@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: .
+      target: 'development'   
+    image: ${APP_NAME}-backend
+    container_name: ${APP_NAME}-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      PGPASSWORD: password
+      DATABASE_URL: postgres://postgres:password@${APP_NAME}-db:5432/${APP_NAME}
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+
+  db:
+    image: postgres
+    container_name: ${APP_NAME}-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  cargo-cache:
+  target-cache:
+  postgres:
