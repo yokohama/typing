@@ -1,3 +1,5 @@
+type ApiResponse<T> = T & { message?: string };
+
 function getHeaders(): HeadersInit | undefined {
   const jwt = localStorage.getItem('jwt');
 
@@ -12,7 +14,7 @@ function getHeaders(): HeadersInit | undefined {
   };
 }
 
-async function handleResponse(response: Response): Promise<any> {
+async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
   const data = await response.json();
 
   if (!response.ok) {
@@ -23,27 +25,27 @@ async function handleResponse(response: Response): Promise<any> {
   return data;
 }
 
-export async function fetchData(
+export async function fetchData<T>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
-): Promise<any> {
+): Promise<ApiResponse<T>> {
   const response = await fetch(url, {
     method: method,
     headers: getHeaders(),
   });
 
-  return handleResponse(response);
+  return handleResponse<T>(response);
 }
 
-export async function postData<T>(
+export async function postData<T, R>(
   url: string,
   data: T
-): Promise<any> {
+): Promise<ApiResponse<R>> {
   const response = await fetch(url, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
 
-  return handleResponse(response);
+  return handleResponse<R>(response);
 }
