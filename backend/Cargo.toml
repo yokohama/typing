@@ -35,3 +35,4 @@ bcrypt = "0.11"
 reqwest = { version = "0.12", features = ["json"] }
 validator = { version = "0.14", features = ["derive"] }
 regex = "1.5"
+strsim = "0.10"

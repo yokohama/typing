@@ -8,7 +8,7 @@ async fn main() {
     let db_pool = middleware::db::get_db_pool().await;
     reset_database(&db_pool).await;
     run_migrations(&db_pool).await;
-    //run_seeds(&db_pool).await;
+    run_seeds(&db_pool).await;
 }
 
 async fn reset_database(pool: &PgPool) {
@@ -30,15 +30,28 @@ async fn run_migrations(pool: &PgPool) {
         .expect("Error running migrations");
 }
 
-/*
 async fn run_seeds(pool: &PgPool) {
+    let titles = vec![
+        "和尚のしっぱい",
+        "天の羽衣",
+        "カッパの雨ごい",
+        "クジラと海のいかり",
+        "ウグイス長者",
+    ];
+    let examples = vec![
+        "あいうえお".to_string(),
+        "かきくけこ".to_string(),
+        "さしすせそ".to_string(),
+        "たちつてと".to_string(),
+        "なにぬねの".to_string(),
+    ];
+
     for i in 1..=5 {
-        let title = format!("Lesson{}", i);
-        let new_lesson = models::lesson::New {
-            title,
+        let new_lesson = models::lesson::Create {
+            title: titles[i - 1].clone().to_string(),
+            example: examples[i - 1].clone(),
         };
     
         let _ = models::lesson::create(pool, new_lesson).await;
     }
 }
-*/

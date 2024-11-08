@@ -9,17 +9,6 @@ import { SessionProvider } from 'next-auth/react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const geistSans = localFont({
-  src: "/fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "/fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
 /* 
  * サーバーサイドコンポーネントなので、一旦コメント。
  * SEO向けにssrやssgで使われている。
@@ -29,23 +18,20 @@ export const metadata: Metadata = {
 };
 */
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <head>
-        <meta httpEquiv="Content-Security-Policy" 
-	  content="trusted-types nextjs#bundler;" />
+        <meta 
+          httpEquiv="Content-Security-Policy" 
+          content="trusted-types nextjs#bundler;" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="bg-gray-100 text-gray-900">
         <SessionProvider>
           <Header />
-          {children}
+          <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+            {children}
+          </main>
           <Footer />
         </SessionProvider>
       </body>
