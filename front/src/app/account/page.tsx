@@ -9,6 +9,16 @@ type UserData = {
   name: string;
 };
 
+type ErrorResponse = {
+  message?: string;
+  error_type?: string;
+  details?: string;
+}
+
+function isErrorResponse(data: any): data is ErrorResponse {
+  return 'message' in data || 'error_type' in data;
+}
+
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
 
@@ -25,7 +35,13 @@ export default function Page() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const data = await fetchData(endpoint, 'GET');
+      const data = await fetchData<UserData | ErrorResponse>(endpoint, 'GET');
+
+      if (isErrorResponse(data)) {
+        console.error('Error fetching user data:', data.message);
+        return;
+      }
+
       setUserData(data);
       setFormData({
         email: data.email || '',
@@ -46,11 +62,12 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = await postData(endpoint, formData);
-      if (data.error_type === 'ValidationError') {
-	const errors = JSON.parse(data.details);
+      const data = await postData<UserData, UserData | ErrorResponse>(endpoint, formData);
+
+      if (isErrorResponse(data) && data.error_type === 'ValidationError') {
+	const errors = data.details ? JSON.parse(data.details) : {};
         setErrors(errors);
-      } else {
+      } else if (!isErrorResponse(data)) {
         setUserData(data);
         setFormData(data);
 	clearErrors();
@@ -65,7 +82,6 @@ export default function Page() {
       <div>
         <h1 className="text-2xl font-bold mb-4 text-gray-800">Profile</h1>
 
-        {/* エラーメッセージ */}
         {validationErrors && (
           <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
             {Object.entries(validationErrors).map(([field, messages]) => (
