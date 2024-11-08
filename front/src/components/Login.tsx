@@ -4,7 +4,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 export default function Login() {
-  let endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
+  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
 
   const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -20,17 +20,17 @@ export default function Login() {
           googleToken: session.accessToken,
         }),
       })
-        .then(async (response) => {
+        .then(async (response: Response) => {
           if (!response.ok) {
             const errorText = await response.text();
             throw new Error(errorText || 'Unknown error occurred');
           }
           return response.json();
         })
-        .then((data) => {
+        .then((data: { jwt: string }) => {
           localStorage.setItem('jwt', data.jwt);
         })
-        .catch((error) => {
+        .catch((error: Error) => {
           console.error('Error sending token to Rust backend:', error);
         });
     }
