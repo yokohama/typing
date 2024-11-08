@@ -10,7 +10,7 @@ type UserData = {
 };
 
 export default function Page() {
-  const endpoint = 'http://localhost:3000/user/profile';
+  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [formData, setFormData] = useState<UserData>({

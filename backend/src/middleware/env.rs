@@ -3,13 +3,14 @@
  * これがないとpanicにしてappの起動を止める
  */
 use std::env;
-use tracing::{debug};
+use tracing::debug;
 
 pub fn check_env() {
     let env_keys = vec![
         "RUST_BACKTRACE",
         "DATABASE_URL",
         "JWT_SECRET",
+        "ALLOWED_ORIGINS",
     ];
 
     for key in env_keys {

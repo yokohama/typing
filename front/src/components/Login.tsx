@@ -4,12 +4,14 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 export default function Login() {
+  let endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
+
   const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.accessToken) {
-      fetch('http://localhost:3000/api/auth/google', {
+      fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

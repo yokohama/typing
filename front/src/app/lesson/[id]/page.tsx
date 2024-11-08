@@ -14,8 +14,8 @@ export default function Page() {
 
   const id = params?.id;
 
-  const getEndpoint = `http://localhost:3000/user/lessons/${id}`;
-  const postEndpoint = `http://localhost:3000/user/lessons/${id}/results`;
+  const getEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/lessons/${id}`;
+  const postEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/lessons/${id}/results`;
 
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [formData, setFormData] = useState<FormData>({ answer: '', time: 0});
@@ -23,7 +23,7 @@ export default function Page() {
   const [time, setTime] = useState<number>(0);
   const [isTiming, setIsTiming] = useState<boolean>(false);
 
-  const { validationErrors, setErrors, clearErrors } = useValidation();
+  const { setErrors, clearErrors } = useValidation();
 
   useEffect(() => {
     const fetchLessonData = async () => {
@@ -80,9 +80,6 @@ export default function Page() {
       console.error('Error create result:', error);
     }
   }; 
-
-
-  const [inputValue, setInputValue] = useState('');
 
   return(
     <div className="flex justify-center min-h-screen bg-gray-50">

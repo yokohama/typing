@@ -10,7 +10,7 @@ import Loading from '@/components/Loading';
 type LessonsData = LessonData[];
 
 export default function Page() {
-  const endpoint = 'http://localhost:3000/user/lessons';
+  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/lessons`;
 
   const [lessonsData, setLessonsData] = useState<LessonsData>([]);
 

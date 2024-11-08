@@ -16,9 +16,8 @@ export default function Page() {
 
   const params = useParams();
   const id = params?.id;
-  const resultEndpoint = `http://localhost:3000/user/results/${id}`;
-  const recordsEndpoint = `http://localhost:3000/user/results?lesson_id=${result?.lesson_id}`;
-
+  const resultEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results/${id}`;
+  const recordsEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results?lesson_id=${result?.lesson_id}`;
 
   useEffect(() => {
     const fetchResultData = async () => {
@@ -30,12 +29,14 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    const fetchRecordsData = async () => {
-      const data = await fetchData(recordsEndpoint, 'GET');
-      setRecords(data);
-    };
+    if (result && result.lesson_id) {
+      const fetchRecordsData = async () => {
+        const data = await fetchData(recordsEndpoint, 'GET');
+        setRecords(data);
+      };
 
-    fetchRecordsData();
+      fetchRecordsData();
+    }
   }, [result]);
 
   return (

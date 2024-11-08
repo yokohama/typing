@@ -9,7 +9,7 @@ import { FormatTime } from '@/lib/format';
 import Loading from '@/components/Loading';
 
 export default function Page() {
-  const endpoint = 'http://localhost:3000/user/results';
+  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results`;
 
   const [resultsData, setResultsData] = useState<ResultData[]>([]);
 
