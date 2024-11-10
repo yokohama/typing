@@ -1,6 +1,11 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { 
+  useEffect, 
+  useState, 
+  ChangeEvent,
+  FormEvent
+} from 'react';
 import { useParams, useRouter } from "next/navigation";
 import { useValidation } from '@/hooks/useValidation';
 
@@ -20,11 +25,16 @@ export default function Page() {
 
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [formData, setFormData] = useState<FormData>({ answer: '', time: 0});
-
   const [time, setTime] = useState<number>(0);
   const [isTiming, setIsTiming] = useState<boolean>(false);
+  const [matchLength, setMatchLength] = useState<number>(0);
 
   const { setErrors, clearErrors } = useValidation();
+
+  const playSound = () => {
+    const audio = new Audio('/sounds/success2.mp3');
+    audio.play();
+  };
 
   useEffect(() => {
     const fetchLessonData = async () => {
@@ -57,6 +67,28 @@ export default function Page() {
     return () => clearInterval(interval);
   }, [isTiming]);
 
+  useEffect(() => {
+    if (!lessonData?.example) return;
+
+    let newMatchLength = 0;
+
+    for (let i = 0; i < formData.answer.length; i++) {
+      if (formData.answer[i] === lessonData.example[i]) {
+        newMatchLength++;
+      } else {
+        break;
+      }
+    }
+
+    if (newMatchLength !== matchLength) {
+      setMatchLength(newMatchLength);
+      if (newMatchLength > matchLength) {
+        playSound();
+      }
+    }
+
+  }, [formData.answer, lessonData?.example, matchLength]);
+
   const handleStart = () => {
     setTime(0);
     setIsTiming(true);
@@ -66,11 +98,11 @@ export default function Page() {
     setIsTiming(false);
   }
 
-  const setInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const setInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setFormData((prevData) => ({ ...prevData, answer: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleStop();
 
@@ -95,41 +127,66 @@ export default function Page() {
     }
   }; 
 
+  const renderExampleWithHighlight = () => {
+    if (!lessonData?.example) return null;
+
+    const matchingText = lessonData.example.slice(0, matchLength);
+    const remainingText = lessonData.example.slice(matchLength);
+
+    return (
+      <span>
+        <span 
+          className="text-green-600 font-bold" 
+          dangerouslySetInnerHTML={{ __html: matchingText.replace(/\n/g, "<br />") }} 
+        />
+        <span 
+          dangerouslySetInnerHTML={{ __html: remainingText.replace(/\n/g, "<br />") }} />
+      </span>
+    );
+  };
+
   return(
     <div className="flex justify-center min-h-screen bg-gray-50">
-      <main className="w-full max-w-3xl bg-white p-6">
+      <main className="w-full max-w-5xl bg-white p-6">
         <h1 
           className="text-2xl font-semibold text-gray-800 mb-4 text-center"
         >{lessonData?.title}</h1>
 
         <div className="flex justify-center mb-4">
-          <div className="text-4xl font-blod text-blue-600 bg-gray-100 rounded-lg p-4">
+          <div className="text-4xl font-bold text-blue-600 bg-gray-100 rounded-lg p-4">
             {FormatTime(time)}
           </div>
         </div>
         
-        <div 
-          className="max-w-3xl bg-gray-100 p-8"
-        >{lessonData?.example}</div>
+        <div className="flex space-x-4">
+          <div 
+            id="exampleArea"
+            className="w-1/2 bg-gray-100 p-8 rounded"
+          >
+            {renderExampleWithHighlight()}
+          </div>
 
-        <div className="mb-4" />
-          
-        <form
-          className="flex flex-col items-center"
-          onSubmit={handleSubmit}
-        >
-          <input
-            type="text"
-            value={formData.answer}
-            onChange={setInput}
-            onFocus={handleStart}
-            className="p-8 border border-gray-300 rounded w-full maz-w-md mb-4"
-          />
-          <button 
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >送信</button>
-        </form>
+          <div 
+            id="formArea"
+            className="w-1/2">
+            <form
+              className="flex flex-col items-center"
+              onSubmit={handleSubmit}
+            >
+              <textarea
+                value={formData.answer}
+                onChange={setInput}
+                onFocus={handleStart}
+                rows={4}
+                className="p-8 border border-gray-300 rounded w-full maz-w-md mb-4"
+              />
+              <button 
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >送信</button>
+            </form>
+          </div>
+        </div>
       </main>
     </div>
   );

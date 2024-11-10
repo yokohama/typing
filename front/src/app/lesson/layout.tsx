@@ -23,7 +23,7 @@ export default function Page({children}: {children: React.ReactNode}) {
             </button>
           </Link>
         </header>
-        <main className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md">
+        <main className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-md">
           {children}
         </main>
       </div>
