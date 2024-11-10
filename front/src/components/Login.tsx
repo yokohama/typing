@@ -53,8 +53,10 @@ export default function Login() {
             </button>
 
             <div className="flex flex-col items-center text-center">
-              <img src={session.user.image || "/default-avatar.png"} alt="User Avatar" className="w-16 h-16 rounded-full object-cover mb-2" />
-              <p className="text-sm text-gray-500">{session.user.email}</p>
+              {session.user?.image && (
+                <img src={session.user.image || "/default-avatar.png"} alt="User Avatar" className="w-16 h-16 rounded-full object-cover mb-2" />
+              )}
+              <p className="text-sm text-gray-500">{session.user?.email || ''}</p>
             </div>
 
             <button
