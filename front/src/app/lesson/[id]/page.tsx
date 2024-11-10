@@ -3,6 +3,7 @@
 import React, { 
   useEffect, 
   useState, 
+  useRef,
   ChangeEvent,
   FormEvent
 } from 'react';
@@ -30,6 +31,8 @@ export default function Page() {
   const [matchLength, setMatchLength] = useState<number>(0);
 
   const { setErrors, clearErrors } = useValidation();
+
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
 
   const playSound = () => {
     const audio = new Audio('/sounds/success2.mp3');
@@ -92,10 +95,20 @@ export default function Page() {
   const handleStart = () => {
     setTime(0);
     setIsTiming(true);
+
+    if (bgmRef.current) {
+      bgmRef.current.loop = true;
+      bgmRef.current.play();
+    }
   };
 
   const handleStop = () => {
     setIsTiming(false);
+
+    if (bgmRef.current) {
+      bgmRef.current.pause();
+      bgmRef.current.currentTime = 0;
+    }
   }
 
   const setInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -187,6 +200,7 @@ export default function Page() {
             </form>
           </div>
         </div>
+        <audio ref={bgmRef} src='/sounds/bgm.mp3' />
       </main>
     </div>
   );
