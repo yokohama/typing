@@ -14,12 +14,6 @@ declare module 'next-auth/jwt' {
   }
 }
 
-// 環境変数のデバッグログ
-console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
-console.log("NEXTAUTH_SECRET:", process.env.NEXTAUTH_SECRET);
-console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
-
 const options: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -30,11 +24,6 @@ const options: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, account }: { token: JWT; account?: Account | null }) {
-      console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-      console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
-      console.log("NEXTAUTH_SECRET:", process.env.NEXTAUTH_SECRET);
-      console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
-
       if (account) {
         token.accessToken = account.access_token;
       }
