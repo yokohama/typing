@@ -9,6 +9,7 @@ import { ResultData } from '@/types/result';
 import { ResultTable } from '@/app/result/components/ResultTable';
 import { Records } from '@/app/result/components/Records';
 import Loading from "@/components/Loading";
+import { isErrorResponse } from '@/types/errorResponse';
 
 export default function Page() {
   const [result, setResult] = useState<ResultData | null>(null);
@@ -22,7 +23,13 @@ export default function Page() {
   useEffect(() => {
     const fetchResultData = async () => {
       const data = await fetchData(resultEndpoint, 'GET');
-      setResult(data);
+
+      if (isErrorResponse(data)) {
+        console.error('Error fetching result data:', data.message);
+	return;
+      }
+
+      setResult(data as ResultData);
     };
 
     fetchResultData();
@@ -32,7 +39,12 @@ export default function Page() {
     if (result && result.lesson_id) {
       const fetchRecordsData = async () => {
         const data = await fetchData(recordsEndpoint, 'GET');
-        setRecords(data);
+
+        if (Array.isArray(data) && data.every(item => !isErrorResponse(item))) {
+          setRecords(data);
+        } else {
+          console.error('Error fetching records data');
+        }
       };
 
       fetchRecordsData();

@@ -7,16 +7,7 @@ import { useValidation } from '@/hooks/useValidation';
 import { LessonData, FormData } from '@/types/lesson';
 import { fetchData, postData } from '@/lib/api';
 import { FormatTime } from '@/lib/format';
-
-type ErrorResponse = {
-  message?: string;
-  error_type?: string;
-  details?: string;
-};
-
-function isErrorResponse(data: unknown): data is ErrorResponse {
-  return typeof data === 'object' && data !== null && ('message' in data || 'error_type' in data);
-}
+import { isErrorResponse } from '@/types/errorResponse';
 
 export default function Page() {
   const params = useParams();
