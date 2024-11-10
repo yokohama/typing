@@ -8,6 +8,16 @@ import { LessonData, FormData } from '@/types/lesson';
 import { fetchData, postData } from '@/lib/api';
 import { FormatTime } from '@/lib/format';
 
+type ErrorResponse = {
+  message?: string;
+  error_type?: string;
+  details?: string;
+};
+
+function isErrorResponse(data: any): data is ErrorResponse {
+  return 'message' in data || 'error_type' in data;
+}
+
 export default function Page() {
   const params = useParams();
   const router = useRouter();
@@ -28,7 +38,15 @@ export default function Page() {
   useEffect(() => {
     const fetchLessonData = async () => {
       const data = await fetchData(getEndpoint, 'GET');
-      setLessonData(data);
+
+      if (isErrorResponse(data)) {
+        console.error('Error fetching lesson data:', data.message);
+	setErrors({ lesson: [data.message || 'An error occurred'] });
+	return;
+      };
+
+      setLessonData(data as LessonData);
+      clearErrors();
     };
 
     fetchLessonData();
@@ -69,10 +87,15 @@ export default function Page() {
 
     try {
       const data = await postData(postEndpoint, updateFormData);
-      if (data.error_type === 'ValidationError') {
-        const errors = JSON.parse(data.details);
-        setErrors(errors);
-      } else {
+
+      if (isErrorResponse(data)) {
+        if (data.error_type === 'ValidationError') {
+	  const errors = data.details ? JSON.parse(data.details) : {};
+	  setErrors(errors);
+	} else {
+	  console.error('API Error:', data.message);
+	}
+      } else if (data && 'id' in data) {
         clearErrors();
         router.push(`/result/${data.id}`);
       }
