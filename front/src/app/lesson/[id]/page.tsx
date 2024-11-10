@@ -14,8 +14,8 @@ type ErrorResponse = {
   details?: string;
 };
 
-function isErrorResponse(data: any): data is ErrorResponse {
-  return 'message' in data || 'error_type' in data;
+function isErrorResponse(data: unknown): data is ErrorResponse {
+  return typeof data === 'object' && data !== null && ('message' in data || 'error_type' in data);
 }
 
 export default function Page() {
