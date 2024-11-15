@@ -1,12 +1,11 @@
 export type ResultData = {
     id: number;
     user_id: number;
-    lesson_id: number;
+    level: number;
     score: number;
     time: number;
-    answer: string;
-    lesson_title: string;
-    lesson_example: string;
+    perfect_count: number;
+    time_bonus: number;
     created_at: Date
 };
 

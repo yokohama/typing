@@ -1,15 +1,16 @@
 use serde::Deserialize;
 use validator::Validate;
 
-use crate::requests::validations;
-
 #[derive(Debug, Deserialize, Validate)]
 pub struct Create {
-    pub answer: String,
+    pub corrects: i32,
+    pub incorrects: i32,
     pub time: i32,
+    pub perfect_count: i32,
 }
 
 #[derive(Deserialize)]
-pub struct LessonQuery {
-    pub lesson_id: Option<i32>,
+pub struct Query {
+    pub user_id: Option<i32>,
+    pub level: Option<i32>,
 }

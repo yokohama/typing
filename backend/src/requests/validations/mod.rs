@@ -7,7 +7,7 @@ use axum::{
     },
     response::Json,
 };
-use validator::{Validate, ValidationErrors};
+use validator::Validate;
 use serde::de::DeserializeOwned;
 use validator::ValidationError;
 use tracing::info;

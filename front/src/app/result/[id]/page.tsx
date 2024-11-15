@@ -18,7 +18,7 @@ export default function Page() {
   const params = useParams();
   const id = params?.id;
   const resultEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results/${id}`;
-  const recordsEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results?lesson_id=${result?.lesson_id}`;
+  const recordsEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${result?.level}/results`;
 
   useEffect(() => {
     const fetchResultData = async () => {
@@ -36,7 +36,7 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    if (result && result.lesson_id) {
+    if (result && result?.level) {
       const fetchRecordsData = async () => {
         const data = await fetchData(recordsEndpoint, 'GET');
 
@@ -57,14 +57,14 @@ export default function Page() {
         {result ? (
           <div>
             <h1 className="text-center text-3xl font-bold mb-6">
-              {result.lesson_title}
+              Level{result.level}
             </h1>
             <Records records={records} />
             <div className="mb-4" />
             <ResultTable result={result} />
             <div className="mb-4" />
             <Link 
-              href={`/lesson/${result.lesson_id}`}
+              href={`/shuting/${result.level}`}
               className="block mx-auto text-center px-6 py-2 bg-orange-600 text-white font-semibold rounded hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 w-fit"
             >チャレンジ</Link>
           </div>

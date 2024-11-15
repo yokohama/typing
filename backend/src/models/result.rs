@@ -1,50 +1,27 @@
 use chrono::NaiveDateTime;
-use strsim::jaro;
 
 use serde::Serialize;
 use sqlx::{
-    PgPool, 
     query_as, 
-    FromRow
+    FromRow, 
+    PgPool
 };
 use tracing::error;
 
 use crate::middleware::error;
-use crate::models::lesson;
-
-#[derive(Debug, Serialize, FromRow)]
-pub struct Created {
-    pub id: i32,
-    pub user_id: i32,
-    pub lesson_id: i32,
-    pub score: f64,
-    pub time: i32,
-    pub answer: String,
-    pub created_at: NaiveDateTime,
-    pub deleted_at: Option<NaiveDateTime>,
-}
-
-#[derive(Debug, Serialize, FromRow)]
-pub struct MinEntry {
-    pub id: i32,
-    pub lesson_id: i32,
-    pub score: f64,
-    pub time: i32,
-    pub created_at: NaiveDateTime,
-    pub deleted_at: Option<NaiveDateTime>,
-    pub lesson_title: String,
-}
+use crate::models;
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Entry {
     pub id: i32,
     pub user_id: i32,
-    pub lesson_id: i32,
-    pub score: f64,
+    pub level: i32,
+    pub correct: i32,
+    pub incorrect: i32,
+    pub score: i32,
     pub time: i32,
-    pub answer: String,
-    pub lesson_title: String,
-    pub lesson_example: String,
+    pub perfect_count: i32,
+    pub time_bonus: i32,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
 }
@@ -52,43 +29,72 @@ pub struct Entry {
 #[derive(Debug, Serialize, FromRow)]
 pub struct Create {
     pub user_id: i32,
-    pub lesson_id: i32,
+    pub level: i32,
+    pub correct: i32,
+    pub incorrect: i32,
     pub time: i32,
-    pub answer: String,
+    pub perfect_count: i32,
 }
 
 pub async fn create(
     pool: &PgPool, 
     params: Create
-) -> Result<Created, error::AppError> {
+) -> Result<Entry, error::AppError> {
 
-    let lesson = lesson::find(&pool, params.lesson_id.clone()).await?;
+    let query =  crate::requests::params::shuting::Query {
+        level: Some(1),
+    };
 
-    let score = calc_score(
-        lesson.example,
-        params.answer.clone(), 
-        params.time.clone()
+    let shutings = models::shuting::where_all(pool, Some(query)).await?;
+    let word_count = shutings.len() as i32;
+
+    let total_limit_sec: i32 = shutings.iter().map(|s| s.limit_sec).sum();
+
+   let score = calc_score(
+        word_count, 
+        params.correct, 
+        params.incorrect, 
+        params.perfect_count, 
+        params.time, 
+        total_limit_sec,
     );
 
     let sql = r#"
         INSERT INTO results (
             user_id, 
-            lesson_id,
+            level,
+            correct,
+            incorrect,
             score,
             time,
-            answer,
+            perfect_count,
+            time_bonus,
             created_at
         )
-        VALUES ($1, $2, $3, $4, $5, NOW())
-        RETURNING id, user_id, lesson_id, score, time, answer, created_at, deleted_at
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+        RETURNING 
+            id, 
+            user_id, 
+            level, 
+            correct, 
+            incorrect, 
+            score, 
+            time, 
+            perfect_count, 
+            time_bonus, 
+            created_at, 
+            deleted_at
     "#;
             
-    let result = query_as::<_, Created>(sql)
+    let result = query_as::<_,Entry>(sql)
         .bind(&params.user_id)
-        .bind(&params.lesson_id)
-        .bind(score)
+        .bind(&params.level)
+        .bind(&params.correct)
+        .bind(&params.incorrect)
+        .bind(score.0)
         .bind(&params.time)
-        .bind(&params.answer)
+        .bind(&params.perfect_count)
+        .bind(score.1)
         .fetch_one(pool)
         .await
         .map_err(|e| {
@@ -101,30 +107,32 @@ pub async fn create(
 
 pub async fn find(
     pool: &PgPool, 
-    user_id: i32,
     id: i32,
+    user_id: i32,
 ) -> Result<Entry, error::AppError> {
 
     let sql = r#"
         SELECT 
-          results.id, 
-          results.user_id, 
-          results.lesson_id, 
-          results.score, 
-          results.time, 
-          results.answer, 
-          results.created_at, 
-          results.deleted_at, 
-          lessons.title AS lesson_title,
-          lessons.example AS lesson_example
-        FROM results
-        LEFT JOIN lessons ON lessons.id = results.lesson_id
-        WHERE results.user_id = $1 AND results.id = $2
+          id, 
+          user_id,
+          level, 
+          correct,
+          incorrect,
+          score, 
+          time, 
+          perfect_count,
+          time_bonus,
+          created_at, 
+          deleted_at
+        FROM 
+          results
+        WHERE
+          id = $1 AND user_id = $2
     "#;
 
-    let lesson = query_as::<_, Entry>(sql)
-        .bind(user_id)
+    let result = query_as::<_, Entry>(sql)
         .bind(id)
+        .bind(user_id)
         .fetch_one(pool)
         .await
         .map_err(|e| {
@@ -132,61 +140,56 @@ pub async fn find(
             error::AppError::DatabaseError(e.to_string())
         })?;
 
-    Ok(lesson)
+    return Ok(result)
 }
 
-pub async fn all_by_user_id(
+pub async fn where_all(
     pool: &PgPool, 
-    user_id: i32,
-    lesson_id: Option<i32>,
-) -> Result<Vec<MinEntry>, error::AppError> {
+    query: Option<crate::requests::params::result::Query>,
+) -> Result<Vec<Entry>, error::AppError> {
 
-    let sql = if let Some(lesson_id) = lesson_id {
-        r#"
-            SELECT 
-              results.id, 
-              results.lesson_id, 
-              results.score, 
-              results.time, 
-              results.created_at, 
-              results.deleted_at,
-              lessons.title AS lesson_title
-            FROM 
-              results
-            LEFT JOIN 
-              lessons 
-            ON 
-              lessons.id = results.lesson_id
-            WHERE 
-              user_id = $1 AND results.lesson_id = $2
-        "#
-    } else {
-        r#"
-            SELECT 
-              results.id, 
-              results.lesson_id, 
-              results.score, 
-              results.time, 
-              results.created_at, 
-              results.deleted_at,
-              lessons.title AS lesson_title
-            FROM 
-              results
-            LEFT JOIN 
-              lessons 
-            ON
-              lessons.id = results.lesson_id
-            WHERE 
-              user_id = $1
-        "#
-    };
+    let mut sql = r#"
+        SELECT 
+          id, 
+          user_id,
+          level, 
+          correct,
+          incorrect,
+          score, 
+          time, 
+          perfect_count,
+          time_bonus,
+          created_at, 
+          deleted_at
+        FROM 
+          results
+    "#.to_string();
 
-    let mut query = query_as::<_, MinEntry>(sql).bind(user_id);
-    if let Some(lesson_id) = lesson_id {
-        query = query.bind(lesson_id);
+    let mut conditions = vec![];
+    let mut binds = vec![];
+
+    if let Some(user_id) = query.as_ref().and_then(|q| q.user_id) {
+        conditions.push("user_id = $1");
+        binds.push(user_id as i64);
     }
 
-    match query.fetch_all(pool).await {
+    if let Some(level) = query.as_ref().and_then(|q| q.level) {
+        conditions.push("level = $2");
+        binds.push(level as i64);
+    }
+
+    if !conditions.is_empty() {
+        sql.push_str(" WHERE ");
+        sql.push_str(&conditions.join(" AND "));
+    }
+
+    let mut query_builder = query_as::<_, Entry>(&sql);
+
+    for bind in binds {
+        query_builder = query_builder.bind(bind);
+    }
+
+    match query_builder.fetch_all(pool).await {
         Ok(results) => {
             Ok(results)
         },
@@ -197,13 +200,39 @@ pub async fn all_by_user_id(
     }
 }
 
-/*
- * ユーザーが入力した回答を文字列の一致度でscoreを計算。
- * time(回答にかかった時間)も係数として入れる。
- */
-fn calc_score(example: String, answer: String, time: i32) -> i32 {
-    let similarity = jaro(&answer, &example);
-    let similarity_score = (similarity * 100.0) as i32;
-    let time_penalty = (time as f64 * 0.1).min(50.0) as i32;
-    (similarity_score - time_penalty).max(0)
+fn calc_score(
+    word_count: i32,
+    correct: i32,
+    incorrect: i32,
+    perfect: i32,
+    current_time: i32,
+    total_limit_sec: i32,
+) -> (i32, i32) {
+    let accuracy = if word_count > 0 {
+        correct as f64 / word_count as f64
+    } else {
+        0.0
+    };
+    let penalty = if correct + incorrect > 0 {
+        incorrect as f64 / (correct + incorrect) as f64
+    } else {
+        0.0
+    };
+    let perfect_bonus = if correct > 0 {
+        perfect as f64 / correct as f64
+    } else {
+        0.0
+    };
+
+    let base_score = (accuracy * 100.0 - penalty * 50.0 + perfect_bonus * 20.0).max(0.0);
+    let score = base_score.min(100.0).round() as i32;
+
+    let time_bonus = if total_limit_sec > 0 {
+        (1.0 - (current_time as f64 / total_limit_sec as f64).min(1.0)) * 20.0
+    } else {
+        0.0
+    };
+    let time_bonus = time_bonus.round() as i32;
+
+    (score, time_bonus)
 }

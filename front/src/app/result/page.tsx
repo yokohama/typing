@@ -1,17 +1,19 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { ResultData } from '@/types/result';
 import { fetchData } from '@/lib/api';
-import { FormatTime } from '@/lib/format';
+import { FormatSecTime, FormatDateTime } from '@/lib/format';
 import Loading from '@/components/Loading';
 
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results`;
 
   const [resultsData, setResultsData] = useState<ResultData[]>([]);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchResultsData = async () => {
@@ -22,23 +24,39 @@ export default function Page() {
     fetchResultsData();
   }, []);
 
+  const sortedResults = resultsData?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
   return(
-    <div>
-      {resultsData ? (
-        resultsData.map((result, index) => (
-	  <Link href={`/result/${result.id}`} key={index}>
-            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 mb-4 hover:bg-gray-50 transition-all duration-200 ease-in-out">
-              <p className="text-gray-500 text-sm">
-                {new Date(result.created_at).toLocaleDateString()}
-              </p>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">{result.lesson_title}</h3>
-              <div className="flex items-center justify-between mt-3">
-                <p className="text-blue-600 font-bold text-lg">Score: {result.score}</p>
-                <p className="text-blue-600 font-bold text-lg">{FormatTime(result.time)}</p>
-              </div>
-            </div>
-          </Link>
-        ))
+    <div className="overflow-x-auto my-6 p-4">
+      {sortedResults ? (
+        <table className="min-w-full leading-normal border-collapse">
+          <thead>
+            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th className="py-3 px-6 text-left">日時</th>
+              <th className="py-3 px-6 text-left">Level</th>
+              <th className="py-3 px-6 text-left">スコア</th>
+              <th className="py-3 px-6 text-left">タイムボーナス</th>
+              <th className="py-3 px-6 text-left">経過時間</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-700">
+            {resultsData.map((result, index) => (
+                <tr 
+                  key={index}
+                  className="border-b border-gray-200 hover:bg-gray-100"
+                  onClick={() => router.push(`/result/${result.id}`)}
+                 >
+                  <td className="py-3 px-6">
+                      {FormatDateTime(result.created_at)}
+                  </td>
+                  <td className="py-3 px-6">{result.level}</td>
+                  <td className="py-3 px-6">{result.score}</td>
+                  <td className="py-3 px-6">{result.time_bonus}</td>
+                  <td className="py-3 px-6">{FormatSecTime(result.time)}</td>
+                </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <Loading />
       )}

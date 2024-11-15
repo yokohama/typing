@@ -1,6 +1,5 @@
 use tracing::info;
 use tower_http::trace::TraceLayer;
-use tower_http::cors::{CorsLayer, Any};
 
 mod routes;
 mod middleware;

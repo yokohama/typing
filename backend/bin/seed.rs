@@ -31,27 +31,21 @@ async fn run_migrations(pool: &PgPool) {
 }
 
 async fn run_seeds(pool: &PgPool) {
-    let titles = vec![
-        "和尚のしっぱい",
-        "天の羽衣",
-        "カッパの雨ごい",
-        "クジラと海のいかり",
-        "ウグイス長者",
-    ];
-    let examples = vec![
-        "むかしむかし、あるオテラに、オショウさんと２人のコゾウがいました。さて、ある冬のばんのこと。 オショウさんが「トウフを長方形に切ってクシにさし、ミソをぬって火にあぶったデンガクドウフ」を２０クシ、いろりに、グルリとならべてさし、 「寒いときは、これがいちばんじゃ。さあ、やけてきたぞ」 こうばしいかおりに、はなをヒクヒクさせました。 とうふにぬりつけたあまいみそが、こんがりとやけて、たまらなくいいにおいですそこへ、においをかぎつけたふたりのコゾウが、とんできました。オショウさんは、デンガクドウフをひとりでぜんぶ、たべるつもりでしたが、いまさらかくすわけにはいきません。 そこで、 「ちょうど、いいところにきた。おまえたちにもわけてやろう。だが、ただわけてやったのではつまらん。クシのかずをよみこんだ歌をつくりあって、そのかずだけ、たべることにしよう。".to_string(),
-        "かきくけこ".to_string(),
-        "さしすせそ".to_string(),
-        "たちつてと".to_string(),
-        "なにぬねの".to_string(),
+    let words = vec![
+        "あいうえお",
+        "かきくけこ",
+        "さしすせそ",
+        "たちつてと",
+        "なにぬねの",
     ];
 
-    for i in 1..=5 {
-        let new_lesson = models::lesson::Create {
-            title: titles[i - 1].clone().to_string(),
-            example: examples[i - 1].clone(),
+    for i in 0..=4 {
+        let new_shuting = models::shuting::Create {
+            level: 1,
+            limit_sec: 5,
+            word: words[i].to_string()
         };
     
-        let _ = models::lesson::create(pool, new_lesson).await;
+        let _ = models::shuting::create(pool, new_shuting).await;
     }
 }

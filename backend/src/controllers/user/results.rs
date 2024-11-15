@@ -1,12 +1,9 @@
-use std::result;
-
 use axum::{
     extract::{State, Path, Query},
     response::Json,
 };
 use serde::Serialize;
 use sqlx::PgPool;
-use tracing::debug;
 
 use crate::middleware::error;
 use crate::middleware::auth;
@@ -16,13 +13,19 @@ use crate::requests::params;
 pub async fn index(
     State(pool): State<PgPool>,
     claims: auth::Claims,
-    Query(params): Query<params::result::LessonQuery>,
+    level: Option<Path<i32>>,
+    Query(mut query): Query<params::result::Query>,
 ) -> Result<Json<impl Serialize>, error::AppError> {
 
-    let result = models::result::all_by_user_id(
+    query.user_id = Some(claims.sub);
+
+    if let Some(level) = level {
+        query.level = Some(level.0)
+    }
+
+    let result = models::result::where_all(
         &pool, 
-        claims.sub,
-        params.lesson_id,
+        Some(query),
     ).await?;
 
     Ok(Json(result))
@@ -31,7 +34,7 @@ pub async fn index(
 pub async fn create(
     State(pool): State<PgPool>,
     claims: auth::Claims,
-    Path(lesson_id): Path<i32>,
+    Path(level): Path<i32>,
     Json(payload): Json<params::result::Create>,
 ) -> Result<Json<impl Serialize>, error::AppError> {
 
@@ -39,9 +42,11 @@ pub async fn create(
         &pool, 
         models::result::Create {
             user_id: claims.sub,
-            lesson_id: lesson_id,
+            level: level,
+            correct: payload.corrects,
+            incorrect: payload.incorrects,
             time: payload.time,
-            answer: payload.answer,
+            perfect_count: payload.perfect_count,
         },
     ).await?;
 
@@ -56,8 +61,8 @@ pub async fn show(
 
     let result = models::result::find(
         &pool, 
-        claims.sub, 
-        id
+        id,
+        claims.sub
     ).await?;
     Ok(Json(result))
 }

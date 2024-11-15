@@ -20,11 +20,11 @@ export default function Header() {
         <nav className="flex space-x-4">
           {session && (
             <>
-              <Link key="lesson" 
-                href="/lesson"
+              <Link key="shuting" 
+                href="/shuting"
                 className="text-gray-700 hover:text-gray-500"
               >
-                Lesson
+                Shuting
               </Link>
               <Link key="account" 
                 href="/account"

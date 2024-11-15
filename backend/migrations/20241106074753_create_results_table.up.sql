@@ -2,8 +2,13 @@
 CREATE TABLE results (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    lesson_id INT REFERENCES lessons(id) ON DELETE CASCADE,
-    score FLOAT,
+    level INT NOT NULL,
+    correct INT NOT NULL,
+    incorrect INT NOT NULL,
+    time INT NOT NULL,
+    score INT NOT NULL,
+    perfect_count INT NOT NULL,
+    time_bonus INT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP
 );

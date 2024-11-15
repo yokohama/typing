@@ -1,7 +1,6 @@
-CREATE TABLE users (
+CREATE TABLE lessons (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255),
+    title VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP
 );
