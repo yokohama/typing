@@ -24,7 +24,11 @@ export default function Page() {
     fetchResultsData();
   }, []);
 
-  const sortedResults = resultsData?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const sortedResults = resultsData
+    ?.filter((result) => result.created_at ! == undefined)
+    .sort((a, b) => 
+      new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
+    );
 
   return(
     <div className="overflow-x-auto my-6 p-4">
@@ -47,12 +51,14 @@ export default function Page() {
                   onClick={() => router.push(`/result/${result.id}`)}
                  >
                   <td className="py-3 px-6">
-                      {FormatDateTime(result.created_at)}
+                    {result.created_at && FormatDateTime(result.created_at)}
                   </td>
                   <td className="py-3 px-6">{result.level}</td>
                   <td className="py-3 px-6">{result.score}</td>
                   <td className="py-3 px-6">{result.time_bonus}</td>
-                  <td className="py-3 px-6">{FormatSecTime(result.time)}</td>
+                  <td className="py-3 px-6">
+                    {result.time && FormatSecTime(result.time)}
+                  </td>
                 </tr>
             ))}
           </tbody>

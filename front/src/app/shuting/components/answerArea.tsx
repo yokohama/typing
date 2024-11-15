@@ -2,14 +2,14 @@ import React, { ChangeEvent, useState } from "react";
 
 import { ShutingData } from "@/types/shuting";
 import { SoundManager } from "./soundManager";
-import { Result } from '@/types/shuting';
+import { ResultData } from "@/types/result";
 
 type AnswerAreaProps =  {
   answerData: string;
   shutingData: ShutingData | null;
   soundManager: SoundManager;
   setIsCorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setResult: React.Dispatch<React.SetStateAction<Result>>;
+  setResultData: React.Dispatch<React.SetStateAction<ResultData>>;
   moveToNextExample: () => void;
   setAnswerData: React.Dispatch<React.SetStateAction<string>>,
   setPerfectCount: React.Dispatch<React.SetStateAction<number>>,
@@ -20,7 +20,7 @@ export default function AnswerArea({
   shutingData,
   soundManager,
   setIsCorrectOverlayVisible,
-  setResult,
+  setResultData,
   moveToNextExample,
   setAnswerData,
   setPerfectCount,
@@ -44,9 +44,9 @@ export default function AnswerArea({
           moveToNextExample();
         }, 1000);
 
-        setResult(prevResult => ({
-          ...prevResult,
-          corrects: prevResult.corrects + 1,
+        setResultData(prev => ({
+          ...prev,
+          correct_count: (prev.correct_count ?? 0) + 1,
         }));
 
         if (!isUseDelete) {

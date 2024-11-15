@@ -3,8 +3,8 @@ use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct Create {
-    pub corrects: i32,
-    pub incorrects: i32,
+    pub correct_count: i32,
+    pub incorrect_count: i32,
     pub time: i32,
     pub perfect_count: i32,
 }

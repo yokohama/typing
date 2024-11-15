@@ -43,8 +43,8 @@ pub async fn create(
         models::result::Create {
             user_id: claims.sub,
             level: level,
-            correct: payload.corrects,
-            incorrect: payload.incorrects,
+            correct_count: payload.correct_count,
+            incorrect_count: payload.incorrect_count,
             time: payload.time,
             perfect_count: payload.perfect_count,
         },

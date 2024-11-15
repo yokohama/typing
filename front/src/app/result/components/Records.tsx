@@ -29,7 +29,7 @@ export const Records: React.FC<RecordsProps> = ({ records }) => {
     datasets: [
       {
         label: 'Score',
-        data: records.map((record) => record.score + record.time_bonus),
+        data: records.map((record) => (record.score ?? 0) + (record.time_bonus ?? 0)),
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         fill: false,
