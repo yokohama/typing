@@ -6,7 +6,8 @@ export class SoundManager {
   private finishSound: HTMLAudioElement;
 
   constructor() {
-    this.bgm = new Audio('/sounds/bgm.mp3');
+    //this.bgm = new Audio('/sounds/bgms/bgm.mp3');
+    this.bgm = new Audio('/sounds/bgms/Morning.mp3');
     this.bgm.loop = true;
 
     this.successSound = new Audio('/sounds/success2.mp3');
