@@ -7,7 +7,7 @@ export const ResultTable: React.FC<ResultTableProps> = ({ result }) => (
       <tr>
         <td className="border px-4 py-2 font-semibold">日時</td>
         <td className="border px-4 py-2">
-          {FormatDateTime(result.created_at)}
+          {result.created_at && FormatDateTime(result.created_at)}
         </td>
       </tr>
       <tr>
@@ -21,12 +21,12 @@ export const ResultTable: React.FC<ResultTableProps> = ({ result }) => (
       <tr>
         <td className="border px-4 py-2 font-semibold">合計スコア</td>
         <td className="border px-4 py-2">
-          {result.score + result.time_bonus}
+          {(result.score ?? 0) + (result.time_bonus ?? 0)}
         </td>
       </tr>
       <tr>
         <td className="border px-4 py-2 font-semibold">経過時間</td>
-        <td className="border px-4 py-2">{FormatSecTime(result.time)}</td>
+        <td className="border px-4 py-2">{FormatSecTime((result.time ?? 0))}</td>
       </tr>
     </tbody>
   </table>

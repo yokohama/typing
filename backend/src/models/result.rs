@@ -16,8 +16,8 @@ pub struct Entry {
     pub id: i32,
     pub user_id: i32,
     pub level: i32,
-    pub correct: i32,
-    pub incorrect: i32,
+    pub correct_count: i32,
+    pub incorrect_count: i32,
     pub score: i32,
     pub time: i32,
     pub perfect_count: i32,
@@ -30,8 +30,8 @@ pub struct Entry {
 pub struct Create {
     pub user_id: i32,
     pub level: i32,
-    pub correct: i32,
-    pub incorrect: i32,
+    pub correct_count: i32,
+    pub incorrect_count: i32,
     pub time: i32,
     pub perfect_count: i32,
 }
@@ -52,8 +52,8 @@ pub async fn create(
 
    let score = calc_score(
         word_count, 
-        params.correct, 
-        params.incorrect, 
+        params.correct_count, 
+        params.incorrect_count, 
         params.perfect_count, 
         params.time, 
         total_limit_sec,
@@ -63,8 +63,8 @@ pub async fn create(
         INSERT INTO results (
             user_id, 
             level,
-            correct,
-            incorrect,
+            correct_count,
+            incorrect_count,
             score,
             time,
             perfect_count,
@@ -76,8 +76,8 @@ pub async fn create(
             id, 
             user_id, 
             level, 
-            correct, 
-            incorrect, 
+            correct_count, 
+            incorrect_count, 
             score, 
             time, 
             perfect_count, 
@@ -89,8 +89,8 @@ pub async fn create(
     let result = query_as::<_,Entry>(sql)
         .bind(&params.user_id)
         .bind(&params.level)
-        .bind(&params.correct)
-        .bind(&params.incorrect)
+        .bind(&params.correct_count)
+        .bind(&params.incorrect_count)
         .bind(score.0)
         .bind(&params.time)
         .bind(&params.perfect_count)
@@ -116,8 +116,8 @@ pub async fn find(
           id, 
           user_id,
           level, 
-          correct,
-          incorrect,
+          correct_count,
+          incorrect_count,
           score, 
           time, 
           perfect_count,
@@ -153,8 +153,8 @@ pub async fn where_all(
           id, 
           user_id,
           level, 
-          correct,
-          incorrect,
+          correct_count,
+          incorrect_count,
           score, 
           time, 
           perfect_count,
@@ -202,24 +202,24 @@ pub async fn where_all(
 
 fn calc_score(
     word_count: i32,
-    correct: i32,
-    incorrect: i32,
+    correct_count: i32,
+    incorrect_count: i32,
     perfect: i32,
     current_time: i32,
     total_limit_sec: i32,
 ) -> (i32, i32) {
     let accuracy = if word_count > 0 {
-        correct as f64 / word_count as f64
+        correct_count as f64 / word_count as f64
     } else {
         0.0
     };
-    let penalty = if correct + incorrect > 0 {
-        incorrect as f64 / (correct + incorrect) as f64
+    let penalty = if correct_count + incorrect_count > 0 {
+        incorrect_count as f64 / (correct_count + incorrect_count) as f64
     } else {
         0.0
     };
-    let perfect_bonus = if correct > 0 {
-        perfect as f64 / correct as f64
+    let perfect_bonus = if correct_count > 0 {
+        perfect as f64 / correct_count as f64
     } else {
         0.0
     };

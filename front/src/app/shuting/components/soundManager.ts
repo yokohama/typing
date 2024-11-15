@@ -6,8 +6,15 @@ export class SoundManager {
   private finishSound: HTMLAudioElement;
 
   constructor() {
-    //this.bgm = new Audio('/sounds/bgms/bgm.mp3');
-    this.bgm = new Audio('/sounds/bgms/Morning.mp3');
+    const bgmList = [
+      '/sounds/bgms/Morning.mp3',
+      '/sounds/bgms/BGM_-_067_-_Stone_Dance.mp3',
+      '/sounds/bgms/Dive_To_Mod.mp3',
+      '/sounds/bgms/bgm.mp3'
+    ];
+    const randomIndex = Math.floor(Math.random() * bgmList.length);
+
+    this.bgm = new Audio(bgmList[randomIndex]);
     this.bgm.loop = true;
 
     this.successSound = new Audio('/sounds/success2.mp3');
