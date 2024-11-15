@@ -131,6 +131,7 @@ export default function Page() {
         router.push(`/result/${data.id}`);
       }
     } catch (error) {
+      console.error(error);
     }
   }
 
