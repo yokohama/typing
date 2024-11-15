@@ -31,19 +31,55 @@ async fn run_migrations(pool: &PgPool) {
 }
 
 async fn run_seeds(pool: &PgPool) {
-    let words = vec![
+    let level1 = vec![
         "あいうえお",
         "かきくけこ",
         "さしすせそ",
         "たちつてと",
         "なにぬねの",
+        "はひふへほ",
+        "まみむめも",
+        "やゆよ",
+        "らりるれろ",
+        "わをん",
     ];
 
-    for i in 0..=4 {
+    for i in 0..=level1.len()-1 {
         let new_shuting = models::shuting::Create {
             level: 1,
             limit_sec: 5,
-            word: words[i].to_string()
+            word: level1[i].to_string()
+        };
+    
+        let _ = models::shuting::create(pool, new_shuting).await;
+    }
+
+    let level2 = vec![
+        "morning",
+        "afternoon",
+        "evening",
+        "night",
+        "year",
+        "month",
+        "day",
+        "week",
+        "time",
+        "minute",
+        "family",
+        "father",
+        "mother",
+        "brother",
+        "sister",
+        "animal",
+        "dog",
+        "cat",
+    ];
+
+    for i in 0..=level2.len()-1 {
+        let new_shuting = models::shuting::Create {
+            level: 2,
+            limit_sec: 5,
+            word: level2[i].to_string()
         };
     
         let _ = models::shuting::create(pool, new_shuting).await;
