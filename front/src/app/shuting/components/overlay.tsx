@@ -1,17 +1,17 @@
-import { ResultData } from "@/types/result";
+import { Result } from "@/types/result";
 
 type OverlayProps = {
   isCorrectOverlayVisible: boolean,
   isIncorrectOverlayVisible: boolean,
   isFinishOverlayVisible: boolean,
-  resultData: ResultData,
+  result: Result,
 };
 
 export default function Overlay({
   isCorrectOverlayVisible,
   isIncorrectOverlayVisible,
   isFinishOverlayVisible,
-  resultData,
+  result,
 }: OverlayProps) {
   return(
     <>
@@ -39,10 +39,10 @@ export default function Overlay({
             FINISH
           </div>
           <div className="text-white text-[3rem] font-bold">
-            スコア: {resultData.score}
+            スコア: {result.score}
           </div>
           <div className="text-white text-[3rem] font-bold">
-            タイムボーナス: {resultData.time_bonus}
+            タイムボーナス: {result.time_bonus}
           </div>
         </div>
       )}
