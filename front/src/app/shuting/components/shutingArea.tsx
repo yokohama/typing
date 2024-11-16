@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import { ResultData } from "@/types/result";
+import { Result } from "@/types/result";
 import { SoundManager } from "./soundManager";
 
 type ShutingAreaProps = {
@@ -16,7 +16,7 @@ type ShutingAreaProps = {
   moveToNextExample: () => void;
   isStart: boolean;
   setShutingLimitSec: React.Dispatch<React.SetStateAction<number | null>>;
-  setResultData: React.Dispatch<React.SetStateAction<ResultData>>;
+  setResult: React.Dispatch<React.SetStateAction<Result>>;
   setIsIncorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -30,7 +30,7 @@ export default function ShutingArea({
   moveToNextExample,
   isStart,
   setShutingLimitSec,
-  setResultData,
+  setResult,
   setIsIncorrectOverlayVisible,
 }: ShutingAreaProps) {
 
@@ -52,9 +52,9 @@ export default function ShutingArea({
   }, [shutingLimitSec, isStart]);
 
   const handleTimeLimitExceeded = () => {
-    setResultData(prev => ({
-      ...prev,
-      incorrect_count: (prev.incorrect_count ?? 0) + 1,
+    setResult(prevResult => ({
+      ...prevResult,
+      incorrect_count: prevResult.incorrect_count + 1,
     }));
     soundManager.playIncorrect();
     setIsIncorrectOverlayVisible(true);

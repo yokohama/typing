@@ -9,7 +9,7 @@ type AnswerAreaProps =  {
   shuting: Shuting | null;
   soundManager: SoundManager;
   setIsCorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setResultData: React.Dispatch<React.SetStateAction<ResultData>>;
+  setResult: React.Dispatch<React.SetStateAction<ResultData>>;
   moveToNextExample: () => void;
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
   setPerfectCount: React.Dispatch<React.SetStateAction<number>>,
@@ -20,7 +20,7 @@ export default function AnswerArea({
   shuting,
   soundManager,
   setIsCorrectOverlayVisible,
-  setResultData,
+  setResult,
   moveToNextExample,
   setAnswer,
   setPerfectCount,
@@ -44,9 +44,9 @@ export default function AnswerArea({
           moveToNextExample();
         }, 1000);
 
-        setResultData(prev => ({
-          ...prev,
-          correct_count: (prev.correct_count ?? 0) + 1,
+        setResult(prevResult => ({
+          ...prevResult,
+          correct_count: prevResult.correct_count + 1,
         }));
 
         if (!isUseDelete) {
