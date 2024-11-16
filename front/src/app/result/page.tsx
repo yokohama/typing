@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { ResultData } from '@/types/result';
+import { Result } from '@/types/result';
 import { fetchData } from '@/lib/api';
 import { FormatSecTime, FormatDateTime } from '@/lib/format';
 import Loading from '@/components/Loading';
@@ -11,24 +11,28 @@ import Loading from '@/components/Loading';
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results`;
 
-  const [resultsData, setResultsData] = useState<ResultData[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
 
   const router = useRouter();
 
   useEffect(() => {
-    const fetchResultsData = async () => {
+    const fetchResults = async () => {
       const data = await fetchData(endpoint, 'GET');
-      setResultsData(Array.isArray(data) ? data : []);
+      setResults(Array.isArray(data) ? data : []);
     };
 
-    fetchResultsData();
+    fetchResults();
   }, []);
 
+<<<<<<< HEAD
   const sortedResults = resultsData
     ?.filter((result) => result.created_at ! == undefined)
     .sort((a, b) => 
       new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
     );
+=======
+  const sortedResults = results?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+>>>>>>> 1aa974f (init)
 
   return(
     <div className="overflow-x-auto my-6 p-4">
@@ -44,7 +48,7 @@ export default function Page() {
             </tr>
           </thead>
           <tbody className="text-gray-700">
-            {resultsData.map((result, index) => (
+            {results.map((result, index) => (
                 <tr 
                   key={index}
                   className="border-b border-gray-200 hover:bg-gray-100"

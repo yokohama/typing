@@ -5,15 +5,15 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
 import { fetchData } from '@/lib/api';
-import { ResultData } from '@/types/result';
+import { Result } from '@/types/result';
 import { ResultTable } from '@/app/result/components/ResultTable';
 import { Records } from '@/app/result/components/Records';
 import Loading from "@/components/Loading";
 import { isErrorResponse } from '@/types/errorResponse';
 
 export default function Page() {
-  const [result, setResult] = useState<ResultData | null>(null);
-  const [records, setRecords] = useState<ResultData[]>([]);
+  const [result, setResult] = useState<Result | null>(null);
+  const [records, setRecords] = useState<Result[]>([]);
 
   const params = useParams();
   const id = params?.id;
@@ -21,7 +21,7 @@ export default function Page() {
   const recordsEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${result?.level}/results`;
 
   useEffect(() => {
-    const fetchResultData = async () => {
+    const fetchResult = async () => {
       const data = await fetchData(resultEndpoint, 'GET');
 
       if (isErrorResponse(data)) {
@@ -29,15 +29,15 @@ export default function Page() {
 	return;
       }
 
-      setResult(data as ResultData);
+      setResult(data as Result);
     };
 
-    fetchResultData();
+    fetchResult();
   }, []);
 
   useEffect(() => {
     if (result && result?.level) {
-      const fetchRecordsData = async () => {
+      const fetchRecords = async () => {
         const data = await fetchData(recordsEndpoint, 'GET');
 
         if (Array.isArray(data) && data.every(item => !isErrorResponse(item))) {
@@ -47,7 +47,7 @@ export default function Page() {
         }
       };
 
-      fetchRecordsData();
+      fetchRecords();
     }
   }, [result]);
 

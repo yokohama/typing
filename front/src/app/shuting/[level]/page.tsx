@@ -7,8 +7,12 @@ import React, {
 } from 'react';
 import { useParams, useRouter } from "next/navigation";
 
+<<<<<<< HEAD
 import { ShutingData } from '@/types/shuting';
 import { ResultData } from '@/types/result';
+=======
+import { Shuting, Result } from '@/types/shuting';
+>>>>>>> 1aa974f (init)
 import { fetchData, postData } from '@/lib/api';
 import { isErrorResponse } from '@/types/errorResponse';
 import { SoundManager } from '../components/soundManager';
@@ -31,9 +35,9 @@ export default function Page() {
 
   const [isStart, setIsStart] = useState<boolean>(false);
   const [isCountdownVisible, setIsCountdownVisible] = useState<boolean>(true);
-  const [shutingsData, setShutingsData] = useState<ShutingData[]>([]);
-  const [shutingData, setShutingData] = useState<ShutingData | null>(null);
-  const [answerData, setAnswerData] = useState<string>('');
+  const [shutings, setShutings] = useState<Shuting[]>([]);
+  const [shuting, setShuting] = useState<Shuting | null>(null);
+  const [answer, setAnswer] = useState<string>('');
   const [perfectCount, setPerfectCount] = useState<number>(0);
 
   const [isCorrectOverlayVisible, setIsCorrectOverlayVisible] = useState(false);
@@ -54,7 +58,7 @@ export default function Page() {
   const soundManager = useRef(new SoundManager()).current;
 
   useEffect(() => {
-    const fetchShutingsData = async () => {
+    const fetchShutings = async () => {
       const data = await fetchData(getEndpoint, 'GET');
 
       if (isErrorResponse(data)) {
@@ -63,15 +67,15 @@ export default function Page() {
       };
 
       if (Array.isArray(data)) {
-        setShutingsData(data);
-        setShutingData(data[currentIndex]);
+        setShutings(data);
+        setShuting(data[currentIndex]);
         setShutingLimitSec(data[currentIndex]?.limit_sec);
       } else {
-        console.error("Expected an array of ShutingData, received:", data);
+        console.error("Expected an array of Shuting, received:", data);
       }
     };
 
-    fetchShutingsData();
+    fetchShutings();
 
   }, []);
 
@@ -92,12 +96,12 @@ export default function Page() {
   const moveToNextExample = () => {
     const nextIndex = currentIndex + 1;
 
-    if (nextIndex < shutingsData.length) {
-      setShutingData(shutingsData[nextIndex]);
-      setAnswerData('');
+    if (nextIndex < shutings.length) {
+      setShuting(shutings[nextIndex]);
+      setAnswer('');
       setCurrentIndex(nextIndex);
       setMatchLength(0);
-      setShutingLimitSec(shutingsData[nextIndex].limit_sec || null);
+      setShutingLimitSec(shutings[nextIndex].limit_sec || null);
     } else {
       handleFinish();
     }
@@ -162,15 +166,15 @@ export default function Page() {
 
         <Progress
           currentIndex={currentIndex}
-          shutingsDataLength={shutingsData.length}
+          shutingsLength={shutings.length}
         />
 
         <StartButton handleStart={handleStart} />
 
         <ShutingArea
           shutingLimitSec={shutingLimitSec}
-          shutingData={shutingData}
-          answerData={answerData}
+          shuting={shuting}
+          answer={answer}
           matchLength={matchLength}
           setMatchLength={setMatchLength}
           soundManager={soundManager}
@@ -182,6 +186,7 @@ export default function Page() {
         />
 
         <AnswerArea
+<<<<<<< HEAD
           answerData={answerData}
           shutingData={shutingData}
           soundManager={soundManager}
@@ -190,6 +195,16 @@ export default function Page() {
           setResultData={setResultData}
           setAnswerData={setAnswerData}
           setPerfectCount={setPerfectCount}
+=======
+          answer={answer}
+	  shuting={shuting}
+	  soundManager={soundManager}
+	  setIsCorrectOverlayVisible={setIsCorrectOverlayVisible}
+	  moveToNextExample={moveToNextExample}
+	  setResult={setResult}
+	  setAnswer={setAnswer}
+	  setPerfectCount={setPerfectCount}
+>>>>>>> 1aa974f (init)
         />
       </main>
     </div>

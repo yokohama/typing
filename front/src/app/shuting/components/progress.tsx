@@ -1,16 +1,16 @@
 interface ProgressProps {
   currentIndex: number;
-  shutingsDataLength: number;
+  shutingsLength: number;
 };
 
-export default function Progress({ currentIndex, shutingsDataLength }: ProgressProps) {
+export default function Progress({ currentIndex, shutingsLength }: ProgressProps) {
   return(
     <div className="mb-4">
       <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
         <div
           className="bg-blue-500 h-4 rounded-full"
           style={{
-            width: `${((currentIndex) / shutingsDataLength) * 100}%`,
+            width: `${((currentIndex) / shutingsLength) * 100}%`,
           }}
         />
       </div>

@@ -5,11 +5,11 @@ import { SoundManager } from "./soundManager";
 
 type ShutingAreaProps = {
   shutingLimitSec: number | null;
-  shutingData: { 
+  shuting: { 
     limit_sec?: number;
     word?: string;
   } | null;
-  answerData: string;
+  answer: string;
   matchLength: number;
   setMatchLength: React.Dispatch<React.SetStateAction<number>>;
   soundManager: SoundManager;
@@ -22,8 +22,8 @@ type ShutingAreaProps = {
 
 export default function ShutingArea({
   shutingLimitSec,
-  shutingData,
-  answerData,
+  shuting,
+  answer,
   matchLength,
   setMatchLength,
   soundManager,
@@ -65,11 +65,11 @@ export default function ShutingArea({
   };
 
   const getHighlightParts = () => {
-    if (!shutingData?.word) return { matchingText: "", remainingText: "" };
+    if (!shuting?.word) return { matchingText: "", remainingText: "" };
 
     let newMatchLength = 0;
-    for (let i = 0; i < answerData.length; i++) {
-      if (answerData[i] === shutingData.word[i]) {
+    for (let i = 0; i < answer.length; i++) {
+      if (answer[i] === shuting.word[i]) {
         newMatchLength++;
       } else {
         break;
@@ -82,25 +82,25 @@ export default function ShutingArea({
     }
 
     return {
-      matchingText: shutingData.word.slice(0, newMatchLength),
-      remainingText: shutingData.word.slice(newMatchLength),
+      matchingText: shuting.word.slice(0, newMatchLength),
+      remainingText: shuting.word.slice(newMatchLength),
     };
   };
 
   const { matchingText, remainingText } = getHighlightParts();
 
-  const borderColor = shutingLimitSec !== null && shutingData?.limit_sec
+  const borderColor = shutingLimitSec !== null && shuting?.limit_sec
     ? `rgba(
-        ${Math.round(220 * (1 - shutingLimitSec / (shutingData.limit_sec || 1))) + 35}, 
-        ${Math.round(180 * (shutingLimitSec / (shutingData.limit_sec || 1)))}, 
-        ${Math.round(50 * (shutingLimitSec / (shutingData.limit_sec || 1)))}, 1)`
+        ${Math.round(220 * (1 - shutingLimitSec / (shuting.limit_sec || 1))) + 35}, 
+        ${Math.round(180 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 
+        ${Math.round(50 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 1)`
     : "rgba(220, 50, 50, 1)";
 
-  const backgroundColor = shutingLimitSec !== null && shutingData?.limit_sec
+  const backgroundColor = shutingLimitSec !== null && shuting?.limit_sec
     ? `rgba(
-        ${Math.round(220 * (1 - shutingLimitSec / (shutingData.limit_sec || 1))) + 35}, 
-        ${Math.round(180 * (shutingLimitSec / (shutingData.limit_sec || 1)))}, 
-        ${Math.round(50 * (shutingLimitSec / (shutingData.limit_sec || 1)))}, 0.1)`
+        ${Math.round(220 * (1 - shutingLimitSec / (shuting.limit_sec || 1))) + 35}, 
+        ${Math.round(180 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 
+        ${Math.round(50 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 0.1)`
     : "rgba(220, 50, 50, 0.1)";
 
   return(

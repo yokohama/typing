@@ -1,28 +1,28 @@
 import React, { ChangeEvent, useState } from "react";
 
-import { ShutingData } from "@/types/shuting";
+import { Shuting } from "@/types/shuting";
 import { SoundManager } from "./soundManager";
 import { ResultData } from "@/types/result";
 
 type AnswerAreaProps =  {
-  answerData: string;
-  shutingData: ShutingData | null;
+  answer: string;
+  shuting: Shuting | null;
   soundManager: SoundManager;
   setIsCorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setResultData: React.Dispatch<React.SetStateAction<ResultData>>;
   moveToNextExample: () => void;
-  setAnswerData: React.Dispatch<React.SetStateAction<string>>,
+  setAnswer: React.Dispatch<React.SetStateAction<string>>,
   setPerfectCount: React.Dispatch<React.SetStateAction<number>>,
 };
 
 export default function AnswerArea({ 
-  answerData, 
-  shutingData,
+  answer, 
+  shuting,
   soundManager,
   setIsCorrectOverlayVisible,
   setResultData,
   moveToNextExample,
-  setAnswerData,
+  setAnswer,
   setPerfectCount,
 }: AnswerAreaProps) {
 
@@ -30,13 +30,13 @@ export default function AnswerArea({
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    setAnswerData(inputValue);
+    setAnswer(inputValue);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (shutingData && answerData === shutingData.word) {
+      if (shuting && answer === shuting.word) {
         setIsCorrectOverlayVisible(true);
         soundManager.playCorrect();
         setTimeout(() => {
@@ -64,7 +64,7 @@ export default function AnswerArea({
     <div id="answerArea" className="w-full">
       <input
         type="text"
-        value={answerData}
+        value={answer}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
         className="w-full p-4 text-xl border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
