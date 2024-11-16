@@ -3,8 +3,9 @@ use validator::Validate;
 
 use crate::requests::validations;
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Default, Debug, Deserialize, Validate)]
 pub struct UpdateProfile {
     #[validate(custom = "validations::name")]
-    pub name: String,
+    pub name: Option<String>,
+    pub point: Option<i32>,
 }

@@ -3,25 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { fetchData, postData } from '@/lib/api';
 import { useValidation } from '@/hooks/useValidation';
+import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 
 type UserData = {
   email: string;
   name: string;
 };
-
-type ErrorResponse = {
-  message?: string;
-  error_type?: string;
-  details?: string;
-}
-
-function isErrorResponse(data: unknown): data is ErrorResponse {
-  return (
-    typeof data === "object" &&
-    data !== null &&
-    ('message' in data || 'error_type' in data)
-  );
-}
 
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
@@ -84,7 +71,7 @@ export default function Page() {
   if (userData) {
     return(
       <div>
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">Profile</h1>
+        <h1 className="text-2xl font-bold mb-4 text-gray-800">プロフィール</h1>
 
         {validationErrors && (
           <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
@@ -98,12 +85,12 @@ export default function Page() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="text-gray-700">
-            <label className="font-semibold">Email:</label>
+            <label className="font-semibold">メールアドレス:</label>
             <p className="ml-2 text-gray-600">{userData.email}</p>
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="name" className="text-gray-700 font-semibold">Name:</label>
+            <label htmlFor="name" className="text-gray-700 font-semibold">ニックネーム:</label>
 
             {isEditing ? (
               <>
