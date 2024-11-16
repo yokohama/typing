@@ -58,6 +58,21 @@ async fn run_seeds(pool: &PgPool) {
         "morning",
         "afternoon",
         "evening",
+        "night",
+        "year",
+        "month",
+        "day",
+        "week",
+        "time",
+        "minute",
+        "family",
+        "father",
+        "mother",
+        "brother",
+        "sister",
+        "animal",
+        "dog",
+        "cat",
     ];
 
     for i in 0..=level2.len()-1 {
