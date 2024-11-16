@@ -62,7 +62,9 @@ pub fn email(value: &str) -> Result<(), ValidationError> {
 */
 
 pub fn name(value: &str) -> Result<(), ValidationError> {
-    if value.len() <= 10 {
+    let char_count = value.chars().count();
+
+    if char_count <= 10 {
         Ok(())
     } else {
         let mut error = ValidationError::new("Invalid name length");

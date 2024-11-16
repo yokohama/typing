@@ -7,4 +7,3 @@ export type ErrorResponse = {
 export function isErrorResponse(data: unknown): data is ErrorResponse {
   return typeof data === 'object' && data !== null && ('message' in data || 'error_type' in data);
 }
-

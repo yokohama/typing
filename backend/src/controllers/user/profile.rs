@@ -4,7 +4,6 @@ use axum::{
 };
 use serde::Serialize;
 use sqlx::PgPool;
-use tracing::debug;
 
 use crate::middleware::error;
 use crate::middleware::auth;
@@ -26,11 +25,11 @@ pub async fn show(
 pub async fn update(
     State(pool): State<PgPool>,
     claims: auth::Claims,
-    payload: JsonValidatedForm<UpdateProfile>
+    payload: JsonValidatedForm<UpdateProfile>,
 ) -> Result<Json<impl Serialize>, error::AppError> {
 
-    debug!("{:?}", payload);
-    let user = user::save(&pool, claims.sub, payload).await?;
+    let validated_payload: UpdateProfile = payload.0;
+    let user = user::save(&pool, claims.sub, validated_payload).await?;
 
     Ok(Json(user))
 }

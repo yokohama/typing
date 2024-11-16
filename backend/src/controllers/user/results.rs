@@ -50,6 +50,8 @@ pub async fn create(
         },
     ).await?;
 
+    update_point(&pool, claims.sub, result.score).await?;
+
     Ok(Json(result))
 }
 
@@ -65,4 +67,30 @@ pub async fn show(
         claims.sub
     ).await?;
     Ok(Json(result))
+}
+
+async fn update_point(
+    pool: &PgPool,
+    user_id: i32,
+    score: i32,
+) -> Result<(), error::AppError> {
+    let user = models::user::find(
+          &pool, 
+          user_id,
+        ).await?
+        .ok_or_else(|| {
+            error::AppError::NotFound(format!(
+                "User with id {} not found", 
+                user_id,
+            ))
+        })?;
+
+    let update = params::user::UpdateProfile {
+        point: Some(user.point + score),
+        ..Default::default()
+    };
+
+    models::user::save(&pool, user_id, update).await?;
+
+    Ok(())
 }
