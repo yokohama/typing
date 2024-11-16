@@ -7,12 +7,7 @@ import React, {
 } from 'react';
 import { useParams, useRouter } from "next/navigation";
 
-<<<<<<< HEAD
-import { ShutingData } from '@/types/shuting';
-import { ResultData } from '@/types/result';
-=======
 import { Shuting, Result } from '@/types/shuting';
->>>>>>> 1aa974f (init)
 import { fetchData, postData } from '@/lib/api';
 import { isErrorResponse } from '@/types/errorResponse';
 import { SoundManager } from '../components/soundManager';
@@ -48,7 +43,7 @@ export default function Page() {
   const [time, setTime] = useState<number>(0);
   const [shutingLimitSec, setShutingLimitSec] = useState<number | null>(null);
   const [matchLength, setMatchLength] = useState<number>(0);
-  const [resultData, setResultData] = useState<ResultData>({ 
+  const [result, setResult] = useState<Result>({ 
     correct_count: 0, 
     incorrect_count: 0, 
     score: 0,
@@ -118,18 +113,18 @@ export default function Page() {
     soundManager.stopBgm();
     soundManager.playFinish();
 
-    const finalResult: ResultData = {
-      ...resultData,
+    const finalResult: Result = {
+      ...result,
       time: time,
       perfect_count: perfectCount,
     };
 
     try {
-      const data: ResultData = await postData(postEndpoint, finalResult);
+      const data: Result = await postData(postEndpoint, finalResult);
       if (isErrorResponse(data)) {
         console.error('API Error:', data.message);
       } else if (data && 'id' in data) {
-        setResultData(prev => ({
+        setResult(prev => ({
           ...prev,
           score: data.score,
           time_bonus: data.time_bonus
@@ -158,7 +153,7 @@ export default function Page() {
         isCorrectOverlayVisible={isCorrectOverlayVisible}
         isIncorrectOverlayVisible={isIncorrectOverlayVisible}
         isFinishOverlayVisible={isFinishOverlayVisible}
-        resultData={resultData}
+        result={result}
       />
 
       <main className="w-full max-w-5xl bg-white p-6">
@@ -181,21 +176,11 @@ export default function Page() {
           moveToNextExample={moveToNextExample}
           isStart={isStart}
           setShutingLimitSec={setShutingLimitSec}
-          setResultData={setResultData}
+          setResult={setResult}
           setIsIncorrectOverlayVisible={setIsIncorrectOverlayVisible}
         />
 
         <AnswerArea
-<<<<<<< HEAD
-          answerData={answerData}
-          shutingData={shutingData}
-          soundManager={soundManager}
-          setIsCorrectOverlayVisible={setIsCorrectOverlayVisible}
-          moveToNextExample={moveToNextExample}
-          setResultData={setResultData}
-          setAnswerData={setAnswerData}
-          setPerfectCount={setPerfectCount}
-=======
           answer={answer}
 	  shuting={shuting}
 	  soundManager={soundManager}
@@ -204,7 +189,6 @@ export default function Page() {
 	  setResult={setResult}
 	  setAnswer={setAnswer}
 	  setPerfectCount={setPerfectCount}
->>>>>>> 1aa974f (init)
         />
       </main>
     </div>

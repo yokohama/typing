@@ -24,15 +24,11 @@ export default function Page() {
     fetchResults();
   }, []);
 
-<<<<<<< HEAD
-  const sortedResults = resultsData
+  const sortedResults = results
     ?.filter((result) => result.created_at ! == undefined)
     .sort((a, b) => 
       new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
     );
-=======
-  const sortedResults = results?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
->>>>>>> 1aa974f (init)
 
   return(
     <div className="overflow-x-auto my-6 p-4">
