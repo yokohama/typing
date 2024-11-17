@@ -2,14 +2,14 @@ import React, { ChangeEvent, useState } from "react";
 
 import { Shuting } from "@/types/shuting";
 import { SoundManager } from "./soundManager";
-import { ResultData } from "@/types/result";
+import { Result } from "@/types/result";
 
 type AnswerAreaProps =  {
   answer: string;
   shuting: Shuting | null;
   soundManager: SoundManager;
   setIsCorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setResult: React.Dispatch<React.SetStateAction<ResultData>>;
+  setResult: React.Dispatch<React.SetStateAction<Result>>;
   moveToNextExample: () => void;
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
   setPerfectCount: React.Dispatch<React.SetStateAction<number>>,
@@ -26,7 +26,7 @@ export default function AnswerArea({
   setPerfectCount,
 }: AnswerAreaProps) {
 
-  const [isUseDelete, setIsUseDelete] = useState(false);
+  const [isTypeDeleteKey, setIsTypeDeleteKey] = useState(false);
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -44,19 +44,19 @@ export default function AnswerArea({
           moveToNextExample();
         }, 1000);
 
-        setResult(prevResult => ({
-          ...prevResult,
-          correct_count: prevResult.correct_count + 1,
+        setResult((prev) => ({
+          ...prev,
+          correct_count: prev.correct_count + 1,
         }));
 
-        if (!isUseDelete) {
+        if (!isTypeDeleteKey) {
           setPerfectCount((prev) => prev + 1);
         }
       }
     }
 
     if (e.key === 'Backspace' && !e.shiftKey) {
-      setIsUseDelete(true);
+      setIsTypeDeleteKey(true);
     }
   };
 

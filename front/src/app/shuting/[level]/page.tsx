@@ -7,7 +7,8 @@ import React, {
 } from 'react';
 import { useParams, useRouter } from "next/navigation";
 
-import { Shuting, Result } from '@/types/shuting';
+import { Shuting } from '@/types/shuting';
+import { Result } from '@/types/result';
 import { fetchData, postData } from '@/lib/api';
 import { isErrorResponse } from '@/types/errorResponse';
 import { SoundManager } from '../components/soundManager';
@@ -43,11 +44,17 @@ export default function Page() {
   const [time, setTime] = useState<number>(0);
   const [shutingLimitSec, setShutingLimitSec] = useState<number | null>(null);
   const [matchLength, setMatchLength] = useState<number>(0);
-  const [result, setResult] = useState<Result>({ 
-    correct_count: 0, 
-    incorrect_count: 0, 
+  const [result, setResult] = useState<Result>({
+    id: undefined,
+    user_id: undefined,
+    level: Number(level),
     score: 0,
-    time: 0 
+    correct_count: 0,
+    incorrect_count: 0,
+    time: 0,
+    perfect_count: 0,
+    time_bonus: 0,
+    created_at: undefined
   });
 
   const soundManager = useRef(new SoundManager()).current;

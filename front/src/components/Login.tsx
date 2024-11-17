@@ -3,6 +3,8 @@
 import { signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
+import { useUser } from '@/context/UserContext';
+
 import { UserInfo } from '@/types/userInfo';
 import Popup from '@/components/Popup';
 import { fetchData } from '@/lib/api';
@@ -13,12 +15,7 @@ export default function Login() {
   const profileEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
 
   const { data: session, status } = useSession();
-  const [ userInfo, setUserInfo ] = useState<UserInfo>({
-    email: '',
-    name: '',
-    image: '',
-    point: 0,
-  });
+  const { userInfo, setUserInfo } = useUser();
   const [ isOpen, setIsOpen ] = useState(false);
 
   useEffect(() => {
@@ -50,20 +47,20 @@ export default function Login() {
   useEffect(() => {
     const getUserInfo = async () => {
       if (status === 'authenticated') {
-        const userInfoData = await fetchData<UserInfo | ErrorResponse>(profileEndpoint, 'GET');
+        const data = await fetchData<UserInfo | ErrorResponse>(profileEndpoint, 'GET');
 
-        if (isErrorResponse(userInfoData)) {
-          console.error('Error fetching user data:', userInfoData.message);
+        if (isErrorResponse(data)) {
+          console.error('Error fetching user data:', data.message);
           return;
         }
 
-        if (userInfoData) {
-          setUserInfo(prev => ({
+        if (data) {
+          setUserInfo((prev) => ({
             ...prev,
-            email: userInfoData.email || '',
-            name:  userInfoData.name  || '',
-            image: userInfoData.image || '',
-            point: userInfoData.point || 0,
+            email: data.email || '',
+            name: data.name || '',
+            image: session.user?.image || '',
+            point: data.point || 0,
           }));
         }
       }
@@ -72,14 +69,13 @@ export default function Login() {
     getUserInfo();
   }, [status]);
 
-
   if (session) {
     return(
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 focus:outline-none">
-          <img src={session.user?.image || "/default-avatar.png"} alt="User Avatar" className="w-full h-full- object-cover" />
+          <img src={userInfo.image || "/default-avatar.png"} alt="User Avatar" className="w-full h-full- object-cover" />
         </button>
 
         <Popup
