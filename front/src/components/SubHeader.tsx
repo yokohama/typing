@@ -4,7 +4,7 @@ export function SubHeader({
   title,
   children
 }: {
-  title: String,
+  title: string,
   children?: React.ReactNode
 }) {
   return (

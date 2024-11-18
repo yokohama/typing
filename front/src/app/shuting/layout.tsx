@@ -1,7 +1,5 @@
 "use client";
 
-import Link from 'next/link';
-
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import Loading from "@/components/Loading";
 import { SubHeader, SubHeaderButton } from '@/components/SubHeader';

@@ -10,8 +10,8 @@ export default function Footer() {
         border-t 
         border-gray-200
     ">
-      <p className="text-sm text-gray-500">
-        <Link href="/">&copy; typing</Link>
+      <p className="text-sm text-yellow-600 font-bold">
+        <Link href="/">&copy; ゆっくりタイピング</Link>
       </p>
     </footer>
   );
