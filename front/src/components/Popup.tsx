@@ -3,19 +3,19 @@ import Link from "next/link";
 
 import { signOut } from 'next-auth/react';
 
-import { UserInfo } from "@/types/userInfo";
+import { useUser } from '@/context/UserContext';
 
 type PopupProps = {
   isOpen: boolean,
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  userInfo: UserInfo,
 };
 
 export default function Popup({ 
   isOpen,
   setIsOpen,
-  userInfo,
 }: PopupProps) {
+  const { userInfo } = useUser();
+
   return (
     <>
       {isOpen && (

@@ -3,7 +3,10 @@ use axum::{
     response::Json,
 };
 use serde::Serialize;
+use serde_json::json;
 use sqlx::PgPool;
+
+use tracing::error;
 
 use crate::middleware::error;
 use crate::middleware::auth;
@@ -50,7 +53,22 @@ pub async fn create(
         },
     ).await?;
 
-    update_point(&pool, claims.sub, result.score).await?;
+    let point = update_point(
+        &pool, 
+        claims.sub, 
+        result.score,
+        result.time_bonus,
+    ).await?;
+
+    let mut result = serde_json::to_value(&result)
+        .map_err(|err| {
+            error!("Failed to serialize result: {}", err);
+            error::AppError::InternalServerError("Failed to serialize result".to_string())
+        })?;
+
+    if let serde_json::Value::Object(ref mut map) = result {
+        map.insert("point".to_string(), json!(point));
+    }
 
     Ok(Json(result))
 }
@@ -73,7 +91,8 @@ async fn update_point(
     pool: &PgPool,
     user_id: i32,
     score: i32,
-) -> Result<(), error::AppError> {
+    time_bonus: i32,
+) -> Result<i32, error::AppError> {
     let user = models::user::find(
           &pool, 
           user_id,
@@ -86,11 +105,11 @@ async fn update_point(
         })?;
 
     let update = params::user::UpdateProfile {
-        point: Some(user.point + score),
+        point: Some(user.point + score + time_bonus),
         ..Default::default()
     };
 
-    models::user::save(&pool, user_id, update).await?;
+    let update_user = models::user::save(&pool, user_id, update).await?;
 
-    Ok(())
+    Ok(update_user.point)
 }

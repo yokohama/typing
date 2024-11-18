@@ -81,7 +81,6 @@ export default function Login() {
         <Popup
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          userInfo={userInfo}
         />
       </div>
     );

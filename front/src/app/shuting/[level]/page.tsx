@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { useParams, useRouter } from "next/navigation";
 
+import { useUser } from '@/context/UserContext';
 import { Shuting } from '@/types/shuting';
 import { Result } from '@/types/result';
 import { fetchData, postData } from '@/lib/api';
@@ -29,6 +30,7 @@ export default function Page() {
   const getEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings?level=${level}`;
   const postEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${level}/results`;
 
+  const { setUserInfo } = useUser();
   const [isStart, setIsStart] = useState<boolean>(false);
   const [isCountdownVisible, setIsCountdownVisible] = useState<boolean>(true);
   const [shutings, setShutings] = useState<Shuting[]>([]);
@@ -54,6 +56,7 @@ export default function Page() {
     time: 0,
     perfect_count: 0,
     time_bonus: 0,
+    point: 0,
     created_at: undefined
   });
 
@@ -78,7 +81,6 @@ export default function Page() {
     };
 
     fetchShutings();
-
   }, []);
 
   useEffect(() => {
@@ -136,6 +138,11 @@ export default function Page() {
           score: data.score,
           time_bonus: data.time_bonus
         }));
+	
+          setUserInfo((prev) => ({
+            ...prev,
+	    point: data.point ?? 0,
+          }));
 
         setIsFinishOverlayVisible(true);
         await new Promise(resolve => setTimeout(resolve, 5000));

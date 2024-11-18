@@ -4,4 +4,3 @@ export type UserInfo = {
   image?: string,
   point: number,
 };
-

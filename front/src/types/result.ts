@@ -8,6 +8,7 @@ export type Result = {
     time: number;
     perfect_count: number;
     time_bonus: number;
+    point: number | undefined | null;
     created_at: Date | undefined;
 };
 
