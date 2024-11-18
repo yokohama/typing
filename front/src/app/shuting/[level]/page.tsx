@@ -81,7 +81,7 @@ export default function Page() {
     };
 
     fetchShutings();
-  }, [currentIndex, getEndpoint, postEndpoint]);
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
@@ -95,7 +95,7 @@ export default function Page() {
     }
 
     return () => clearInterval(interval);
-  }, [isStart, time]);
+  }, [isStart]);
 
   const moveToNextExample = () => {
     const nextIndex = currentIndex + 1;

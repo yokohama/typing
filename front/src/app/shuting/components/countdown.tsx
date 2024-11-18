@@ -24,7 +24,7 @@ export default function Countdown({
       setIsCountdownVisible(false);
       handleStart();
     }
-  }, [countdown, setIsCountdownVisible, handleStart]);
+  }, [countdown]);
 
   return (
     <>

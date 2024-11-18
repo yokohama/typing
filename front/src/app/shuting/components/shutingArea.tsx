@@ -54,7 +54,6 @@ export default function ShutingArea({
   }, [
     shutingLimitSec, 
     isStart, 
-    setShutingLimitSec
   ]);
 
   const handleTimeLimitExceeded = () => {
