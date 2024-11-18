@@ -33,6 +33,9 @@ const options: NextAuthOptions = {
       session.accessToken = token.accessToken;
       return session;
     },
+    async redirect({ baseUrl }: { baseUrl: string }) {
+      return `${baseUrl}/shuting`;
+    },
   },
 };
 

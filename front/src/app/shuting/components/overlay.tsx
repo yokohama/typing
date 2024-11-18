@@ -4,6 +4,7 @@ type OverlayProps = {
   isCorrectOverlayVisible: boolean,
   isIncorrectOverlayVisible: boolean,
   isFinishOverlayVisible: boolean,
+  isPerfectOverlayVisible: boolean,
   result: Result,
 };
 
@@ -11,6 +12,7 @@ export default function Overlay({
   isCorrectOverlayVisible,
   isIncorrectOverlayVisible,
   isFinishOverlayVisible,
+  isPerfectOverlayVisible,
   result,
 }: OverlayProps) {
   return(
@@ -20,6 +22,14 @@ export default function Overlay({
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
          >
           <span className="text-white text-[20rem] font-bold">〇</span>
+        </div>
+      )}
+
+      {isPerfectOverlayVisible && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+         >
+          <span className="text-white text-[10rem] font-bold">すごい！</span>
         </div>
       )}
 

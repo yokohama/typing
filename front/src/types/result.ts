@@ -1,7 +1,7 @@
 export type Result = {
     id: number | undefined;
     user_id: number | undefined;
-    level: number;
+    shuting_id: number;
     score: number;
     correct_count: number;
     incorrect_count: number;

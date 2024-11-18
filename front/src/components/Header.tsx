@@ -24,13 +24,7 @@ export default function Header() {
                 href="/shuting"
                 className="text-gray-700 hover:text-gray-500"
               >
-                Shuting
-              </Link>
-              <Link key="account" 
-                href="/account"
-                className="text-gray-700 hover:text-gray-500"
-              >
-                Account
+                シューティング
               </Link>
             </>
           )}

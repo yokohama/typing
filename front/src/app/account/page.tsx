@@ -5,39 +5,36 @@ import { fetchData, postData } from '@/lib/api';
 import { useValidation } from '@/hooks/useValidation';
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 
-type UserData = {
-  email: string;
-  name: string;
-};
+import { useUser } from '@/context/UserContext';
+import { UserInfo } from '@/types/userInfo';
 
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
 
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [formData, setFormData] = useState<UserData>({
+  const { userInfo, setUserInfo } = useUser();
+  const [formData, setFormData] = useState<UserInfo>({
     email: '',
     name: '',
+    point: 0,
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const handleEditClick = () => setIsEditing(true);
 
   const { validationErrors, setErrors, clearErrors } = useValidation();
+  const [isUpdated, setIsUpdated] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const data = await fetchData<UserData | ErrorResponse>(endpoint, 'GET');
+      const data = await fetchData<UserInfo | ErrorResponse>(endpoint, 'GET');
 
       if (isErrorResponse(data)) {
         console.error('Error fetching user data:', data.message);
         return;
       }
 
-      setUserData(data);
-      setFormData({
-        email: data.email || '',
-        name: data.name || '',
-      });
+      setUserInfo(data);
+      setFormData(data);
     };
 
     fetchUserData();
@@ -53,25 +50,35 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = await postData<UserData, UserData | ErrorResponse>(endpoint, formData);
+      const data = await postData<UserInfo, UserInfo | ErrorResponse>(endpoint, formData);
 
       if (isErrorResponse(data) && data.error_type === 'ValidationError') {
 	const errors = data.details ? JSON.parse(data.details) : {};
         setErrors(errors);
       } else if (!isErrorResponse(data)) {
-        setUserData(data);
+        setUserInfo(data);
         setFormData(data);
-	clearErrors();
+        clearErrors();
+
+        setIsUpdated(true);
+        setTimeout(() => {
+          setIsUpdated(false);
+        }, 3000);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
     }
   };
 
-  if (userData) {
+  if (userInfo) {
     return(
       <div>
         <h1 className="text-2xl font-bold mb-4 text-gray-800">プロフィール</h1>
+        {isUpdated && (
+          <div className="bg-green-400 text-white py-2 px-4 rounded-lg shadow-lg mb-4">
+            保存しました。
+          </div>
+        )}
 
         {validationErrors && (
           <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
@@ -86,7 +93,7 @@ export default function Page() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="text-gray-700">
             <label className="font-semibold">メールアドレス:</label>
-            <p className="ml-2 text-gray-600">{userData.email}</p>
+            <p className="ml-2 text-gray-600">{userInfo.email}</p>
           </div>
 
           <div className="flex flex-col">
@@ -109,9 +116,7 @@ export default function Page() {
               <p
                 className="mt-1 p-2 border border-transparent rounded hover:bg-gray-100 cursor-pointer"
                 onClick={handleEditClick}
-              >
-                {formData.name || "Click to edit"}
-              </p>
+              >{formData.name || "Click to edit"}</p>
             )}   
           </div>
 

@@ -9,6 +9,7 @@ type AnswerAreaProps =  {
   shuting: Shuting | null;
   soundManager: SoundManager;
   setIsCorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsPerfectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setResult: React.Dispatch<React.SetStateAction<Result>>;
   moveToNextExample: () => void;
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
@@ -20,6 +21,7 @@ export default function AnswerArea({
   shuting,
   soundManager,
   setIsCorrectOverlayVisible,
+  setIsPerfectOverlayVisible,
   setResult,
   moveToNextExample,
   setAnswer,
@@ -36,21 +38,30 @@ export default function AnswerArea({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+
+      setResult((prev) => ({
+        ...prev,
+        correct_count: prev.correct_count + 1,
+      }));
+
       if (shuting && answer === shuting.word) {
-        setIsCorrectOverlayVisible(true);
-        soundManager.playCorrect();
-        setTimeout(() => {
-          setIsCorrectOverlayVisible(false);
-          moveToNextExample();
-        }, 1000);
-
-        setResult((prev) => ({
-          ...prev,
-          correct_count: prev.correct_count + 1,
-        }));
-
         if (!isTypeDeleteKey) {
+          soundManager.playPerfect();
           setPerfectCount((prev) => prev + 1);
+
+          setIsPerfectOverlayVisible(true);
+          setTimeout(() => {
+            setIsPerfectOverlayVisible(false);
+            moveToNextExample();
+          }, 1000);
+
+        } else {
+          soundManager.playCorrect();
+          setIsCorrectOverlayVisible(true);
+          setTimeout(() => {
+            setIsCorrectOverlayVisible(false);
+            moveToNextExample();
+          }, 1000);
         }
       }
     }

@@ -4,6 +4,8 @@ export class SoundManager {
   private correctSound: HTMLAudioElement;
   private incorrectSound: HTMLAudioElement;
   private finishSound: HTMLAudioElement;
+  private perfectSound: HTMLAudioElement;
+  private readyGoSound: HTMLAudioElement;
 
   constructor() {
     const bgmList = [
@@ -18,9 +20,11 @@ export class SoundManager {
     this.bgm.loop = true;
 
     this.successSound = new Audio('/sounds/success2.mp3');
-    this.correctSound = new Audio('/sounds/correct.mp3');
-    this.incorrectSound = new Audio('/sounds/incorrect.mp3');
+    this.perfectSound = new Audio('/sounds/excellent.mp3');
+    this.correctSound = new Audio('/sounds/good.mp3');
+    this.incorrectSound = new Audio('/sounds/out.mp3');
     this.finishSound = new Audio('/sounds/finish.mp3');
+    this.readyGoSound = new Audio('/sounds/readygo.mp3');
   }
 
   playBgm() {
@@ -51,4 +55,15 @@ export class SoundManager {
     this.finishSound.currentTime = 0;
     this.finishSound.play().catch(error => console.error('Failed to play finish sound:', error));
   }
+
+  playPerfect() {
+    this.perfectSound.currentTime = 0;
+    this.perfectSound.play().catch(error => console.error('Failed to perfect sound:', error));
+  }
+
+  playReadyGo() {
+    this.readyGoSound.currentTime = 0;
+    this.readyGoSound.play().catch(error => console.error('Failed to readygo sound:', error));
+  }
+
 }

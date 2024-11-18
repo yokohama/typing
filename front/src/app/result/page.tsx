@@ -53,7 +53,7 @@ export default function Page() {
                   <td className="py-3 px-6">
                     {result.created_at && FormatDateTime(result.created_at)}
                   </td>
-                  <td className="py-3 px-6">{result.level}</td>
+                  <td className="py-3 px-6">{result.shuting_id}</td>
                   <td className="py-3 px-6">{result.score}</td>
                   <td className="py-3 px-6">{result.time_bonus}</td>
                   <td className="py-3 px-6">

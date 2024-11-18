@@ -20,7 +20,7 @@ export default function Popup({
   return (
     <>
       {isOpen && (
-        <div className="absolute right-0 mt-2 py-12 w-64 bg-gray-100 border border-gray-200 rounded-xl shadow-lg p-4">
+        <div className="absolute right-0 mt-2 py-12 w-64 bg-gray-100 border border-gray-200 rounded-xl shadow-lg p-4 z-50">
           <button onClick={() => setIsOpen(false)} className="absolute top-2 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold">
             &times;
           </button>

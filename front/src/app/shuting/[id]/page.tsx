@@ -25,20 +25,21 @@ export default function Page() {
   const params = useParams();
   const router = useRouter();
 
-  const level = params?.level;
+  const id = params?.id;
 
-  const getEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings?level=${level}`;
-  const postEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${level}/results`;
+  const getEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${id}`;
+  const postEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${id}/results`;
 
   const { setUserInfo } = useUser();
   const [isStart, setIsStart] = useState<boolean>(false);
   const [isCountdownVisible, setIsCountdownVisible] = useState<boolean>(true);
-  const [shutings, setShutings] = useState<Shuting[]>([]);
+  const [shutingWords, setShutingWords] = useState<Shuting[]>([]);
   const [shuting, setShuting] = useState<Shuting | null>(null);
   const [answer, setAnswer] = useState<string>('');
   const [perfectCount, setPerfectCount] = useState<number>(0);
 
   const [isCorrectOverlayVisible, setIsCorrectOverlayVisible] = useState(false);
+  const [isPerfectOverlayVisible, setIsPerfectOverlayVisible] = useState(false);
   const [isIncorrectOverlayVisible, setIsIncorrectOverlayVisible] = useState(false);
   const [isFinishOverlayVisible, setIsFinishOverlayVisible] = useState(false);
 
@@ -49,7 +50,7 @@ export default function Page() {
   const [result, setResult] = useState<Result>({
     id: undefined,
     user_id: undefined,
-    level: Number(level),
+    shuting_id: Number(id),
     score: 0,
     correct_count: 0,
     incorrect_count: 0,
@@ -71,16 +72,18 @@ export default function Page() {
 	return;
       };
 
-      if (Array.isArray(data)) {
-        setShutings(data);
-        setShuting(data[currentIndex]);
-        setShutingLimitSec(data[currentIndex]?.limit_sec);
+      if (Array.isArray(data.words)) {
+        setShutingWords(data.words);
+        setShuting(data.words[currentIndex]);
+        setShutingLimitSec(data.words[currentIndex]?.limit_sec);
       } else {
         console.error("Expected an array of Shuting, received:", data);
       }
     };
 
     fetchShutings();
+
+    soundManager.playReadyGo();
   }, []);
 
   useEffect(() => {
@@ -100,12 +103,12 @@ export default function Page() {
   const moveToNextExample = () => {
     const nextIndex = currentIndex + 1;
 
-    if (nextIndex < shutings.length) {
-      setShuting(shutings[nextIndex]);
+    if (nextIndex < shutingWords.length) {
+      setShuting(shutingWords[nextIndex]);
       setAnswer('');
       setCurrentIndex(nextIndex);
       setMatchLength(0);
-      setShutingLimitSec(shutings[nextIndex].limit_sec || null);
+      setShutingLimitSec(shutingWords[nextIndex].limit_sec || null);
     } else {
       handleFinish();
     }
@@ -161,10 +164,12 @@ export default function Page() {
         isCountdownVisible={isCountdownVisible}
         setIsCountdownVisible={setIsCountdownVisible}
 	handleStart={handleStart}
+        soundManager={soundManager}
       />
 
       <Overlay 
         isCorrectOverlayVisible={isCorrectOverlayVisible}
+        isPerfectOverlayVisible={isPerfectOverlayVisible}
         isIncorrectOverlayVisible={isIncorrectOverlayVisible}
         isFinishOverlayVisible={isFinishOverlayVisible}
         result={result}
@@ -175,7 +180,7 @@ export default function Page() {
 
         <Progress
           currentIndex={currentIndex}
-          shutingsLength={shutings.length}
+          shutingWordsLength={shutingWords.length}
         />
 
         <StartButton handleStart={handleStart} />
@@ -199,6 +204,7 @@ export default function Page() {
 	  shuting={shuting}
 	  soundManager={soundManager}
 	  setIsCorrectOverlayVisible={setIsCorrectOverlayVisible}
+	  setIsPerfectOverlayVisible={setIsPerfectOverlayVisible}
 	  moveToNextExample={moveToNextExample}
 	  setResult={setResult}
 	  setAnswer={setAnswer}

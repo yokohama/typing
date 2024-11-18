@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
+
 import { Result } from "@/types/result";
 import { SoundManager } from "./soundManager";
 
@@ -17,7 +18,7 @@ type ShutingAreaProps = {
   setShutingLimitSec: React.Dispatch<React.SetStateAction<number | null>>;
   setResult: React.Dispatch<React.SetStateAction<Result>>;
   setIsIncorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
-};
+}
 
 export default function ShutingArea({
   shutingLimitSec,
@@ -33,34 +34,16 @@ export default function ShutingArea({
   setIsIncorrectOverlayVisible,
 }: ShutingAreaProps) {
 
-  const newMatchLength = useMemo(() => {
-    if (!shuting?.word) return 0;
-
-    let tempMatchLength = 0;
-    for (let i = 0; i < answer.length; i++) {
-      if (answer[i] === shuting.word[i]) {
-        tempMatchLength++;
-      } else {
-        break;
-      }
-    }
-    return tempMatchLength;
-  }, [answer, shuting?.word]);
-
   useEffect(() => {
-    if (newMatchLength > matchLength) {
-      soundManager.playSuccess();
-      setMatchLength(newMatchLength);
-    }
-  }, [newMatchLength, matchLength, soundManager]);
-
-  useEffect(() => {
-    if (!isStart || shutingLimitSec === null || shutingLimitSec <= 0) return;
+    if (!isStart || 
+          shutingLimitSec === null || 
+          shutingLimitSec <= 0) return;
 
     const shutingInterval = setInterval(() => {
       setShutingLimitSec(prev => {
         if (prev === null || prev <= 1) {
           clearInterval(shutingInterval);
+          handleTimeLimitExceeded();
           return 0;
         }
         return prev - 1;
@@ -68,13 +51,10 @@ export default function ShutingArea({
     }, 1000);
 
     return () => clearInterval(shutingInterval);
-  }, [isStart]);
-
-  useEffect(() => {
-    if (shutingLimitSec === 0) {
-      handleTimeLimitExceeded();
-    }
-  }, [shutingLimitSec]);
+  }, [
+    shutingLimitSec, 
+    isStart, 
+  ]);
 
   const handleTimeLimitExceeded = () => {
     setResult(prevResult => ({
@@ -88,6 +68,31 @@ export default function ShutingArea({
       moveToNextExample();
     }, 1000);
   };
+
+  const getHighlightParts = () => {
+    if (!shuting?.word) return { matchingText: "", remainingText: "" };
+
+    let newMatchLength = 0;
+    for (let i = 0; i < answer.length; i++) {
+      if (answer[i] === shuting.word[i]) {
+        newMatchLength++;
+      } else {
+        break;
+      }
+    }
+
+    if (newMatchLength > matchLength) {
+      soundManager.playSuccess();
+      setMatchLength(newMatchLength);
+    }
+
+    return {
+      matchingText: shuting.word.slice(0, newMatchLength),
+      remainingText: shuting.word.slice(newMatchLength),
+    };
+  };
+
+  const { matchingText, remainingText } = getHighlightParts();
 
   const borderColor = shutingLimitSec !== null && shuting?.limit_sec
     ? `rgba(
@@ -103,7 +108,7 @@ export default function ShutingArea({
         ${Math.round(50 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 0.1)`
     : "rgba(220, 50, 50, 0.1)";
 
-  return (
+  return(
     <div
       id="shutingArea"
       className="mb-6 p-8 text-center text-2xl font-bold text-gray-800 rounded-lg shadow-lg w-full"
@@ -114,12 +119,8 @@ export default function ShutingArea({
       }}
     >
       <span>
-        <span className="text-green-600 font-bold">
-          {shuting?.word?.slice(0, newMatchLength)}
-        </span>
-        <span>
-          {shuting?.word?.slice(newMatchLength)}
-        </span>
+        <span className="text-green-600 font-bold">{matchingText}</span>
+        <span>{remainingText}</span>
       </span>
     </div>
   );
