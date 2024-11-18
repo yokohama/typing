@@ -49,18 +49,6 @@ where
     }
 }
 
-// メアドのバリデーション
-/*
-pub fn email(value: &str) -> Result<(), ValidationError> {
-    let regex = regex::Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap();
-    if regex.is_match(value) {
-        Ok(())
-    } else {
-        Err(ValidationError::new("Invalid email format"))
-    }
-}
-*/
-
 pub fn name(value: &str) -> Result<(), ValidationError> {
     let char_count = value.chars().count();
 

@@ -78,7 +78,7 @@ const ShutingItem = ({
 
         <div>
           <h3 className="text-3xl font-bold">
-          {`Level${level}`}
+          {`レベル${level}`}
           </h3>
           <p className="text-lg text-gray-500">
           {description}

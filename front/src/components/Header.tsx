@@ -18,10 +18,17 @@ export default function Header() {
       ">
         <Link key="top" 
           href={session ? "/shuting" : "/" }
-          className="text-xl font-semibold text-gray-800 hover:text-gray-600">
-          TYPING
+          className="
+            text-4xl 
+            text-yellow-600
+            font-bold
+            tracking-wide
+            text-gray-800
+            hover:text-gray-600
+        ">
+           ゆっくりタイピング
+          <p className="text-sm text-gray-700">Learn and improve your typing skills</p>
         </Link>
-
         <Login />
       </div>
     </header>

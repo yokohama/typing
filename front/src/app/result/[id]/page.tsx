@@ -57,7 +57,7 @@ export default function Page() {
         {result ? (
           <div>
             <h1 className="text-center text-3xl font-bold mb-6">
-              Level{result.shuting_id}
+              レベル{result.shuting_id}
             </h1>
             <Records records={records} />
             <ResultTable result={result} />
