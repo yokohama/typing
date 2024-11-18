@@ -15,7 +15,7 @@ use crate::models;
 pub struct Entry {
     pub id: i32,
     pub user_id: i32,
-    pub level: i32,
+    pub shuting_id: i32,
     pub correct_count: i32,
     pub incorrect_count: i32,
     pub score: i32,
@@ -29,7 +29,7 @@ pub struct Entry {
 #[derive(Debug, Serialize, FromRow)]
 pub struct Create {
     pub user_id: i32,
-    pub level: i32,
+    pub shuting_id: i32,
     pub correct_count: i32,
     pub incorrect_count: i32,
     pub time: i32,
@@ -41,14 +41,10 @@ pub async fn create(
     params: Create
 ) -> Result<Entry, error::AppError> {
 
-    let query =  crate::requests::params::shuting::Query {
-        level: Some(1),
-    };
-
-    let shutings = models::shuting::where_all(pool, Some(query)).await?;
+    let shutings = models::shuting::all(pool).await?;
     let word_count = shutings.len() as i32;
 
-    let total_limit_sec: i32 = shutings.iter().map(|s| s.limit_sec).sum();
+//    let total_limit_sec: i32 = shutings.iter().map(|s| s.limit_sec).sum();
 
    let score = calc_score(
         word_count, 
@@ -56,13 +52,13 @@ pub async fn create(
         params.incorrect_count, 
         params.perfect_count, 
         params.time, 
-        total_limit_sec,
+ //       total_limit_sec,
     );
 
     let sql = r#"
         INSERT INTO results (
             user_id, 
-            level,
+            shuting_id,
             correct_count,
             incorrect_count,
             score,
@@ -75,7 +71,7 @@ pub async fn create(
         RETURNING 
             id, 
             user_id, 
-            level, 
+            shuting_id, 
             correct_count, 
             incorrect_count, 
             score, 
@@ -88,7 +84,7 @@ pub async fn create(
             
     let result = query_as::<_,Entry>(sql)
         .bind(&params.user_id)
-        .bind(&params.level)
+        .bind(&params.shuting_id)
         .bind(&params.correct_count)
         .bind(&params.incorrect_count)
         .bind(score.0)
@@ -115,7 +111,7 @@ pub async fn find(
         SELECT 
           id, 
           user_id,
-          level, 
+          shuting_id, 
           correct_count,
           incorrect_count,
           score, 
@@ -152,7 +148,7 @@ pub async fn where_all(
         SELECT 
           id, 
           user_id,
-          level, 
+          shuting_id, 
           correct_count,
           incorrect_count,
           score, 
@@ -173,9 +169,9 @@ pub async fn where_all(
         binds.push(user_id as i64);
     }
 
-    if let Some(level) = query.as_ref().and_then(|q| q.level) {
-        conditions.push("level = $2");
-        binds.push(level as i64);
+    if let Some(shuting_id) = query.as_ref().and_then(|q| q.shuting_id) {
+        conditions.push("shuting_id = $2");
+        binds.push(shuting_id as i64);
     }
 
     if !conditions.is_empty() {
@@ -206,7 +202,7 @@ fn calc_score(
     incorrect_count: i32,
     perfect: i32,
     current_time: i32,
-    total_limit_sec: i32,
+//    total_limit_sec: i32,
 ) -> (i32, i32) {
     let accuracy = if word_count > 0 {
         correct_count as f64 / word_count as f64
@@ -227,12 +223,15 @@ fn calc_score(
     let base_score = (accuracy * 100.0 - penalty * 50.0 + perfect_bonus * 20.0).max(0.0);
     let score = base_score.min(100.0).round() as i32;
 
+    let time_bonus = 0;
+    /*
     let time_bonus = if total_limit_sec > 0 {
         (1.0 - (current_time as f64 / total_limit_sec as f64).min(1.0)) * 20.0
     } else {
         0.0
     };
-    let time_bonus = time_bonus.round() as i32;
+    */
+    //let time_bonus = time_bonus.round() as i32;
 
     (score, time_bonus)
 }

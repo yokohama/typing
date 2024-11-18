@@ -16,14 +16,14 @@ use crate::requests::params;
 pub async fn index(
     State(pool): State<PgPool>,
     claims: auth::Claims,
-    level: Option<Path<i32>>,
+    shuting_id: Option<Path<i32>>,
     Query(mut query): Query<params::result::Query>,
 ) -> Result<Json<impl Serialize>, error::AppError> {
 
     query.user_id = Some(claims.sub);
 
-    if let Some(level) = level {
-        query.level = Some(level.0)
+    if let Some(shuting_id) = shuting_id {
+        query.shuting_id = Some(shuting_id.0)
     }
 
     let result = models::result::where_all(
@@ -37,7 +37,7 @@ pub async fn index(
 pub async fn create(
     State(pool): State<PgPool>,
     claims: auth::Claims,
-    Path(level): Path<i32>,
+    Path(shuting_id): Path<i32>,
     Json(payload): Json<params::result::Create>,
 ) -> Result<Json<impl Serialize>, error::AppError> {
 
@@ -45,7 +45,7 @@ pub async fn create(
         &pool, 
         models::result::Create {
             user_id: claims.sub,
-            level: level,
+            shuting_id: shuting_id,
             correct_count: payload.correct_count,
             incorrect_count: payload.incorrect_count,
             time: payload.time,

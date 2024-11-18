@@ -9,6 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { useUser } from '@/context/UserContext';
 import { Shuting } from '@/types/shuting';
+import { Word } from '@/types/shuting';
 import { Result } from '@/types/result';
 import { fetchData, postData } from '@/lib/api';
 import { isErrorResponse } from '@/types/errorResponse';
@@ -33,8 +34,8 @@ export default function Page() {
   const { setUserInfo } = useUser();
   const [isStart, setIsStart] = useState<boolean>(false);
   const [isCountdownVisible, setIsCountdownVisible] = useState<boolean>(true);
-  const [shutingWords, setShutingWords] = useState<Shuting[]>([]);
-  const [shuting, setShuting] = useState<Shuting | null>(null);
+  const [shutingWords, setShutingWords] = useState<Word[]>([]);
+  const [currentWord, setCurrentWord] = useState<Word | null>(null);
   const [answer, setAnswer] = useState<string>('');
   const [perfectCount, setPerfectCount] = useState<number>(0);
 
@@ -65,7 +66,7 @@ export default function Page() {
 
   useEffect(() => {
     const fetchShutings = async () => {
-      const data = await fetchData(getEndpoint, 'GET');
+      const data: Shuting = await fetchData(getEndpoint, 'GET');
 
       if (isErrorResponse(data)) {
         console.error('Error fetching lesson data:', data.message);
@@ -74,7 +75,7 @@ export default function Page() {
 
       if (Array.isArray(data.words)) {
         setShutingWords(data.words);
-        setShuting(data.words[currentIndex]);
+        setCurrentWord(data.words[currentIndex]);
         setShutingLimitSec(data.words[currentIndex]?.limit_sec);
       } else {
         console.error("Expected an array of Shuting, received:", data);
@@ -104,7 +105,7 @@ export default function Page() {
     const nextIndex = currentIndex + 1;
 
     if (nextIndex < shutingWords.length) {
-      setShuting(shutingWords[nextIndex]);
+      setCurrentWord(shutingWords[nextIndex]);
       setAnswer('');
       setCurrentIndex(nextIndex);
       setMatchLength(0);
@@ -164,7 +165,6 @@ export default function Page() {
         isCountdownVisible={isCountdownVisible}
         setIsCountdownVisible={setIsCountdownVisible}
 	handleStart={handleStart}
-        soundManager={soundManager}
       />
 
       <Overlay 
@@ -187,7 +187,7 @@ export default function Page() {
 
         <ShutingArea
           shutingLimitSec={shutingLimitSec}
-          shuting={shuting}
+          word={currentWord}
           answer={answer}
           matchLength={matchLength}
           setMatchLength={setMatchLength}
@@ -201,7 +201,7 @@ export default function Page() {
 
         <AnswerArea
           answer={answer}
-	  shuting={shuting}
+	  word={currentWord}
 	  soundManager={soundManager}
 	  setIsCorrectOverlayVisible={setIsCorrectOverlayVisible}
 	  setIsPerfectOverlayVisible={setIsPerfectOverlayVisible}

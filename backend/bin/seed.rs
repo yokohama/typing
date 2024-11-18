@@ -31,7 +31,18 @@ async fn run_migrations(pool: &PgPool) {
 }
 
 async fn run_seeds(pool: &PgPool) {
-    let level1 = vec![
+    let shuting = match models::shuting::create(
+        pool, 
+        models::shuting::Create {
+            level: 1,
+            description: "ひらがなにチャレンジ！".to_string(),
+        },
+    ).await {
+        Ok(entry) => entry,
+        Err(_e) => { return; }
+    };
+    
+    let words = vec![
         "あいうえお",
         "かきくけこ",
         "さしすせそ",
@@ -44,44 +55,38 @@ async fn run_seeds(pool: &PgPool) {
         "わをん",
     ];
 
-    for i in 0..=level1.len()-1 {
-        let new_shuting = models::shuting::Create {
-            level: 1,
-            limit_sec: 5,
-            word: level1[i].to_string()
-        };
-    
-        let _ = models::shuting::create(pool, new_shuting).await;
+    for i in 0..=words.len()-1 {
+       let _ = models::word::create(
+           pool,models::word::Create {
+               shuting_id: shuting.id,
+               word: words[i].to_string(),
+               limit_sec: 10,
+           }).await;
     }
 
-    let level2 = vec![
+    let shuting = match models::shuting::create(
+        pool, 
+        models::shuting::Create {
+            level: 2,
+            description: "英語にチャレンジ！".to_string(),
+        },
+    ).await {
+        Ok(entry) => entry,
+        Err(_e) => { return; }
+    };
+
+    let words = vec![
         "morning",
-        "afternoon",
         "evening",
         "night",
-        "year",
-        "month",
-        "day",
-        "week",
-        "time",
-        "minute",
-        "family",
-        "father",
-        "mother",
-        "brother",
-        "sister",
-        "animal",
-        "dog",
-        "cat",
     ];
 
-    for i in 0..=level2.len()-1 {
-        let new_shuting = models::shuting::Create {
-            level: 2,
-            limit_sec: 5,
-            word: level2[i].to_string()
-        };
-    
-        let _ = models::shuting::create(pool, new_shuting).await;
+    for i in 0..=words.len()-1 {
+       let _ = models::word::create(
+           pool,models::word::Create {
+               shuting_id: shuting.id,
+               word: words[i].to_string(),
+               limit_sec: 10,
+           }).await;
     }
 }

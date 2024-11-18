@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use chrono::NaiveDateTime;
 
 use serde::Serialize;
@@ -8,45 +10,53 @@ use sqlx::{
 };
 use tracing::error;
 
+use crate::controllers::user::shutings;
+use crate::models;
 use crate::middleware::error;
 use crate::requests::params;
 
 #[derive(Debug, Serialize, FromRow)]
-pub struct Entry {
+pub struct MinEntry {
     pub id: i32,
     pub level: i32,
-    pub limit_sec: i32,
-    pub word: String,
+    pub description: String,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Serialize, FromRow)]
+pub struct Entry {
+    pub id: i32,
+    pub level: i32,
+    pub description: String,
+    pub created_at: NaiveDateTime,
+    pub deleted_at: Option<NaiveDateTime>,
+    pub words: Option<Vec<models::word::Entry>>,
+}
+
+#[derive(Debug, Serialize, FromRow)]
 pub struct Create {
     pub level: i32,
-    pub limit_sec: i32,
-    pub word: String,
+    pub description: String,
 }
 
 pub async fn create(
     pool: &PgPool, 
     params: Create
-) -> Result<Entry, error::AppError> {
+) -> Result<MinEntry, error::AppError> {
     let sql = r#"
         INSERT INTO shutings (
             level, 
-            limit_sec,
-            word,
+            description,
             created_at
         )
-        VALUES ($1, $2, $3, NOW())
-        RETURNING id, level, limit_sec, word, created_at, deleted_at
+        VALUES ($1, $2, NOW())
+        RETURNING id, level, description, created_at, deleted_at
     "#;
             
-    let shuting = query_as::<_, Entry>(sql)
+    let result = query_as::<_, MinEntry>(sql)
         .bind(&params.level)
-        .bind(&params.limit_sec)
-        .bind(&params.word)
+        .bind(&params.description)
         .fetch_one(pool)
         .await
         .map_err(|e| {
@@ -54,52 +64,93 @@ pub async fn create(
             error::AppError::DatabaseError(e.to_string())
         })?;
 
-    Ok(shuting)
+    Ok(result)
 }
 
-pub async fn where_all(
+pub async fn all(
     pool: &PgPool, 
-    query: Option<params::shuting::Query>, 
-) -> Result<Vec<Entry>, error::AppError> {
+) -> Result<Vec<MinEntry>, error::AppError> {
 
-    let sql = if let Some(params::shuting::Query { level: Some(_) }) = query {
-        r#"
-            SELECT 
-                id, 
-                level,
-                limit_sec,
-                word,
-                created_at, 
-                deleted_at
-            FROM 
-                shutings
-            WHERE 
-                level = $1
-        "#
-    } else {
-        r#"
-            SELECT 
-                id, 
-                level,
-                limit_sec,
-                word,
-                created_at, 
-                deleted_at
-            FROM 
-                shutings
-        "#
+    let sql = r#"
+          SELECT 
+            id, 
+            level,
+            description,
+            created_at, 
+            deleted_at
+          FROM 
+            shutings
+      "#;
+
+    let result = query_as::<_, MinEntry>(sql)
+        .fetch_all(pool)
+        .await
+        .map_err(|e| {
+            error!("{:#?}", e);
+            error::AppError::DatabaseError(e.to_string())
+        })?;
+
+    Ok(result)
+}
+
+pub async fn find(
+    pool: &PgPool, 
+    id: i32,
+) -> Result<Entry, error::AppError> {
+
+    let sql = r#"
+        SELECT 
+          id, 
+          level, 
+          description,
+          created_at, 
+          deleted_at
+        FROM 
+          shutings
+        WHERE
+          id = $1
+    "#;
+
+    let shuting_result = query_as::<_, MinEntry>(sql)
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .map_err(|e| {
+            error!("{:#?}", e);
+            error::AppError::DatabaseError(e.to_string())
+        })?;
+
+    let sql = r#"
+        SELECT 
+          id, 
+          shuting_id, 
+          word,
+          limit_sec,
+          created_at, 
+          deleted_at
+        FROM 
+          words
+        WHERE
+          shuting_id = $1
+    "#;
+
+    let word_results = query_as::<_, models::word::Entry>(sql)
+        .bind(shuting_result.id)
+        .fetch_all(pool)
+        .await
+        .map_err(|e| {
+            error!("{:#?}", e);
+            error::AppError::DatabaseError(e.to_string())
+        })?;
+
+    let result = Entry {
+        id: shuting_result.id,
+        level: shuting_result.level,
+        description: shuting_result.description,
+        created_at: shuting_result.created_at,
+        deleted_at: shuting_result.deleted_at,
+        words: Some(word_results),
     };
 
-    let mut sql_query = query_as::<_, Entry>(sql);
-    if let Some(params::shuting::Query { level: Some(level) }) = query {
-        sql_query = sql_query.bind(level);
-    }
-
-    match sql_query.fetch_all(pool).await {
-        Ok(shutings) => Ok(shutings),
-        Err(e) => {
-            error!("{:#?}", e);
-            Err(error::AppError::DatabaseError(e.to_string()))
-        }
-    }
+    return Ok(result)
 }

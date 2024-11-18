@@ -1,13 +1,11 @@
 import React, { useEffect, useMemo } from "react";
 import { Result } from "@/types/result";
+import { Word } from "@/types/shuting";
 import { SoundManager } from "./soundManager";
 
 type ShutingAreaProps = {
   shutingLimitSec: number | null;
-  shuting: { 
-    limit_sec?: number;
-    word?: string;
-  } | null;
+  word: Word | null;
   answer: string;
   matchLength: number;
   setMatchLength: React.Dispatch<React.SetStateAction<number>>;
@@ -21,7 +19,7 @@ type ShutingAreaProps = {
 
 export default function ShutingArea({
   shutingLimitSec,
-  shuting,
+  word,
   answer,
   matchLength,
   setMatchLength,
@@ -34,18 +32,18 @@ export default function ShutingArea({
 }: ShutingAreaProps) {
 
   const newMatchLength = useMemo(() => {
-    if (!shuting?.word) return 0;
+    if (!word?.word) return 0;
 
     let tempMatchLength = 0;
     for (let i = 0; i < answer.length; i++) {
-      if (answer[i] === shuting.word[i]) {
+      if (answer[i] === word?.word[i]) {
         tempMatchLength++;
       } else {
         break;
       }
     }
     return tempMatchLength;
-  }, [answer, shuting?.word]);
+  }, [answer, word?.word]);
 
   useEffect(() => {
     if (newMatchLength > matchLength) {
@@ -89,18 +87,18 @@ export default function ShutingArea({
     }, 1000);
   };
 
-  const borderColor = shutingLimitSec !== null && shuting?.limit_sec
+  const borderColor = shutingLimitSec !== null && word?.limit_sec
     ? `rgba(
-        ${Math.round(220 * (1 - shutingLimitSec / (shuting.limit_sec || 1))) + 35}, 
-        ${Math.round(180 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 
-        ${Math.round(50 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 1)`
+        ${Math.round(220 * (1 - shutingLimitSec / (word.limit_sec || 1))) + 35}, 
+        ${Math.round(180 * (shutingLimitSec / (word.limit_sec || 1)))}, 
+        ${Math.round(50 * (shutingLimitSec / (word.limit_sec || 1)))}, 1)`
     : "rgba(220, 50, 50, 1)";
 
-  const backgroundColor = shutingLimitSec !== null && shuting?.limit_sec
+  const backgroundColor = shutingLimitSec !== null && word?.limit_sec
     ? `rgba(
-        ${Math.round(220 * (1 - shutingLimitSec / (shuting.limit_sec || 1))) + 35}, 
-        ${Math.round(180 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 
-        ${Math.round(50 * (shutingLimitSec / (shuting.limit_sec || 1)))}, 0.1)`
+        ${Math.round(220 * (1 - shutingLimitSec / (word.limit_sec || 1))) + 35}, 
+        ${Math.round(180 * (shutingLimitSec / (word.limit_sec || 1)))}, 
+        ${Math.round(50 * (shutingLimitSec / (word.limit_sec || 1)))}, 0.1)`
     : "rgba(220, 50, 50, 0.1)";
 
   return (
@@ -115,10 +113,10 @@ export default function ShutingArea({
     >
       <span>
         <span className="text-green-600 font-bold">
-          {shuting?.word?.slice(0, newMatchLength)}
+          {word?.word?.slice(0, newMatchLength)}
         </span>
         <span>
-          {shuting?.word?.slice(newMatchLength)}
+          {word?.word?.slice(newMatchLength)}
         </span>
       </span>
     </div>

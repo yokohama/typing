@@ -12,5 +12,5 @@ pub struct Create {
 #[derive(Deserialize)]
 pub struct Query {
     pub user_id: Option<i32>,
-    pub level: Option<i32>,
+    pub shuting_id: Option<i32>,
 }

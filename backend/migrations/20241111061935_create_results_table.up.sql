@@ -2,7 +2,7 @@
 CREATE TABLE results (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    level INT NOT NULL,
+    shuting_id INT REFERENCES shutings(id) ON DELETE CASCADE,
     correct_count INT NOT NULL,
     incorrect_count INT NOT NULL,
     time INT NOT NULL,

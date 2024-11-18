@@ -11,7 +11,7 @@ migration-revert:
 	sqlx migrate revert --database-url postgres://postgres:password@localhost:/$(APP_NAME)
 
 psql:
-	PGPASSWORD=password psql -h localhost -p 5432 -U postgres -d $(APP_NAME)
+	PGPASSWORD=password psql -h localhost -p 5432 -U postgres -d postgres -d $(APP_NAME)
 
 aws-logs-service:
 	aws logs tail $(CLOUDWATCH_LOG_GROUP)/service --follow --profile $(PROFILE)

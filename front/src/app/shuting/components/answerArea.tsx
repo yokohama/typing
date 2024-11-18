@@ -1,12 +1,12 @@
 import React, { ChangeEvent, useState } from "react";
 
-import { Shuting } from "@/types/shuting";
 import { SoundManager } from "./soundManager";
 import { Result } from "@/types/result";
+import { Word } from "@/types/shuting";
 
 type AnswerAreaProps =  {
   answer: string;
-  shuting: Shuting | null;
+  word: Word | null;
   soundManager: SoundManager;
   setIsCorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setIsPerfectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,7 +18,7 @@ type AnswerAreaProps =  {
 
 export default function AnswerArea({ 
   answer, 
-  shuting,
+  word,
   soundManager,
   setIsCorrectOverlayVisible,
   setIsPerfectOverlayVisible,
@@ -44,7 +44,7 @@ export default function AnswerArea({
         correct_count: prev.correct_count + 1,
       }));
 
-      if (shuting && answer === shuting.word) {
+      if (word && answer === word.word) {
         if (!isTypeDeleteKey) {
           soundManager.playPerfect();
           setPerfectCount((prev) => prev + 1);
