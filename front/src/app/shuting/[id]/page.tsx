@@ -16,7 +16,6 @@ import { isErrorResponse } from '@/types/errorResponse';
 import { SoundManager } from '../components/soundManager';
 import Time from '../components/time';
 import ShutingArea from '../components/shutingArea';
-import StartButton from '../components/startButton';
 import Progress from '../components/progress';
 import AnswerArea from '../components/answerArea';
 import Overlay from '../components/overlay';
@@ -182,8 +181,6 @@ export default function Page() {
           currentIndex={currentIndex}
           shutingWordsLength={shutingWords.length}
         />
-
-        <StartButton handleStart={handleStart} />
 
         <ShutingArea
           shutingLimitSec={shutingLimitSec}

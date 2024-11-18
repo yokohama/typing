@@ -14,7 +14,7 @@ export default function Page({children}: {children: React.ReactNode}) {
   if (session) {
     return(
       <div className="min-h-screen bg-gray-50 flex flex-col items-center rounded-xl">
-        <SubHeader title="シューティング">
+        <SubHeader title="結果">
           <SubHeaderButton
             title='レコード'
             url='/result'

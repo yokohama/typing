@@ -134,12 +134,12 @@ pub async fn save(
     let mut updates = vec![];
     let mut index = 1;
 
-    if let Some(name) = &params.name {
+    if let Some(_name) = &params.name {
         updates.push(format!("name = ${}", index));
         index += 1;
     }
 
-    if let Some(point) = params.point {
+    if let Some(_point) = params.point {
         updates.push(format!("point = ${}", index));
         index += 1;
     }

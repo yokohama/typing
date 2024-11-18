@@ -16,7 +16,7 @@ export default function Page({children}: {children: React.ReactNode}) {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center rounded-xl">
         <SubHeader title="アカウント" />
 
-        <main className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md">
+        <main className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-md">
           {children}
         </main>
       </div>

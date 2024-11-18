@@ -7,7 +7,6 @@ use sqlx::PgPool;
 
 use crate::middleware::error;
 use crate::middleware::auth;
-use crate::requests::params;
 use crate::models::shuting;
 
 pub async fn index(

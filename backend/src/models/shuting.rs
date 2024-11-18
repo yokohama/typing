@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use chrono::NaiveDateTime;
 
 use serde::Serialize;
@@ -10,10 +8,8 @@ use sqlx::{
 };
 use tracing::error;
 
-use crate::controllers::user::shutings;
 use crate::models;
 use crate::middleware::error;
-use crate::requests::params;
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct MinEntry {
@@ -51,7 +47,12 @@ pub async fn create(
             created_at
         )
         VALUES ($1, $2, NOW())
-        RETURNING id, level, description, created_at, deleted_at
+        RETURNING 
+          id, 
+          level, 
+          description, 
+          created_at, 
+          deleted_at
     "#;
             
     let result = query_as::<_, MinEntry>(sql)

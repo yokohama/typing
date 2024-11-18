@@ -41,18 +41,29 @@ pub async fn create(
     params: Create
 ) -> Result<Entry, error::AppError> {
 
-    let shutings = models::shuting::all(pool).await?;
-    let word_count = shutings.len() as i32;
+    let shuting = models::shuting::find(&pool, params.shuting_id).await?;
 
-//    let total_limit_sec: i32 = shutings.iter().map(|s| s.limit_sec).sum();
+    let word_count: i32 = shuting.words
+        .as_ref()
+        .map(|words| words.len() as i32)
+        .unwrap_or(0);
 
-   let score = calc_score(
+    let total_limit_sec: i32 = shuting.words
+        .as_ref()
+        .map(|words| {
+            words.iter()
+                .map(|word| word.limit_sec)
+                .sum::<i32>()
+        })
+        .unwrap_or(0);
+
+    let score = calc_score(
         word_count, 
         params.correct_count, 
         params.incorrect_count, 
         params.perfect_count, 
         params.time, 
- //       total_limit_sec,
+        total_limit_sec,
     );
 
     let sql = r#"
@@ -202,7 +213,7 @@ fn calc_score(
     incorrect_count: i32,
     perfect: i32,
     current_time: i32,
-//    total_limit_sec: i32,
+    total_limit_sec: i32,
 ) -> (i32, i32) {
     let accuracy = if word_count > 0 {
         correct_count as f64 / word_count as f64
@@ -223,15 +234,12 @@ fn calc_score(
     let base_score = (accuracy * 100.0 - penalty * 50.0 + perfect_bonus * 20.0).max(0.0);
     let score = base_score.min(100.0).round() as i32;
 
-    let time_bonus = 0;
-    /*
     let time_bonus = if total_limit_sec > 0 {
         (1.0 - (current_time as f64 / total_limit_sec as f64).min(1.0)) * 20.0
     } else {
         0.0
     };
-    */
-    //let time_bonus = time_bonus.round() as i32;
+    let time_bonus = time_bonus.round() as i32;
 
     (score, time_bonus)
 }

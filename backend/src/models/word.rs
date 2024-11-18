@@ -9,7 +9,6 @@ use sqlx::{
 use tracing::error;
 
 use crate::middleware::error;
-use crate::models;
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Entry {
