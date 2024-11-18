@@ -2,7 +2,7 @@ import { ResultTableProps } from "@/types/result";
 import { FormatSecTime, FormatDateTime } from "@/lib/format";
 
 export const ResultTable: React.FC<ResultTableProps> = ({ result }) => (
-  <div className="overflow-x-auto">
+  <div className="overflow-x-auto mb-10">
     <table className="table-auto w-full border-collapse border border-gray-300 rounded-lg shadow-md">
       <tbody>
         <tr className="odd:bg-white even:bg-gray-100">

@@ -60,13 +60,8 @@ export default function Page() {
               Level{result.shuting_id}
             </h1>
             <Records records={records} />
-            <div className="mb-4" />
             <ResultTable result={result} />
-            <div className="mb-4" />
-            <Link 
-              href={`/shuting/${result.shuting_id}`}
-              className="block mx-auto text-center px-6 py-2 bg-orange-600 text-white font-semibold rounded hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 w-fit"
-            >チャレンジ</Link>
+            <ChallengeButton shuting_id={result.shuting_id} />
           </div>
         ): (
           <Loading />
@@ -74,4 +69,27 @@ export default function Page() {
       </main>
     </div>
   );
+}
+
+const ChallengeButton = ({
+  shuting_id
+} : {
+  shuting_id: number
+}) => {
+  return (
+    <Link 
+      href={`/shuting/${shuting_id}`}
+      className="
+        block 
+        px-6 py-2
+        mx-auto text-center 
+        bg-yellow-400 text-white font-semibold 
+        rounded
+        hover:bg-orange-400
+        focus:outline-none
+        focus:ring-2
+        focus:ring-orange-500
+        focus:ring-offset-2 w-fit
+    ">チャレンジ</Link>
+  )
 }

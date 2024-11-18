@@ -48,15 +48,14 @@ export default function AnswerArea({
         if (!isTypeDeleteKey) {
           soundManager.playPerfect();
           setPerfectCount((prev) => prev + 1);
-
           setIsPerfectOverlayVisible(true);
           setTimeout(() => {
             setIsPerfectOverlayVisible(false);
             moveToNextExample();
           }, 1000);
-
         } else {
           soundManager.playCorrect();
+          setIsTypeDeleteKey(false);
           setIsCorrectOverlayVisible(true);
           setTimeout(() => {
             setIsCorrectOverlayVisible(false);
@@ -78,8 +77,15 @@ export default function AnswerArea({
         value={answer}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
-        className="w-full p-4 text-xl border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+        autoFocus
+        className="
+          w-full p-4
+          text-xl border-2 border-gray-300
+          rounded-lg
+          focus:outline-none
+          focus:ring-2
+          focus:ring-blue-500
+      "/>
     </div>
   );
 }

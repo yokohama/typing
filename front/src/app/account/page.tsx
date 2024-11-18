@@ -33,7 +33,10 @@ export default function Page() {
         return;
       }
 
-      setUserInfo(data);
+      setUserInfo({
+        ...data,
+        image: userInfo.image
+      });
       setFormData(data);
     };
 
@@ -53,10 +56,13 @@ export default function Page() {
       const data = await postData<UserInfo, UserInfo | ErrorResponse>(endpoint, formData);
 
       if (isErrorResponse(data) && data.error_type === 'ValidationError') {
-	const errors = data.details ? JSON.parse(data.details) : {};
+        const errors = data.details ? JSON.parse(data.details) : {};
         setErrors(errors);
       } else if (!isErrorResponse(data)) {
-        setUserInfo(data);
+        setUserInfo({
+          ...data,
+          image: userInfo.image
+        });
         setFormData(data);
         clearErrors();
 
@@ -100,23 +106,28 @@ export default function Page() {
             <label htmlFor="name" className="text-gray-700 font-semibold">ニックネーム:</label>
 
             {isEditing ? (
-              <>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name || ''}
-                  onChange={handleChange}
-                  className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  onBlur={() => setIsEditing(false)} 
-                  autoFocus
-                />
-              </>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name || ''}
+                onChange={handleChange}
+                onBlur={() => setIsEditing(false)} 
+                autoFocus
+                className="
+                  mt-1 p-2 border border-gray-300 rounded 
+                  focus:outline-none focus:ring-2 focus:ring-blue-400
+                "
+              />
             ) : (
               <p
-                className="mt-1 p-2 border border-transparent rounded hover:bg-gray-100 cursor-pointer"
                 onClick={handleEditClick}
-              >{formData.name || "Click to edit"}</p>
+                className="
+                  mt-1 p-2 
+                  border border-transparent rounded
+                  bg-gray-100
+                  hover:bg-gray-200 cursor-pointer
+                ">{formData.name || "Click to edit"}</p>
             )}   
           </div>
 

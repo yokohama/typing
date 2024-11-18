@@ -45,10 +45,13 @@ export const Records: React.FC<RecordsProps> = ({ records }) => {
       },
       title: {
         display: true,
-        text: '成長記録',
       },
     },
   };
 
-  return <Line data={data} options={options} />;
+  return (
+    <div className="mb-10">
+      <Line data={data} options={options} />
+    </div>
+  );
 }

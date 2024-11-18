@@ -73,13 +73,23 @@ export default function Login() {
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 focus:outline-none">
+          className="
+            w-16 h-16 
+            rounded-full 
+            overflow-hidden 
+            focus:outline-none 
+            hover:ring-4 hover:ring-pink-400 
+            transform transition-transform duration-200 
+            focus:scale-110 
+            hover:scale-110 
+            active:scale-105
+          ">
           <Image 
             src={userInfo.image || "/images/default-avatar.png"} 
             width={100}
             height={100}
             alt="User Avatar" 
-            className="w-full h-full- object-cover"
+            className="w-full h-full object-cover"
           />
         </button>
 

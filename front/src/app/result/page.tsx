@@ -47,7 +47,7 @@ export default function Page() {
             {results.map((result, index) => (
                 <tr 
                   key={index}
-                  className="border-b border-gray-200 hover:bg-gray-100"
+                  className="border-b border-gray-200 hover:bg-red-100"
                   onClick={() => router.push(`/result/${result.id}`)}
                  >
                   <td className="py-3 px-6">
