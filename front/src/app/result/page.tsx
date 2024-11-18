@@ -22,7 +22,7 @@ export default function Page() {
     };
 
     fetchResults();
-  }, []);
+  }, [endpoint]);
 
   const sortedResults = results
     ?.filter((result) => result.created_at ! == undefined)

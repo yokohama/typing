@@ -28,7 +28,7 @@ export const Records: React.FC<RecordsProps> = ({ records }) => {
     labels: records.map((_, index) => index + 1),
     datasets: [
       {
-        label: 'Score',
+        label: '合計スコア',
         data: records.map((record) => (record.score ?? 0) + (record.time_bonus ?? 0)),
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -45,7 +45,7 @@ export const Records: React.FC<RecordsProps> = ({ records }) => {
       },
       title: {
         display: true,
-        text: 'Scores Over Time',
+        text: '成長記録',
       },
     },
   };

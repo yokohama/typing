@@ -33,7 +33,7 @@ export default function Page() {
     };
 
     fetchResult();
-  }, []);
+  }, [resultEndpoint]);
 
   useEffect(() => {
     if (result && result?.level) {
@@ -49,7 +49,7 @@ export default function Page() {
 
       fetchRecords();
     }
-  }, [result]);
+  }, [result, recordsEndpoint]);
 
   return (
     <div className="flex justify-center min-h-screen bg-gray-50">

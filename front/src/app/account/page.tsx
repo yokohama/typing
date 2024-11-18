@@ -41,7 +41,7 @@ export default function Page() {
     };
 
     fetchUserData();
-  }, []);
+  }, [endpoint]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

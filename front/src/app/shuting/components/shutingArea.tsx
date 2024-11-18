@@ -35,7 +35,9 @@ export default function ShutingArea({
 }: ShutingAreaProps) {
 
   useEffect(() => {
-    if (!isStart || shutingLimitSec === null || shutingLimitSec <= 0) return;
+    if (!isStart || 
+          shutingLimitSec === null || 
+          shutingLimitSec <= 0) return;
 
     const shutingInterval = setInterval(() => {
       setShutingLimitSec(prev => {
@@ -49,7 +51,11 @@ export default function ShutingArea({
     }, 1000);
 
     return () => clearInterval(shutingInterval);
-  }, [shutingLimitSec, isStart]);
+  }, [
+    shutingLimitSec, 
+    isStart, 
+    setShutingLimitSec
+  ]);
 
   const handleTimeLimitExceeded = () => {
     setResult(prevResult => ({

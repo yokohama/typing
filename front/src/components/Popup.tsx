@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { signOut } from 'next-auth/react';
 
@@ -26,7 +27,13 @@ export default function Popup({
 
           <div className="flex flex-col items-center text-center">
             {userInfo.image && (
-              <img src={userInfo.image || "/default-avatar.png"} alt="User Avatar" className="w-16 h-16 rounded-full object-cover mb-2" />
+              <Image 
+                src={userInfo.image || "/images/default-avatar.png"} 
+                alt="User Avatar" 
+                width={100}
+                height={100}
+                className="w-16 h-16 rounded-full object-cover mb-2"
+              />
             )}
             <Link href="/account">
               <p className="text-xl text-gray-500">{userInfo.name || ''}</p>
