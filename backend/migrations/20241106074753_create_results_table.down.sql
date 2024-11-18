@@ -1,2 +1,1 @@
--- Add down migration script here
-DROP TABLE lessons;
+DROP TABLE results;
