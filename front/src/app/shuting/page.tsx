@@ -73,6 +73,7 @@ const ShutingItem = ({
           hover:text-black
 	  hover:border-4
 	  hover:border-red-300
+	  hover:rounded-xl
       ">
         <img
           src={`/images/level${level}.png`}
