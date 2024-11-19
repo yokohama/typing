@@ -13,7 +13,8 @@ export class SoundManager {
       '/sounds/bgms/Morning.mp3',
       '/sounds/bgms/BGM_-_067_-_Stone_Dance.mp3',
       '/sounds/bgms/Dive_To_Mod.mp3',
-      '/sounds/bgms/bgm.mp3'
+      '/sounds/bgms/bgm.mp3',
+      '/sounds/bgms/kaeruno_piano.mp3'
     ];
     const randomIndex = Math.floor(Math.random() * bgmList.length);
 
