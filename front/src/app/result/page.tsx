@@ -36,11 +36,11 @@ export default function Page() {
         <table className="min-w-full leading-normal border-collapse">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left">日時</th>
-              <th className="py-3 px-6 text-left">Level</th>
+              <th className="py-3 px-6 text-left"></th>
+              <th className="py-3 px-6 text-left">レベル</th>
               <th className="py-3 px-6 text-left">スコア</th>
               <th className="py-3 px-6 text-left">タイムボーナス</th>
-              <th className="py-3 px-6 text-left">経過時間</th>
+              <th className="py-3 px-6 text-left">タイム</th>
             </tr>
           </thead>
           <tbody className="text-gray-700">

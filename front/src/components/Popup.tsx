@@ -85,7 +85,10 @@ const UserInfoArea = ({
         <p className="text-xl text-gray-500">{userInfo.name || ''}</p>
         <p className="text-sm text-gray-500">{userInfo.email || ''}</p>
         <div className="py-8">
-          <p className="text-4xl text-gray-500">{userInfo.point} pt</p>
+          <p>
+            <span className="text-4xl text-gray-500">{userInfo.point}</span>
+            <span className="text-xl font-bold text-gray-500"> コイン</span>
+          </p>
         </div>
       </div>
     </Link>
