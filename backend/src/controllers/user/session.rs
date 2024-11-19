@@ -37,7 +37,6 @@ pub async fn google(
         .await
     {
         Ok(resp) => resp,
-        // errorをfrontに返した際にフロント側でログアウトの実装をする。
         Err(err) => {
             error!("Error sending request to Google API: {}", err);
             return Err(error::AppError::InternalServerError(
@@ -56,7 +55,6 @@ pub async fn google(
             "Google API returned an error. Status: {}, Body: {}",
             status, body_text
         );
-        // errorをfrontに返した際にフロント側でログアウトの実装をする。
         return Err(error::AppError::InternalServerError(format!(
             "Google API error: {}",
             status

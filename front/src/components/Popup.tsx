@@ -119,7 +119,7 @@ const EditButton = ({
 const LogoutButton = () => {
   return (
     <button
-      onClick={() => signOut({ callbackUrl: "/" })}
+      onClick={() => signOut({ callbackUrl: '/push-logout-button' })}
       className="
         flex
         items-center

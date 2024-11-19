@@ -29,6 +29,7 @@ export async function fetchData<T>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
 ): Promise<ApiResponse<T>> {
+  console.log(url);
   const response = await fetch(url, {
     method: method,
     headers: getHeaders(),

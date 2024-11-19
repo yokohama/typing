@@ -27,7 +27,9 @@ export default function Header() {
             hover:text-gray-600
         ">
            ゆっくりタイピング
-          <p className="text-sm text-gray-700">Learn and improve your typing skills</p>
+          <p className="text-sm text-gray-700">
+            Learn and improve your typing skills
+          </p>
         </Link>
         <Login />
       </div>

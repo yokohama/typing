@@ -21,7 +21,9 @@ const options: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+
   secret: process.env.NEXTAUTH_SECRET,
+
   callbacks: {
     async jwt({ token, account }: { token: JWT; account?: Account | null }) {
       if (account) {
@@ -33,8 +35,15 @@ const options: NextAuthOptions = {
       session.accessToken = token.accessToken;
       return session;
     },
-    async redirect({ baseUrl }: { baseUrl: string }) {
-      return `${baseUrl}/shuting`;
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      if (
+        url.includes('/push-logout-button') || 
+        url.includes('/google-accesstoken-error')
+      ) {
+        return `${baseUrl}/`;
+      } else {
+        return `${baseUrl}/shuting`;
+      }
     },
   },
 };

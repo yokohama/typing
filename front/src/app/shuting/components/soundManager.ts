@@ -6,6 +6,7 @@ export class SoundManager {
   private finishSound: HTMLAudioElement;
   private perfectSound: HTMLAudioElement;
   private readyGoSound: HTMLAudioElement;
+  private selectSound: HTMLAudioElement;
 
   constructor() {
     const bgmList = [
@@ -25,6 +26,7 @@ export class SoundManager {
     this.incorrectSound = new Audio('/sounds/out.mp3');
     this.finishSound = new Audio('/sounds/finish.mp3');
     this.readyGoSound = new Audio('/sounds/readygo.mp3');
+    this.selectSound = new Audio('/sounds/correct.mp3');
   }
 
   playBgm() {
@@ -66,4 +68,8 @@ export class SoundManager {
     this.readyGoSound.play().catch(error => console.error('Failed to readygo sound:', error));
   }
 
+  playSelect() {
+    this.selectSound.currentTime = 0;
+    this.selectSound.play().catch(error => console.error('Failed to select sound:', error));
+  }
 }
