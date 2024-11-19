@@ -53,13 +53,12 @@ export default function Login() {
          flex items-center justify-center
          px-4 py-2 
          bg-white 
-         text-gray-700 
-         border-2 
-	 border-gray-400 
+         text-gray-600 
+         font-bold
+         shadow
          rounded-md 
          hover:bg-gray-100
-       "
-    >
+    ">
        <img 
          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
          alt="Google logo" 
