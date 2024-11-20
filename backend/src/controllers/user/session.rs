@@ -75,7 +75,7 @@ pub async fn google(
         }
     };
 
-    let user = user::create(&pool,user::Create{
+    let user = user::create(&pool, user::Create{
         email: user_info.email.clone(),
         name: user_info.name.clone(),
     }).await?;

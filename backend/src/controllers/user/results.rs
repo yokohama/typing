@@ -56,8 +56,7 @@ pub async fn create(
     let point = update_point(
         &pool, 
         claims.sub, 
-        result.score,
-        result.time_bonus,
+        result.point,
     ).await?;
 
     let mut result = serde_json::to_value(&result)
@@ -90,9 +89,9 @@ pub async fn show(
 async fn update_point(
     pool: &PgPool,
     user_id: i32,
-    score: i32,
-    time_bonus: i32,
+    point: i32,
 ) -> Result<i32, error::AppError> {
+
     let user = models::user::find(
           &pool, 
           user_id,
@@ -105,7 +104,7 @@ async fn update_point(
         })?;
 
     let update = params::user::UpdateProfile {
-        point: Some(user.point + score + time_bonus),
+        point: Some(user.point + point),
         ..Default::default()
     };
 

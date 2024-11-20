@@ -4,8 +4,7 @@ function getHeaders(): HeadersInit | undefined {
   const jwt = localStorage.getItem('jwt');
 
   if(!jwt) {
-    console.error('JWT token not found in localStorage');
-    return;
+    throw new Error('JWT token not found in localStorage');
   }
 
   return {
@@ -29,7 +28,7 @@ export async function fetchData<T>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
 ): Promise<ApiResponse<T>> {
-  console.log(url);
+
   const response = await fetch(url, {
     method: method,
     headers: getHeaders(),

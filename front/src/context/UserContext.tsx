@@ -6,23 +6,17 @@ import React, {
   ReactNode 
 } from "react";
 
-import { UserInfo } from "@/types/userInfo";
-
-
-
-
-
 import { useSession, signOut } from 'next-auth/react';
+
 import { fetchData } from '@/lib/api';
+import { UserInfo } from "@/types/userInfo";
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
-
-
-
-
 
 type UserContextType = {
   userInfo: UserInfo;
   setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
+  isJwtAvailable: boolean;
+  setIsJwtAvailable: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -35,66 +29,64 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     image: "",
     point: 0,
   });
+  const [isJwtAvailable, setIsJwtAvailable] = useState<boolean>(false);
 
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
   const profileEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
 
-  const getJwtByGoogleAccessToken = async () => {
+  useEffect(() => {
     if (status === 'authenticated' && session?.accessToken) {
-      const response = await fetch(endpoint, {
+      fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          googleToken: session.accessToken,
+          googleToken: session?.accessToken,
         }),
-      });
+      }).then(jwtRes => {
+        jwtRes.json().then((jwtData: { jwt: string }) => {
+          localStorage.setItem('jwt', jwtData.jwt);
+          setIsJwtAvailable(true);
 
-      if (!response.ok) {
-        signOut({ callbackUrl: '/google-accesstoken-error' })
-        const errorText = await response.text();
-        throw new Error(errorText || 'Unknown error occurred');
-      }
+          fetchData<UserInfo | ErrorResponse>(
+            profileEndpoint, 
+            'GET'
+          ).then((userRes) => {
 
-      const jwtData: { jwt: string } = await response.json();
-      localStorage.setItem('jwt', jwtData.jwt);
+            if (isErrorResponse(userRes)) {
+              console.error('Error fetching user data:', userRes.message);
+              return;
+            }
+
+            setUserInfo((prev) => ({
+              ...prev,
+              email: userRes.email || '',
+              name: userRes.name || '',
+              image: session?.user?.image || '',
+              point: userRes.point || 0,
+            }));
+          });
+        }).catch(error => {
+          localStorage.clear();
+          signOut({ callbackUrl: '/google-accesstoken-error' })
+          console.error(error);
+	});
+      })
     }
-  };
-
-  const getUserInfo = async () => {
-    const data = await fetchData<UserInfo | ErrorResponse>(profileEndpoint, 'GET');
-
-    if (isErrorResponse(data)) {
-      console.error('Error fetching user data:', data.message);
-      return;
-    }
-
-    if (data) {
-      setUserInfo((prev) => ({
-        ...prev,
-        email: data.email || '',
-        name: data.name || '',
-        image: session?.user?.image || '',
-        point: data.point || 0,
-      }));
-    }
-  }
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.accessToken) {
-      getJwtByGoogleAccessToken();
-      getUserInfo();
-    }
-
   }, [ session, status ]);
 
   return (
-    <UserContext.Provider value={{ userInfo, setUserInfo }}>
+    <UserContext.Provider value={{ 
+      userInfo, 
+      setUserInfo, 
+      isJwtAvailable,
+      setIsJwtAvailable,
+    }}>
       {children}
     </UserContext.Provider>
   );
-};
+};  
 
 export const useUser = () => {
   const context = useContext(UserContext);

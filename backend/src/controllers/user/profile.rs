@@ -7,6 +7,7 @@ use sqlx::PgPool;
 
 use crate::middleware::error;
 use crate::middleware::auth;
+use crate::models;
 use crate::models::user;
 use crate::requests::{
     params::user::UpdateProfile,

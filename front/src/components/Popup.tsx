@@ -122,7 +122,10 @@ const EditButton = ({
 const LogoutButton = () => {
   return (
     <button
-      onClick={() => signOut({ callbackUrl: '/push-logout-button' })}
+      onClick={() => {
+        localStorage.clear();
+        signOut({ callbackUrl: '/push-logout-button' });
+      }}
       className="
         flex
         items-center

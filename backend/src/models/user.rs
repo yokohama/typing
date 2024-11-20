@@ -7,7 +7,7 @@ use sqlx::{
     FromRow
 };
 
-use tracing::error;
+use tracing::{ debug, error };
 
 use crate::middleware::error;
 use crate::requests::params::user::UpdateProfile;
@@ -57,7 +57,6 @@ pub async fn find_by_email(
                 Err(error::AppError::DatabaseError(e.to_string()))
             }
         }
-
 }
 
 pub async fn find(
@@ -88,17 +87,16 @@ pub async fn find(
                 Err(error::AppError::DatabaseError(e.to_string()))
             }
         }
-
 }
 
 pub async fn create(
     pool: &PgPool, 
     params: Create
 ) -> Result<Entry, error::AppError> {
-    match find_by_email(&pool, params.email.clone()).await? {
-        Some(user) => {
-            Ok(user)
-        },
+    let user = find_by_email(&pool, params.email.clone()).await?;
+
+    match user {
+        Some(user) => Ok(user),
         None => {
             let sql = r#"
             INSERT INTO users (
@@ -107,7 +105,7 @@ pub async fn create(
                 created_at
             )
             VALUES ($1, $2, NOW())
-            RETURNING id, email, name, created_at, deleted_at
+            RETURNING id, email, name, point, created_at, deleted_at
             "#;
             
             let user = query_as::<_, Entry>(sql)
@@ -153,7 +151,16 @@ pub async fn save(
 
     sql.push_str(&updates.join(", "));
     sql.push_str(&format!(
-        " WHERE id = ${} RETURNING id, email, name, point, created_at, deleted_at",
+        " WHERE 
+            id = ${} 
+          RETURNING 
+            id, 
+            email, 
+            name, 
+            point, 
+            created_at, 
+            deleted_at
+        ",
         index
     ));
 
