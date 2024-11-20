@@ -10,6 +10,11 @@ $ cd typing/backend
 以下の内容で `typing/backend/.env` を作成してください。
 ```
 APP_NAME=typing
+RUST_BACKTRACE=1
+JWT_SECRET=secret
+PROFILE=yokohama
+CLOUDWATCH_LOG_GROUP=/aws/apprunner/xxxxxx
+ALLOWED_ORIGINS=http://localhost:3001
 ```
 
 ### ビルド＆DB作成
