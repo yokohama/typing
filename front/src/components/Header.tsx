@@ -13,21 +13,23 @@ export default function Header() {
     <header className="bg-yellow-400 shadow-md">
       <div 
         className="
-          p-4 sm:p-6 lg:p-8
+          p-2 sm:p-6 lg:p-8
           flex justify-between items-center 
       ">
         <Link key="top" 
           href={session ? "/shuting" : "/" }
           className="
-            text-4xl 
+            text-2xl sm:text-3xl lg:text-4xl
             text-yellow-600
             font-bold
             tracking-wide
-            text-gray-800
             hover:text-gray-600
         ">
            ゆっくりタイピング
-          <p className="text-sm text-gray-700">
+          <p className="
+            text-xs lg:text-sm xl:text-sm
+            text-gray-700
+          ">
             Learn and improve your typing skills
           </p>
         </Link>

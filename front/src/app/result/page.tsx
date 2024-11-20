@@ -33,18 +33,32 @@ export default function Page() {
   return(
     <div className="overflow-x-auto my-6 p-4">
       {sortedResults ? (
-        <table className="min-w-full leading-normal border-collapse">
-          <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left"></th>
-              <th className="py-3 px-6 text-left">レベル</th>
-              <th className="py-3 px-6 text-left">スコア</th>
-              <th className="py-3 px-6 text-left">タイムボーナス</th>
-              <th className="py-3 px-6 text-left">タイム</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700">
-            {results.map((result, index) => (
+        <div 
+          className="
+            border-4 border-yellow-300 
+            rounded-xl overflow-hidden
+        ">
+          <table className="
+            min-w-full bg-white
+            border-collapse
+          ">
+            <thead>
+              <tr 
+                className="
+                  text-sm
+                  bg-yellow-200 
+                  text-gray-600
+                  leading-normal
+              ">
+                <th className="py-3 px-6"></th>
+                <th className="py-3 px-6">レベル</th>
+                <th className="py-3 px-6">スコア</th>
+                <th className="py-3 px-6">タイムボーナス</th>
+                <th className="py-3 px-6">タイム</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-700">
+              {results.map((result, index) => (
                 <tr 
                   key={index}
                   className="border-b border-gray-200 hover:bg-red-100"
@@ -60,9 +74,10 @@ export default function Page() {
                     {result.time && FormatSecTime(result.time)}
                   </td>
                 </tr>
-            ))}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <Loading />
       )}

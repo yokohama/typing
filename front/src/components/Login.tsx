@@ -9,6 +9,9 @@ import { useUser } from '@/context/UserContext';
 import Popup from '@/components/Popup';
 
 export default function Login() {
+
+  const googleIcon = "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg";
+
   const { data: session } = useSession();
   const { userInfo } = useUser();
   const [ isOpen, setIsOpen ] = useState(false);
@@ -19,7 +22,7 @@ export default function Login() {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="
-            w-16 h-16 
+            w-12 h-12 sm:w-16 sm:h-16
             rounded-full 
             overflow-hidden 
             focus:outline-none 
@@ -51,7 +54,7 @@ export default function Login() {
        onClick={() => signIn('google')}
        className="
          flex items-center justify-center
-         px-4 py-2 
+         px-2 py-2 sm:px-4
          bg-white 
          text-gray-600 
          font-bold
@@ -60,9 +63,9 @@ export default function Login() {
          hover:bg-gray-100
     ">
        <img 
-         src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+         src={googleIcon}
          alt="Google logo" 
-         className="h-5 w-5 mr-2" 
+         className="h-4 sm:h-5 w-4 sm:w-5 mr-2" 
        />
        Sign in
     </button>

@@ -1,3 +1,5 @@
+import { handleGoogleAccessTokenError } from "@/context/UserContext";
+
 type ApiResponse<T> = T & { message?: string };
 
 function getHeaders(): HeadersInit | undefined {
@@ -20,7 +22,10 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     console.error('API Error: ', data.message);
   }
 
-  console.log(data);
+  if (data.error_type === 'MissingCredentials') {
+    handleGoogleAccessTokenError(data.message);
+  }
+
   return data;
 }
 

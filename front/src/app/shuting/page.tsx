@@ -64,33 +64,34 @@ const ShutingItem = ({
         onMouseOver={() => { soundManager.playSelect() }}
         className="
           h-32
+          bg-orange-50
           flex items-center
           transition-transform transform
           bg-white shadow-md rounded-lg
           text-gray-500
           hover:scale-105
-          hover:bg-red-100
+          hover:bg-orange-100
           hover:text-black
-	  hover:border-4
-	  hover:border-red-300
-	  hover:rounded-xl
+          hover:border-4
+          hover:border-orange-300
+          hover:rounded-xl
       ">
         <img
           src={`/images/level${level}.png`}
           alt={`level${level}`}
           className="
-            mr-4
             rounded-tl-lg rounded-bl-lg
             h-full w-auto object-cover
           "/>
 
-        <div>
+        <div className="p-2 sm:p-4 lg:p-6">
           <h3 className="text-3xl font-bold">
           {`レベル${level}`}
           </h3>
-          <p className="text-lg text-gray-500">
-          {description}
-          </p>
+          <p className="
+            text-md lg:text-lg
+            text-gray-500
+          ">{description}</p>
         </div>
       </div>
     </Link>

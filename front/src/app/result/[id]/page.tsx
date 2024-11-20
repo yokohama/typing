@@ -52,21 +52,19 @@ export default function Page() {
   }, [result, recordsEndpoint]);
 
   return (
-    <div className="flex justify-center min-h-screen bg-gray-50">
-      <main className="w-full max-w-3xl bg-white p-6">
-        {result ? (
-          <div>
-            <h1 className="text-center text-3xl font-bold mb-6">
-              レベル{result.shuting_id}
-            </h1>
-            <Records records={records} />
-            <ResultTable result={result} />
-            <ChallengeButton shuting_id={result.shuting_id} />
-          </div>
-        ): (
-          <Loading />
-        )}
-      </main>
+    <div className="justify-center min-h-screen">
+      {result ? (
+        <div>
+          <h1 className="text-center text-3xl font-bold">
+            レベル{result.shuting_id}
+          </h1>
+          <Records records={records} />
+          <ResultTable result={result} />
+          <ChallengeButton shuting_id={result.shuting_id} />
+        </div>
+      ): (
+        <Loading />
+      )}
     </div>
   );
 }

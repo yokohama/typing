@@ -21,6 +21,12 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+export const handleGoogleAccessTokenError = (errorMsg: string) => {
+  localStorage.clear();
+  signOut({ callbackUrl: '/google-accesstoken-error' })
+  console.error(errorMsg);
+}
+
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data: session, status } = useSession();
   const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -68,10 +74,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             }));
           });
         }).catch(error => {
-          localStorage.clear();
-          signOut({ callbackUrl: '/google-accesstoken-error' })
-          console.error(error);
-	});
+          handleGoogleAccessTokenError(error.message);
+        });
       })
     }
   }, [ session, status ]);
