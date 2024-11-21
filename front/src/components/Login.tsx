@@ -26,10 +26,10 @@ export default function Login() {
             rounded-full 
             overflow-hidden 
             focus:outline-none 
-            hover:ring-4 hover:ring-pink-400 
             transform transition-transform duration-200 
             focus:scale-110 
             hover:scale-110 
+            hover:ring-4 hover:ring-orange-500 
             active:scale-105
           ">
           <Image 

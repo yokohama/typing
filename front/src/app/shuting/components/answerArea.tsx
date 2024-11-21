@@ -80,7 +80,10 @@ export default function AnswerArea({
         autoFocus
         className="
           w-full p-4
-          text-xl border-2 border-gray-300
+          text-2xl lg:text-4xl
+          text-center
+          font-bold
+          border-2 border-gray-300
           rounded-lg
           focus:outline-none
           focus:ring-2

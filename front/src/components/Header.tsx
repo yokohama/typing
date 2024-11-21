@@ -23,9 +23,8 @@ export default function Header() {
             text-yellow-600
             font-bold
             tracking-wide
-            hover:text-gray-600
         ">
-           ゆっくりタイピング
+          <p className="hover:text-gray-700">ゆっくりタイピング</p>
           <p className="
             text-xs lg:text-sm xl:text-sm
             text-gray-700

@@ -194,18 +194,19 @@ export default function Page() {
           setShutingLimitSec={setShutingLimitSec}
           setResult={setResult}
           setIsIncorrectOverlayVisible={setIsIncorrectOverlayVisible}
+          currentIndex={currentIndex}
         />
 
         <AnswerArea
           answer={answer}
-	  word={currentWord}
-	  soundManager={soundManager}
-	  setIsCorrectOverlayVisible={setIsCorrectOverlayVisible}
-	  setIsPerfectOverlayVisible={setIsPerfectOverlayVisible}
-	  moveToNextExample={moveToNextExample}
-	  setResult={setResult}
-	  setAnswer={setAnswer}
-	  setPerfectCount={setPerfectCount}
+          word={currentWord}
+          soundManager={soundManager}
+          setIsCorrectOverlayVisible={setIsCorrectOverlayVisible}
+          setIsPerfectOverlayVisible={setIsPerfectOverlayVisible}
+          moveToNextExample={moveToNextExample}
+          setResult={setResult}
+          setAnswer={setAnswer}
+          setPerfectCount={setPerfectCount}
         />
       </main>
     </div>

@@ -79,11 +79,14 @@ export default function Page() {
   if (userInfo) {
     return(
       <div>
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">プロフィール</h1>
         {isUpdated && (
-          <div className="bg-green-400 text-white py-2 px-4 rounded-lg shadow-lg mb-4">
-            保存しました。
-          </div>
+          <div className="
+            py-2 px-4 
+            mb-4
+            bg-green-400
+            text-white
+            rounded-lg shadow-lg
+          ">保存しました。</div>
         )}
 
         {validationErrors && (
@@ -103,7 +106,10 @@ export default function Page() {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="name" className="text-gray-700 font-semibold">ニックネーム:</label>
+            <label 
+              htmlFor="name" 
+              className="text-gray-700 font-semibold"
+            >ニックネーム:</label>
 
             {isEditing ? (
               <input
@@ -131,12 +137,21 @@ export default function Page() {
             )}   
           </div>
 
+          <div className="mb-8" />
+
           <button
             type="submit"
-            className="w-full py-2 mt-4 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-	    保存
-          </button>
+            className="
+              w-full 
+              py-2
+              bg-blue-600 text-white 
+              font-semibold 
+              rounded 
+              hover:bg-blue-700
+              focus:outline-none
+              focus:ring-2
+              focus:ring-blue-500
+	  ">保存</button>
         </form>
       </div>
     );

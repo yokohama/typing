@@ -8,7 +8,6 @@ export const RecordIcon = () => {
       <button
         className="
           bg-pink-500 
-          hover:bg-pink-600 
           text-white 
           rounded-full 
           w-10 h-10 
@@ -16,6 +15,8 @@ export const RecordIcon = () => {
           justify-center 
           items-center 
           shadow-md
+          hover:bg-pink-600 
+          hover:scale-110
       ">
         <FaListUl size={16} />
       </button>

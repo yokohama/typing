@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import { OverlayVisible } from "@/app/shuting/components/overlay";
+
 type CountdownProps = {
   isCountdownVisible: boolean;
   setIsCountdownVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,11 +31,13 @@ export default function Countdown({
   return (
     <>
       {isCountdownVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <span className="text-white text-[10rem] font-bold">
-            {countdown}
-          </span>
-        </div>
+        <OverlayVisible>
+          <span className="
+            text-white
+            font-bold
+            text-[10rem] lg:text-[20rem]
+          ">{countdown}</span>
+        </OverlayVisible>
       )}
     </>
   );

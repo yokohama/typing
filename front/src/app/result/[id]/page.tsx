@@ -81,12 +81,13 @@ const ChallengeButton = ({
         block 
         px-6 py-2
         mx-auto text-center 
-        bg-yellow-400 text-white font-semibold 
+        bg-pink-400 text-white font-semibold 
         rounded
-        hover:bg-orange-400
+        hover:bg-pink-500
+        hover:scale-110
         focus:outline-none
         focus:ring-2
-        focus:ring-orange-500
+        focus:ring-pink-500
         focus:ring-offset-2 w-fit
     ">チャレンジ</Link>
   )

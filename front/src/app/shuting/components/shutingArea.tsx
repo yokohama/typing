@@ -15,6 +15,7 @@ type ShutingAreaProps = {
   setShutingLimitSec: React.Dispatch<React.SetStateAction<number | null>>;
   setResult: React.Dispatch<React.SetStateAction<Result>>;
   setIsIncorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  currentIndex: number;
 };
 
 export default function ShutingArea({
@@ -29,6 +30,7 @@ export default function ShutingArea({
   setShutingLimitSec,
   setResult,
   setIsIncorrectOverlayVisible,
+  currentIndex,
 }: ShutingAreaProps) {
 
   const newMatchLength = useMemo(() => {
@@ -55,18 +57,18 @@ export default function ShutingArea({
   useEffect(() => {
     if (!isStart || shutingLimitSec === null || shutingLimitSec <= 0) return;
 
-    const shutingInterval = setInterval(() => {
+    const interval = setInterval(() => {
       setShutingLimitSec(prev => {
         if (prev === null || prev <= 1) {
-          clearInterval(shutingInterval);
+          clearInterval(interval);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(shutingInterval);
-  }, [isStart]);
+    return () => clearInterval(interval);
+  }, [isStart, currentIndex]);
 
   useEffect(() => {
     if (shutingLimitSec === 0) {
@@ -104,13 +106,19 @@ export default function ShutingArea({
   return (
     <div
       id="shutingArea"
-      className="mb-6 p-8 text-center text-2xl font-bold text-gray-800 rounded-lg shadow-lg w-full"
       style={{
         border: "4px solid",
         borderColor: borderColor,
         backgroundColor: backgroundColor,
       }}
-    >
+      className="
+        w-full
+        mb-6 p-8
+        text-center
+        text-3xl lg:text-5xl
+        font-bold text-gray-800
+        rounded-lg shadow-lg
+    ">
       <span>
         <span className="text-green-600 font-bold">
           {word?.word?.slice(0, newMatchLength)}

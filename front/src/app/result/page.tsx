@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Result } from '@/types/result';
@@ -50,29 +50,32 @@ export default function Page() {
                   text-gray-600
                   leading-normal
               ">
-                <th className="py-3 px-6"></th>
-                <th className="py-3 px-6">レベル</th>
-                <th className="py-3 px-6">スコア</th>
-                <th className="py-3 px-6">タイムボーナス</th>
-                <th className="py-3 px-6">タイム</th>
+                <Th></Th>
+                <Th>レベル</Th>
+                <Th>スコア</Th>
+                <Th>タイムボーナス</Th>
+                <Th>タイム</Th>
+                <Th>コイン</Th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
               {results.map((result, index) => (
                 <tr 
                   key={index}
-                  className="border-b border-gray-200 hover:bg-red-100"
                   onClick={() => router.push(`/result/${result.id}`)}
-                 >
-                  <td className="py-3 px-6">
+                  className="
+                    text-center
+                    border-b border-gray-200 
+                    hover:bg-red-100
+                ">
+                  <Td>
                     {result.created_at && FormatDateTime(result.created_at)}
-                  </td>
-                  <td className="py-3 px-6">{result.shuting_id}</td>
-                  <td className="py-3 px-6">{result.score}</td>
-                  <td className="py-3 px-6">{result.time_bonus}</td>
-                  <td className="py-3 px-6">
-                    {result.time && FormatSecTime(result.time)}
-                  </td>
+                  </Td>
+                  <Td>{result.shuting_id}</Td>
+                  <Td>{result.score}</Td>
+                  <Td>{result.time_bonus}</Td>
+                  <Td>{result.time && FormatSecTime(result.time)}</Td>
+                  <Td>{result.point}</Td>
                 </tr>
               ))}
             </tbody>
@@ -84,3 +87,23 @@ export default function Page() {
     </div>
   );
 };
+
+const Th = ({
+  children,
+} : {
+  children?: ReactNode
+}) => {
+  return (
+    <td className="py-3 px-6 font-bold">{children}</td>
+  );
+}
+
+const Td = ({
+  children,
+} : {
+  children?: ReactNode
+}) => {
+  return (
+    <td className="py-3 px-6">{children}</td>
+  );
+}
