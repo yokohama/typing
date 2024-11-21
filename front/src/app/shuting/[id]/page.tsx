@@ -32,16 +32,29 @@ export default function Page() {
 
   const { setUserInfo } = useUser();
   const [isStart, setIsStart] = useState<boolean>(false);
+  const [isFinish, setIsFinish] = useState<boolean>(false);
   const [isCountdownVisible, setIsCountdownVisible] = useState<boolean>(true);
   const [shutingWords, setShutingWords] = useState<Word[]>([]);
   const [currentWord, setCurrentWord] = useState<Word | null>(null);
   const [answer, setAnswer] = useState<string>('');
   const [perfectCount, setPerfectCount] = useState<number>(0);
 
-  const [isCorrectOverlayVisible, setIsCorrectOverlayVisible] = useState(false);
-  const [isPerfectOverlayVisible, setIsPerfectOverlayVisible] = useState(false);
-  const [isIncorrectOverlayVisible, setIsIncorrectOverlayVisible] = useState(false);
-  const [isFinishOverlayVisible, setIsFinishOverlayVisible] = useState(false);
+  const [
+    isCorrectOverlayVisible, 
+    setIsCorrectOverlayVisible
+  ] = useState(false);
+  const [
+    isPerfectOverlayVisible, 
+    setIsPerfectOverlayVisible
+  ] = useState(false);
+  const [
+    isIncorrectOverlayVisible, 
+    setIsIncorrectOverlayVisible
+  ] = useState(false);
+  const [
+    isFinishOverlayVisible, 
+    setIsFinishOverlayVisible
+  ] = useState(false);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [time, setTime] = useState<number>(0);
@@ -122,6 +135,7 @@ export default function Page() {
 
   const handleFinish = async () => {
     setIsStart(false);
+    setIsFinish(true);
     soundManager.stopBgm();
     soundManager.playFinish();
 
@@ -180,6 +194,7 @@ export default function Page() {
         <Progress
           currentIndex={currentIndex}
           shutingWordsLength={shutingWords.length}
+          isFinish={isFinish}
         />
 
         <ShutingArea

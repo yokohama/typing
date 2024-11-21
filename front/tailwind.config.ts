@@ -12,6 +12,17 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+
+      keyframes: {
+        stripes: {
+          '0%': { backgroundPosition: '0 0' },
+          '100%': { backgroundPosition: '20px 20px' },
+        },
+      },
+
+      animation: {
+        stripes: 'stripes 1s linear infinite',
+      },
     },
   },
   plugins: [],
