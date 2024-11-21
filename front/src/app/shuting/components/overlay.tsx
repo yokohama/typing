@@ -20,9 +20,9 @@ export default function Overlay({
       {isCorrectOverlayVisible && (
         <OverlayVisible>
           <span className="
-            text-[10rem] lg:text-[20rem]
+            text-6xl lg:text-[10rem]
             text-white font-bold
-          ">〇</span>
+          ">(*ˊᵕˋ*)</span>
         </OverlayVisible>
       )}
 
@@ -31,14 +31,14 @@ export default function Overlay({
           <span className="
             text-6xl lg:text-[10rem]
             text-white font-bold
-          ">すごい！</span>
+          ">(°∀°)ｯ?!</span>
         </OverlayVisible>
       )}
 
       {isIncorrectOverlayVisible && (
         <OverlayVisible>
           <span className="
-            text-[5rem] lg:text-[10rem]
+            text-6xl lg:text-[10rem]
             text-white font-bold
           ">(;´д｀)</span>
         </OverlayVisible>
