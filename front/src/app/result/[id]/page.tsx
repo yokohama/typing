@@ -55,9 +55,12 @@ export default function Page() {
     <div className="justify-center min-h-screen">
       {result ? (
         <div>
-          <h1 className="text-center text-3xl font-bold">
-            レベル{result.shuting_id}
-          </h1>
+          <h1 className="
+            text-2xl
+            font-bold
+            text-center
+            text-gray-600
+          ">レベル{result.shuting_id}</h1>
           <Records records={records} />
           <ResultTable result={result} />
           <ChallengeButton shuting_id={result.shuting_id} />
@@ -78,11 +81,13 @@ const ChallengeButton = ({
     <Link 
       href={`/shuting/${shuting_id}`}
       className="
-        block 
+        flex items-center justify-center mx-auto
+        w-full lg:w-80
+        h-12 lg:h-16
         px-6 py-2
-        mx-auto text-center 
+        rounded-lg
+        text-xl
         bg-pink-400 text-white font-semibold 
-        rounded
         hover:bg-pink-500
         hover:scale-110
         focus:outline-none

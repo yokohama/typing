@@ -18,7 +18,7 @@ export function SubHeader({
       <h2 
         className="
           text-xl lg:text-2xl
-          font-bold text-gray-800
+          font-bold text-gray-600
       ">{title}</h2>
       {children}
     </header>

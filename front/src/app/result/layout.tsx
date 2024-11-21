@@ -8,7 +8,7 @@ import { RecordIcon } from "./components/RecordIcon";
 export default function Page({children}: {children: React.ReactNode}) {
   return(
     <RequireAuth>
-      <SubHeader title="結果">
+      <SubHeader title="レコード">
         <RecordIcon />
       </SubHeader>
       <Main>{children}</Main>

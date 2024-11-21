@@ -30,9 +30,9 @@ export const Records: React.FC<RecordsProps> = ({ records }) => {
       {
         label: '合計スコア',
         data: records.map((record) => (record.score ?? 0) + (record.time_bonus ?? 0)),
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        fill: false,
+        borderColor: 'rgba(244, 114, 182, 0.4)',
+        backgroundColor: 'rgb(244, 114, 182)',
+        fill: true,
       },
     ],
   };
