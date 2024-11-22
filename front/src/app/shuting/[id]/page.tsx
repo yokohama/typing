@@ -85,13 +85,17 @@ export default function Page() {
 
       if (isErrorResponse(data)) {
         console.error('Error fetching lesson data:', data.message);
-	return;
+        return;
       };
 
       if (Array.isArray(data.words)) {
-        setShutingWords(data.words);
-        setCurrentWord(data.words[currentIndex]);
-        setShutingLimitSec(data.words[currentIndex]?.limit_sec);
+        let words: Word[] = data.is_random
+          ? [...data.words].sort(() => Math.random() - 0.5)
+          : data.words;
+
+        setShutingWords(words);
+        setCurrentWord(words[currentIndex]);
+        setShutingLimitSec(words[currentIndex]?.limit_sec);
       } else {
         console.error("Expected an array of Shuting, received:", data);
       }

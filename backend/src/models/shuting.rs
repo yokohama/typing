@@ -16,6 +16,7 @@ pub struct MinEntry {
     pub id: i32,
     pub level: i32,
     pub description: String,
+    pub is_random: bool,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
 }
@@ -25,9 +26,10 @@ pub struct Entry {
     pub id: i32,
     pub level: i32,
     pub description: String,
+    pub is_random: bool,
+    pub words: Option<Vec<models::word::Entry>>,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
-    pub words: Option<Vec<models::word::Entry>>,
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -51,6 +53,7 @@ pub async fn create(
           id, 
           level, 
           description, 
+          is_random,
           created_at, 
           deleted_at
     "#;
@@ -77,6 +80,7 @@ pub async fn all(
             id, 
             level,
             description,
+            is_random,
             created_at, 
             deleted_at
           FROM 
@@ -104,6 +108,7 @@ pub async fn find(
           id, 
           level, 
           description,
+          is_random,
           created_at, 
           deleted_at
         FROM 
@@ -148,6 +153,7 @@ pub async fn find(
         id: shuting_result.id,
         level: shuting_result.level,
         description: shuting_result.description,
+        is_random: shuting_result.is_random,
         created_at: shuting_result.created_at,
         deleted_at: shuting_result.deleted_at,
         words: Some(word_results),

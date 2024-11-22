@@ -7,5 +7,6 @@ export type Shuting = {
   id: number;
   level: number;
   description: string;
+  is_random: boolean;
   words: Word[];
 };
