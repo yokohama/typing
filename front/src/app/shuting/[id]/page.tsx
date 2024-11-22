@@ -5,7 +5,7 @@ import React, {
   useState, 
   useRef,
 } from 'react';
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { useUser } from '@/context/UserContext';
 import { Shuting } from '@/types/shuting';
@@ -75,6 +75,9 @@ export default function Page() {
   });
 
   const soundManager = useRef(new SoundManager()).current;
+
+  // Stop BGM when use browser back button.
+  window.addEventListener('popstate', () => {soundManager.stopBgm() });
 
   useEffect(() => {
     const fetchShutings = async () => {

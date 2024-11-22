@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
 
 import { RecordsProps } from '@/types/result';
@@ -20,10 +21,11 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler,
 );
 
-export const Records: React.FC<RecordsProps> = ({ records }) => {
+export const Chart: React.FC<RecordsProps> = ({ records }) => {
   const data = {
     labels: records.map((_, index) => index + 1),
     datasets: [
@@ -32,7 +34,7 @@ export const Records: React.FC<RecordsProps> = ({ records }) => {
         data: records.map((record) => (record.score ?? 0) + (record.time_bonus ?? 0)),
         borderColor: 'rgba(244, 114, 182, 0.4)',
         backgroundColor: 'rgb(244, 114, 182)',
-        fill: true,
+        fill: false
       },
     ],
   };

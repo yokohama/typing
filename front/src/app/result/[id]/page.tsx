@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { fetchData } from '@/lib/api';
 import { Result } from '@/types/result';
 import { ResultTable } from '@/app/result/components/ResultTable';
-import { Records } from '@/app/result/components/Records';
+import { Chart } from '@/app/result/components/Chart';
 import Loading from "@/components/Loading";
 import { isErrorResponse } from '@/types/errorResponse';
 
@@ -61,7 +61,7 @@ export default function Page() {
             text-center
             text-gray-600
           ">レベル{result.shuting_id}</h1>
-          <Records records={records} />
+          <Chart records={records} />
           <ResultTable result={result} />
           <ChallengeButton shuting_id={result.shuting_id} />
         </div>
