@@ -5,7 +5,7 @@ import React, {
   useState, 
   useRef,
 } from 'react';
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { useUser } from '@/context/UserContext';
 import { Shuting } from '@/types/shuting';
@@ -89,7 +89,7 @@ export default function Page() {
       };
 
       if (Array.isArray(data.words)) {
-        let words: Word[] = data.is_random
+        const words: Word[] = data.is_random
           ? [...data.words].sort(() => Math.random() - 0.5)
           : data.words;
 

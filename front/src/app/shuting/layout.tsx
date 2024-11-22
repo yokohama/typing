@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { RequireAuth } from "@/components/RequireAuth";
 import { SubHeader } from '@/components/SubHeader';
 import { Main } from "@/components/Main";
