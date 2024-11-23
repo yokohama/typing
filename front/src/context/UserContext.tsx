@@ -34,6 +34,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     name: "",
     image: "",
     point: 0,
+    total_point: 0,
   });
   const [isJwtAvailable, setIsJwtAvailable] = useState<boolean>(false);
 
@@ -71,6 +72,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               name: userRes.name || '',
               image: session?.user?.image || '',
               point: userRes.point || 0,
+              total_point: userRes.point || 0,
             }));
           });
         }).catch(error => {

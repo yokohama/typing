@@ -10,6 +10,7 @@ import { ResultTable } from '@/app/result/components/ResultTable';
 import { Chart } from '@/app/result/components/Chart';
 import Loading from "@/components/Loading";
 import { isErrorResponse } from '@/types/errorResponse';
+import { BasicButton } from "@/components/Button";
 
 export default function Page() {
   const [result, setResult] = useState<Result | null>(null);
@@ -63,37 +64,14 @@ export default function Page() {
           ">レベル{result.shuting_id}</h1>
           <Chart records={records} />
           <ResultTable result={result} />
-          <ChallengeButton shuting_id={result.shuting_id} />
+          <BasicButton 
+            text='チャレンジ'
+            url={`/shuting/${result.shuting_id}`}
+          />
         </div>
       ): (
         <Loading />
       )}
     </div>
   );
-}
-
-const ChallengeButton = ({
-  shuting_id
-} : {
-  shuting_id: number
-}) => {
-  return (
-    <Link 
-      href={`/shuting/${shuting_id}`}
-      className="
-        flex items-center justify-center mx-auto
-        w-full lg:w-80
-        h-12 lg:h-16
-        px-6 py-2
-        rounded-lg
-        text-xl
-        bg-pink-400 text-white font-semibold 
-        hover:bg-pink-500
-        hover:scale-110
-        focus:outline-none
-        focus:ring-2
-        focus:ring-pink-500
-        focus:ring-offset-2 w-fit
-    ">チャレンジ</Link>
-  )
 }

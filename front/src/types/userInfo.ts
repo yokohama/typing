@@ -3,4 +3,5 @@ export type UserInfo = {
   name?: string,
   image?: string,
   point: number,
+  total_point: number,
 };

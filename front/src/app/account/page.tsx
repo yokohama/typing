@@ -7,6 +7,8 @@ import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 
 import { useUser } from '@/context/UserContext';
 import { UserInfo } from '@/types/userInfo';
+import { BasicButton } from '@/components/Button';
+import { Label } from '@/app/account/components/Lable';
 
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
@@ -101,15 +103,12 @@ export default function Page() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="text-gray-700">
-            <label className="font-semibold">メールアドレス:</label>
+            <Label text="メールアドレス" />
             <p className="ml-2 text-gray-600">{userInfo.email}</p>
           </div>
 
           <div className="flex flex-col">
-            <label 
-              htmlFor="name" 
-              className="text-gray-700 font-semibold"
-            >ニックネーム:</label>
+            <Label text="ニックネーム" />
 
             {isEditing ? (
               <input
@@ -121,8 +120,12 @@ export default function Page() {
                 onBlur={() => setIsEditing(false)} 
                 autoFocus
                 className="
-                  mt-1 p-2 border border-gray-300 rounded 
-                  focus:outline-none focus:ring-2 focus:ring-blue-400
+                  mt-1 p-2
+                  border border-gray-300 
+                  rounded 
+                  focus:outline-none 
+                  focus:ring-2 
+                  focus:ring-blue-400
                 "
               />
             ) : (
@@ -135,23 +138,10 @@ export default function Page() {
                   hover:bg-gray-200 cursor-pointer
                 ">{formData.name || "Click to edit"}</p>
             )}   
+            <div className="mb-8" />
           </div>
 
-          <div className="mb-8" />
-
-          <button
-            type="submit"
-            className="
-              w-full 
-              py-2
-              bg-blue-600 text-white 
-              font-semibold 
-              rounded 
-              hover:bg-blue-700
-              focus:outline-none
-              focus:ring-2
-              focus:ring-blue-500
-	  ">保存</button>
+          <BasicButton text="保存" type="submit" />
         </form>
       </div>
     );
