@@ -105,10 +105,15 @@ async fn update_point(
 
     let update = params::user::UpdateProfile {
         point: Some(user.point + point),
+        total_point: Some(user.total_point + point),
         ..Default::default()
     };
 
-    let update_user = models::user::save(&pool, user_id, update).await?;
+    let update_user = models::user::save(
+        &pool, 
+        user_id, 
+        update
+    ).await?;
 
     Ok(update_user.point)
 }

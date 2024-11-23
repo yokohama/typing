@@ -8,4 +8,5 @@ pub struct UpdateProfile {
     #[validate(custom = "validations::name")]
     pub name: Option<String>,
     pub point: Option<i32>,
+    pub total_point: Option<i32>,
 }

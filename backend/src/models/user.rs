@@ -7,7 +7,7 @@ use sqlx::{
     FromRow
 };
 
-use tracing::{ debug, error };
+use tracing::error;
 
 use crate::middleware::error;
 use crate::requests::params::user::UpdateProfile;
@@ -18,6 +18,7 @@ pub struct Entry {
     pub email: String,
     pub name: Option<String>,
     pub point: i32,
+    pub total_point: i32,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
 }
@@ -39,6 +40,7 @@ pub async fn find_by_email(
           email, 
           name, 
           point, 
+          total_point,
           created_at, 
           deleted_at 
         FROM 
@@ -70,6 +72,7 @@ pub async fn find(
           email, 
           name, 
           point, 
+          total_point, 
           created_at, 
           deleted_at 
         FROM
@@ -105,7 +108,14 @@ pub async fn create(
                 created_at
             )
             VALUES ($1, $2, NOW())
-            RETURNING id, email, name, point, created_at, deleted_at
+            RETURNING 
+              id, 
+              email, 
+              name, 
+              point, 
+              total_point, 
+              created_at, 
+              deleted_at
             "#;
             
             let user = query_as::<_, Entry>(sql)
@@ -158,6 +168,7 @@ pub async fn save(
             email, 
             name, 
             point, 
+            total_point, 
             created_at, 
             deleted_at
         ",
