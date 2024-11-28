@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 
 import { fetchData } from '@/lib/api';
 import { Result } from '@/types/result';

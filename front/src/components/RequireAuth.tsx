@@ -12,6 +12,13 @@ export const RequireAuth = ({
   const { data: session, status } = useSession();
   const { isJwtAvailable } = useUser();
 
+/*
+  if (!isJwtAvailable) {
+    signIn("google");
+    return null;
+  }
+*/
+
   if (status === 'loading' || !isJwtAvailable) {
     return <Loading />;
   }
@@ -25,8 +32,5 @@ export const RequireAuth = ({
         items-center rounded-xl
       ">{children}</div>
     );
-  } else {
-    signIn("google");
-    return null;
   }
 }

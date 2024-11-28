@@ -1,4 +1,5 @@
 export type UserInfo = {
+  id: number | null,
   email?: string,
   name?: string,
   image?: string,

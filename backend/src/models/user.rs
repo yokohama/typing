@@ -96,10 +96,10 @@ pub async fn create(
     pool: &PgPool, 
     params: Create
 ) -> Result<Entry, error::AppError> {
-    let user = find_by_email(&pool, params.email.clone()).await?;
+    let exist_user = find_by_email(&pool, params.email.clone()).await?;
 
-    match user {
-        Some(user) => Ok(user),
+    match exist_user {
+        Some(exist_user) => Ok(exist_user),
         None => {
             let sql = r#"
             INSERT INTO users (
@@ -118,7 +118,7 @@ pub async fn create(
               deleted_at
             "#;
             
-            let user = query_as::<_, Entry>(sql)
+            let created_user = query_as::<_, Entry>(sql)
                 .bind(&params.email)
                 .bind(&params.name)
                 .fetch_one(pool)
@@ -128,7 +128,7 @@ pub async fn create(
                     error::AppError::DatabaseError(e.to_string())
                 })?;
 
-            Ok(user)
+            Ok(created_user)
         },
     }
 }

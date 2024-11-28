@@ -31,6 +31,5 @@ pub async fn update(
 
     let validated_payload: UpdateProfile = payload.0;
     let user = user::save(&pool, claims.sub, validated_payload).await?;
-
     Ok(Json(user))
 }

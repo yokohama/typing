@@ -8,9 +8,10 @@ import React, {
 
 import { useSession, signOut } from 'next-auth/react';
 
-import { fetchData } from '@/lib/api';
+import { fetchData, postData } from '@/lib/api';
 import { UserInfo } from "@/types/userInfo";
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
+import { useAlert } from "@/context/AlertContext";
 
 type UserContextType = {
   userInfo: UserInfo;
@@ -28,8 +29,11 @@ export const handleGoogleAccessTokenError = (errorMsg: string) => {
 }
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
+  const { setAlert } = useAlert();
+
   const { data: session, status } = useSession();
   const [userInfo, setUserInfo] = useState<UserInfo>({
+    id: null,
     email: "",
     name: "",
     image: "",
@@ -40,6 +44,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
   const profileEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
+  const pairEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/pair`;
 
   useEffect(() => {
     if (status === 'authenticated' && session?.accessToken) {
@@ -51,6 +56,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify({
           googleToken: session?.accessToken,
         }),
+
       }).then(jwtRes => {
         jwtRes.json().then((jwtData: { jwt: string }) => {
           localStorage.setItem('jwt', jwtData.jwt);
@@ -68,6 +74,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
             setUserInfo((prev) => ({
               ...prev,
+              id: userRes.id || null,
               email: userRes.email || '',
               name: userRes.name || '',
               image: session?.user?.image || '',
@@ -81,6 +88,42 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       })
     }
   }, [ session, status ]);
+
+  // Create pair if from invitation link
+  useEffect(() => {
+    const createPair = async (inviteChildUserId: number) => {
+      try {
+        const res = await postData(
+          pairEndpoint, 
+          {
+            parent_user_id: userInfo.id,
+            child_user_id: inviteChildUserId,
+          }
+        );
+
+        if (isErrorResponse(res) && res.message) {
+          // You can debug => `res.message`
+          setAlert({
+            type: "error",
+            msg: "親子の関連付けに失敗しました。"
+          });
+          sessionStorage.removeItem("inviteChildUserId");
+        } else {
+          setAlert({
+            type: "success",
+            msg: "親子の関連付けに成功しました。"
+          });
+	}
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    let inviteChildUserId = sessionStorage.getItem("inviteChildUserId");
+    if (inviteChildUserId) {
+      createPair(parseInt(inviteChildUserId, 10));
+    };
+  }, [userInfo]);
 
   return (
     <UserContext.Provider value={{ 

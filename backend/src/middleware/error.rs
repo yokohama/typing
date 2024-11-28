@@ -36,6 +36,9 @@ pub enum AppError {
 
     #[error("Form input error: {0}")]
     FormInputError(String),
+
+    #[error("Dupulicate record error: {0}")]
+    DuplicateRecordError(String),
 }
 
 #[derive(Serialize)]
@@ -123,6 +126,11 @@ impl IntoResponse for AppError {
             AppError::FormInputError(msg) => (
                 StatusCode::BAD_REQUEST, 
                 "FormInputError",
+                msg, 
+                None),
+            AppError::DuplicateRecordError(msg) => (
+                StatusCode::CONFLICT, 
+                "DuplicateRecordError",
                 msg, 
                 None),
         };

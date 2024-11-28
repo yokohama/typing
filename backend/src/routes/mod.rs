@@ -13,6 +13,7 @@ pub fn get_routing(pool: PgPool) -> Router {
     Router::new()
         .route("/", get(welcome::show))
         .route("/api/auth/google", post(user::session::google))
+        .route("/user/pair", post(user::pair::create))
         .route("/user/profile", get(user::profile::show))
         .route("/user/profile", post(user::profile::update))
         .route("/user/shutings", get(user::shutings::index))
