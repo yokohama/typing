@@ -14,8 +14,8 @@ import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 import { useAlert } from "@/context/AlertContext";
 
 type UserContextType = {
-  userInfo: UserInfo;
-  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
+  userInfo: UserInfo | null;
+  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo | null>>;
   isJwtAvailable: boolean;
   setIsJwtAvailable: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -32,15 +32,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { setAlert } = useAlert();
 
   const { data: session, status } = useSession();
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    id: null,
-    email: "",
-    name: "",
-    image: "",
-    point: 0,
-    total_point: 0,
-  });
-  const [isJwtAvailable, setIsJwtAvailable] = useState<boolean>(false);
+  const [ userInfo, setUserInfo ] = useState<UserInfo | null>(null);
+  const [ isJwtAvailable, setIsJwtAvailable ] = useState<boolean>(false);
 
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
   const profileEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
@@ -87,7 +80,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         });
       })
     }
-  }, [ session, status ]);
+  }, [session, status]);
 
   // Create pair if from invitation link
   useEffect(() => {
@@ -96,7 +89,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const res = await postData(
           pairEndpoint, 
           {
-            parent_user_id: userInfo.id,
+            parent_user_id: userInfo?.id,
             child_user_id: inviteChildUserId,
           }
         );
@@ -113,14 +106,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             type: "success",
             msg: "親子の関連付けに成功しました。"
           });
-	}
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
     let inviteChildUserId = sessionStorage.getItem("inviteChildUserId");
-    if (inviteChildUserId) {
+    if (userInfo && inviteChildUserId) {
       createPair(parseInt(inviteChildUserId, 10));
     };
   }, [userInfo]);

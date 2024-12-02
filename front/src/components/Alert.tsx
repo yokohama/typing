@@ -8,35 +8,43 @@ export const Alert = () => {
     setAlert(null);
   };
 
-  console.log(alert);
+  const alertStyle = {
+    error: {
+      bgColor: "bg-red-200",
+      textColor: "text-red-600",
+      hoverColor: "hover:text-red-800",
+    },
+    success: {
+      bgColor: "bg-green-200",
+      textColor: "text-green-600",
+      hoverColor: "hover:text-green-800",
+    },
+  };
+
+  const { bgColor, textColor, hoverColor } = alertStyle[alert.type] || {};
+
   return (
-     // ×ボタン右寄にもう少し大きく
-     // msgは左寄せ
-     // mx-4が効かない。
     <div
-      className="
+      className={`
         w-full p-4
-        bg-red-200
-        text-red-600
+        ${bgColor}
+        ${textColor}
         font-bold
         rounded-lg
         flex items-center justify-between
-    ">
-      <div
-        className="
-          flex-1 text-left
-      ">{alert.msg}</div>
+    `}>
+      <div className="flex-1 text-left">{alert.msg}</div>
       <button
         onClick={handleCloseButton}
-        className="
+        className={`
           text-xl
           font-bold
           bg-transparent
           border-none
-          hover:text-red-800
+          ${hoverColor}
           focus:outline-none
           ml-4
-        "
+        `}
       >×</button>
     </div>
   );

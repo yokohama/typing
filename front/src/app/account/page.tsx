@@ -15,9 +15,11 @@ export default function Page() {
 
   const { userInfo, setUserInfo } = useUser();
   const [formData, setFormData] = useState<UserInfo>({
+    id: null,
     email: '',
     name: '',
     point: 0,
+    total_point: 0,
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -37,7 +39,7 @@ export default function Page() {
 
       setUserInfo({
         ...data,
-        image: userInfo.image
+        image: userInfo?.image
       });
       setFormData(data);
     };
@@ -63,7 +65,7 @@ export default function Page() {
       } else if (!isErrorResponse(data)) {
         setUserInfo({
           ...data,
-          image: userInfo.image
+          image: userInfo?.image
         });
         setFormData(data);
         clearErrors();

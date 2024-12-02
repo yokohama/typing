@@ -1,17 +1,15 @@
 'use client';
 
 import Image from 'next/image';
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
 import { useUser } from '@/context/UserContext';
 
 import Popup from '@/components/Popup';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 export default function Login() {
-
-  const googleIcon = "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg";
-
   const { data: session } = useSession();
   const { userInfo } = useUser();
   const [ isOpen, setIsOpen ] = useState(false);
@@ -33,7 +31,7 @@ export default function Login() {
             active:scale-105
           ">
           <Image 
-            src={userInfo.image || "/images/default-avatar.png"} 
+            src={userInfo?.image || "/images/default-avatar.png"} 
             width={100}
             height={100}
             alt="User Avatar" 
@@ -50,24 +48,6 @@ export default function Login() {
   }
 
   return (
-    <button 
-       onClick={() => signIn('google')}
-       className="
-         flex items-center justify-center
-         px-2 py-2 sm:px-4
-         bg-white 
-         text-gray-600 
-         font-bold
-         shadow
-         rounded-md 
-         hover:bg-gray-100
-    ">
-       <img 
-         src={googleIcon}
-         alt="Google logo" 
-         className="h-4 sm:h-5 w-4 sm:w-5 mr-2" 
-       />
-       Sign in
-    </button>
+    <GoogleSignInButton />
   );
 }
