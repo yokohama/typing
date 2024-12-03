@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
-export default function InvitationPage() {
+function InvitationPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get('inviteChildUserId');
   const userName = searchParams.get('inviteChildUserName');
@@ -44,4 +44,12 @@ export default function InvitationPage() {
       </div>
     </div>
   )
+}
+
+export default function Root() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <InvitationPage />
+    </Suspense>
+  );
 }
