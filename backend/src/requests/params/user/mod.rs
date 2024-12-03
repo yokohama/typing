@@ -10,3 +10,8 @@ pub struct UpdateProfile {
     pub point: Option<i32>,
     pub total_point: Option<i32>,
 }
+
+#[derive(Deserialize)]
+pub struct Query {
+    pub user_id: Option<i32>,
+}

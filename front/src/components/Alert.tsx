@@ -1,11 +1,13 @@
 import { useAlert } from "@/context/AlertContext";
 
 export const Alert = () => {
-  const { alert, setAlert } = useAlert();
-  if (!alert) { return null; }
+  const { alerts, setAlerts } = useAlert();
+  if (!alerts || alerts.length === 0) {
+    return null;
+  }
 
-  const handleCloseButton = () => {
-    setAlert(null);
+  const handleCloseButton = (index: number) => {
+    setAlerts((prev) => prev.filter((_, i) => i !== index));
   };
 
   const alertStyle = {
@@ -21,31 +23,37 @@ export const Alert = () => {
     },
   };
 
-  const { bgColor, textColor, hoverColor } = alertStyle[alert.type] || {};
-
   return (
-    <div
-      className={`
-        w-full p-4
-        ${bgColor}
-        ${textColor}
-        font-bold
-        rounded-lg
-        flex items-center justify-between
-    `}>
-      <div className="flex-1 text-left">{alert.msg}</div>
-      <button
-        onClick={handleCloseButton}
-        className={`
-          text-xl
-          font-bold
-          bg-transparent
-          border-none
-          ${hoverColor}
-          focus:outline-none
-          ml-4
-        `}
-      >×</button>
+    <div className="space-y-4">
+      {alerts.map((alert, index) => {
+        const { bgColor, textColor, hoverColor } = alertStyle[alert.type] || {};
+        return (
+          <div
+            key={index}
+            className={`
+              w-full p-4
+              ${bgColor}
+              ${textColor}
+              font-bold
+              rounded-lg
+              flex items-center justify-between
+          `}>
+            <div className="flex-1 text-left">{alert.msg}</div>
+            <button
+              onClick={() => handleCloseButton(index)}
+              className={`
+                text-xl
+                font-bold
+                bg-transparent
+                border-none
+                ${hoverColor}
+                focus:outline-none
+                ml-4
+              `}
+            >×</button>
+          </div>
+        );
+      })}
     </div>
   );
 }

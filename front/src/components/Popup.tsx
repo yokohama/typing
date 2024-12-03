@@ -20,7 +20,7 @@ export default function Popup({
 
   return (
     <>
-      {isOpen && (
+      {isOpen && userInfo && (
         <div 
           className="
             absolute
@@ -35,6 +35,7 @@ export default function Popup({
             userInfo={userInfo}
           />
           <EditButton setIsOpen={setIsOpen} />
+          <PairButton setIsOpen={setIsOpen} />
           <LogoutButton />
           <FooterArea />
         </div>
@@ -118,6 +119,31 @@ const EditButton = ({
           focus:ring-blue-500
           focus:ring-offset-2
       ">編集</button>
+    </Link>
+  )
+}
+
+const PairButton = ({ 
+  setIsOpen 
+} : {
+  setIsOpen: (isOpen: boolean) => void
+}) => {
+  return(
+    <Link href="/pair">
+      <button 
+        onClick={() => {setIsOpen(false)}}
+        className="
+          px-4 py-2 
+          my-2
+          w-full
+          bg-pink-400
+          text-white font-semibold rounded
+          hover:bg-pink-600
+          focus:outline-none
+          focus:ring-2
+          focus:ring-blue-500
+          focus:ring-offset-2
+      ">親子関係</button>
     </Link>
   )
 }

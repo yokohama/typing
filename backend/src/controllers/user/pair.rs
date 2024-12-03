@@ -26,3 +26,16 @@ pub async fn create(
 
     Ok(Json(result))
 }
+
+pub async fn index(
+    State(pool): State<PgPool>,
+    claims: auth::Claims,
+) -> Result<Json<impl Serialize>, error::AppError> {
+
+    let result = models::parents_children::all(
+        &pool, 
+        claims.sub,
+    ).await?;
+
+    Ok(Json(result))
+}

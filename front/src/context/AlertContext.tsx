@@ -11,19 +11,19 @@ export type AlertType = {
 };
 
 type AlertContextType = {
-  alert: AlertType | null;
-  setAlert: React.Dispatch<React.SetStateAction<AlertType | null>>;
+  alerts: AlertType[];
+  setAlerts: React.Dispatch<React.SetStateAction<AlertType[]>>;
 };
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
 
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
-  const [alert, setAlert] = useState<AlertType | null>(null);
+  const [alerts, setAlerts] = useState<AlertType[]>([]);
 
   return (
     <AlertContext.Provider value={{ 
-      alert,
-      setAlert,
+      alerts,
+      setAlerts,
     }}>
       {children}
     </AlertContext.Provider>

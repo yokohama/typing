@@ -5,6 +5,7 @@ import React, {
   useEffect,
   ReactNode 
 } from "react";
+import { useRouter } from "next/navigation";
 
 import { useSession, signOut } from 'next-auth/react';
 
@@ -29,7 +30,8 @@ export const handleGoogleAccessTokenError = (errorMsg: string) => {
 }
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const { setAlert } = useAlert();
+  const router = useRouter();
+  const { setAlerts } = useAlert();
 
   const { data: session, status } = useSession();
   const [ userInfo, setUserInfo ] = useState<UserInfo | null>(null);
@@ -37,7 +39,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
   const profileEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
-  const pairEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/pair`;
+  const pairEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/pairs`;
 
   useEffect(() => {
     if (status === 'authenticated' && session?.accessToken) {
@@ -96,23 +98,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
         if (isErrorResponse(res) && res.message) {
           // You can debug => `res.message`
-          setAlert({
-            type: "error",
-            msg: "親子の関連付けに失敗しました。"
-          });
           sessionStorage.removeItem("inviteChildUserId");
+          router.push('/invitation/exist');
         } else {
-          setAlert({
-            type: "success",
-            msg: "親子の関連付けに成功しました。"
-          });
+          setAlerts(prev => [
+            ...prev,
+            {
+              type: "success",
+              msg: "親子の関連付けに成功しました。"
+            }
+          ]);
         }
       } catch (error) {
         console.error(error);
       }
     };
 
-    let inviteChildUserId = sessionStorage.getItem("inviteChildUserId");
+    const inviteChildUserId = sessionStorage.getItem("inviteChildUserId");
     if (userInfo && inviteChildUserId) {
       createPair(parseInt(inviteChildUserId, 10));
     };

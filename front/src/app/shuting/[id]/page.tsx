@@ -165,7 +165,9 @@ export default function Page() {
 	
           setUserInfo((prev) => ({
             ...prev,
-	    point: data.point ?? 0,
+            id: prev?.id ?? null,
+            point: data.point ?? 0,
+            total_point: prev?.total_point ?? 0,
           }));
 
         setIsFinishOverlayVisible(true);

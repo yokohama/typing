@@ -7,6 +7,7 @@ use sqlx::{
     FromRow
 };
 
+use tower_http::follow_redirect::policy::PolicyExt;
 use tracing::error;
 
 use crate::middleware::error;
@@ -23,6 +24,14 @@ pub struct Entry {
 pub struct Create {
     pub parent_user_id: i32,
     pub child_user_id: i32,
+}
+
+#[derive(Debug, Serialize, FromRow)]
+pub struct Relation {
+    pub relation_type: String,
+    pub relation_user_id: i32,
+    pub relation_user_name: String,
+    pub created_at: NaiveDateTime,
 }
 
 pub async fn find_pair(
@@ -106,4 +115,64 @@ pub async fn create(
             Ok(pair)
         },
     }
+}
+
+pub async fn all(
+    pool: &PgPool, 
+    user_id: i32,
+) -> Result<Vec<Relation>, error::AppError> {
+
+    async fn fetch_relation(
+        pool: &PgPool,
+        sql: &str,
+        user_id: i32,
+    ) -> Result<Vec<Relation>, error::AppError> {
+          sqlx::query_as::<_, Relation>(sql)
+            .bind(user_id)
+            .fetch_all(pool)
+            .await
+            .map_err(|e| {
+                error!("{:#?}", e);
+                error::AppError::DatabaseError(e.to_string())
+            })
+    }
+
+    let sql = r#"
+          SELECT 
+            'child' AS relation_type,
+            child_user_id AS relation_user_id,
+            users.name AS relation_user_name,
+            parents_children.created_at
+          FROM 
+            parents_children
+          LEFT JOIN
+            users
+          ON
+            parents_children.child_user_id = users.id
+          WHERE
+            parents_children.parent_user_id = $1
+      "#;
+    let child_results = fetch_relation(pool, sql, user_id).await?;
+
+    let sql = r#"
+          SELECT 
+            'parent' AS relation_type,
+            parent_user_id AS relation_user_id,
+            users.name AS relation_user_name,
+            parents_children.created_at
+          FROM 
+            parents_children
+          LEFT JOIN
+            users
+          ON
+            parents_children.parent_user_id = users.id
+          WHERE
+            parents_children.child_user_id = $1
+      "#;
+    let parent_results = fetch_relation(pool, sql, user_id).await?;
+
+    let mut combined_results = child_results;
+    combined_results.extend(parent_results);
+
+    Ok(combined_results)
 }

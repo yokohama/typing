@@ -9,6 +9,7 @@ import { AlertProvider } from '@/context/AlertContext';
 import { UserProvider } from '@/context/UserContext';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Alert } from '@/components/Alert';
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main className="
                 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8
               ">
+                <Alert />
                 {children}
               </main>
               <Footer />
