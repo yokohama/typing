@@ -36,11 +36,13 @@ export const GiftRequest = ({
   const [giftRequest, setGiftRequest] = useState<GiftRequest | null>(null);
 
   useEffect(() => {
-    userInfo?.id && setGiftRequest({
-      parent_user_id: parentUserId,
-      child_user_id: userInfo.id,
-      point: 0,
-    });
+    if (userInfo?.id) {
+      setGiftRequest({
+        parent_user_id: parentUserId,
+        child_user_id: userInfo.id,
+        point: 0,
+      });
+    }
   }, []);
 
   const handleChangePoint = (e: React.ChangeEvent<HTMLInputElement>) => {
