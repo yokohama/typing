@@ -2,9 +2,13 @@ import Link from "next/link";
 
 import { FaListUl } from "react-icons/fa";
 
-export const RecordIcon = () => {
+export const ListIcon = ({
+  href,
+} : {
+  href: string,
+}) => {
   return (
-    <Link href="/result">
+    <Link href={href}>
       <button
         className="
           bg-pink-500 

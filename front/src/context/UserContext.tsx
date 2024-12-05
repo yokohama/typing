@@ -99,7 +99,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (isErrorResponse(res) && res.message) {
           // You can debug => `res.message`
           sessionStorage.removeItem("inviteChildUserId");
-          router.push('/invitation/exist');
+          router.push('/pair/invitation/exist');
         } else {
           setAlerts(prev => [
             ...prev,

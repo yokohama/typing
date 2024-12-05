@@ -31,7 +31,7 @@ export const Alert = () => {
           <div
             key={index}
             className={`
-              w-full p-4
+              w-full p-4 mb-2
               ${bgColor}
               ${textColor}
               font-bold

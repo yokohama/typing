@@ -1,90 +1,77 @@
-import { ResultTableProps } from "@/types/result";
-import { FormatSecTime, FormatDateTime } from "@/lib/format";
-import { ReactNode } from "react";
+import { useRouter } from 'next/navigation';
 
-export const ResultTable: React.FC<ResultTableProps> = ({ result }) => (
-  <>
-    <div className="
-      text-2xl
-      text-center
-      text-gray-600
-      font-bold
-    ">{result.created_at && FormatDateTime(result.created_at)}</div>
+import { FormatDateTime, FormatSecTime } from '@/lib/format';
 
-    <div className="
-      mb-6
-      border-4 border-yellow-300 
-      rounded-xl overflow-hidden
-    ">
-      <table className="
-        min-w-full bg-white
-        border-collapse
-      ">
-        <tbody>
-          <tr>
-            <Th>コイン</Th>
-            <Td>{result.point}</Td>
-          </tr>
-          <tr>
-            <Th>スコア</Th>
-            <Td>{result.score}</Td>
-          </tr>
-          <tr>
-            <Th>タイムボーナス</Th>
-            <Td>{result.time_bonus}</Td>
-          </tr>
-          <tr>
-            <Th>所要時間</Th>
-            <Td>{FormatSecTime((result.time ?? 0))}</Td>
-          </tr>
-          <tr>
-            <Th>パーフェクト</Th>
-            <Td>{result.perfect_count}</Td>
-          </tr>
-          <tr>
-            <Th>正解</Th>
-            <Td>{result.correct_count}</Td>
-          </tr>
-          <tr>
-            <Th>失敗</Th>
-            <Td>{result.incorrect_count}</Td>
-          </tr>
-        </tbody>
-      </table>
+import { Result } from '@/types/result';
+
+import { 
+  Table,
+  Thead, TheadTr,
+  Tbody, TbodyTr,
+  Th, Td,
+} from "@/components/Table";
+import { MobileTable } from '@/components/MobileTable';
+
+export const ResultTable = ({
+  sortedResults,
+}
+: {
+  sortedResults: Result[],
+}) => {
+  const router = useRouter();
+
+  return(
+    <div>
+      <div className="hidden md:block overflow-x-auto">
+        <Table>
+          <Thead>
+            <TheadTr>
+              <Th></Th>
+              <Th>レベル</Th>
+              <Th>スコア</Th>
+              <Th>タイムボーナス</Th>
+              <Th>タイム</Th>
+              <Th>コイン</Th>
+            </TheadTr>
+          </Thead>
+          <Tbody>
+            {sortedResults.map((result, index) => (
+              <TbodyTr
+                key={index}
+                handleOnClick={() => router.push(`/result/${result.id}`)}
+              >
+                <Td>{result.created_at && FormatDateTime(result.created_at)}</Td>
+                <Td>{result.shuting_id}</Td>
+                <Td>{result.score}</Td>
+                <Td>{result.time_bonus}</Td>
+                <Td>{result.time && FormatSecTime(result.time)}</Td>
+                <Td>{result.point}</Td>
+              </TbodyTr>
+            ))}
+          </Tbody>
+        </Table>
+      </div>
+      <div className="md:hidden space-y-4">
+        {sortedResults.map((result, index) => (
+          <MobileTable
+            key={index}
+            handleOnClick={() => router.push(`/result/${result.id}`)}
+          >
+            <p className="text-gray-500 text-sm mb-2">
+              作成日: {result.created_at && FormatDateTime(result.created_at)}
+            </p>
+            <p className="text-lg font-bold">
+              レベル: {result.shuting_id}
+            </p>
+            <p className="text-lg font-bold">
+              スコア: {result.score}
+            </p>
+            <p>タイムボーナス: {result.time_bonus}</p>
+            <p>タイム: {result.time && FormatSecTime(result.time)}</p>
+            <p>コイン: {result.point}</p>
+          </MobileTable>
+        ))}
+      </div>
     </div>
-  </>
-);
-
-const Th = ({
-  children,
-} : {
-  children?: ReactNode,
-}) => {
-  return (
-    <td className="
-      py-3 px-6 
-      text-lg
-      font-semibold 
-      bg-yellow-200 
-      text-gray-600 
-      leding-normal 
-      border border-b-yellow-400 border-r-yellow-400
-    ">{children}</td>
   );
-}
-
-const Td = ({
-  children,
-} : {
-  children?: ReactNode,
-}) => {
-  return (
-    <td className="
-      px-4 py-2
-      text-xl
-      text-center
-      border 
-      border border-b-yellow-400
-    ">{children}</td>
-  );
-}
+};

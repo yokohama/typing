@@ -24,6 +24,8 @@ pub fn get_routing(pool: PgPool) -> Router {
 
         .route("/user/pairs", get(user::pair::index))
         .route("/user/pairs", post(user::pair::create))
+        .route("/user/gift_requests", get(user::gift_requests::index))
+        .route("/user/gift_requests", post(user::gift_requests::create))
 
         .with_state(pool)
         .fallback(error::not_found)

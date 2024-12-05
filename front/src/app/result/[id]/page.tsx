@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 
 import { fetchData } from '@/lib/api';
 import { Result } from '@/types/result';
-import { ResultTable } from '@/app/result/components/ResultTable';
+import { Description } from '@/app/result/components/Description';
 import { Chart } from '@/app/result/components/Chart';
 import Loading from "@/components/Loading";
 import { isErrorResponse } from '@/types/errorResponse';
@@ -62,7 +62,7 @@ export default function Page() {
             text-gray-600
           ">レベル{result.shuting_id}</h1>
           <Chart records={records} />
-          <ResultTable result={result} />
+          <Description result={result} />
           <BasicButton 
             text='チャレンジ'
             url={`/shuting/${result.shuting_id}`}

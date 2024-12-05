@@ -12,10 +12,6 @@ export type Result = {
     created_at: Date | undefined;
 };
 
-export type ResultTableProps = {
-  result: Result;
-};
-
 export type RecordsProps = {
   records: Result[];
 }

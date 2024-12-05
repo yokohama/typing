@@ -69,33 +69,41 @@ const UserInfoArea = ({
   userInfo: UserInfo,
 }) => {
   return(
-    <Link href="/account">
-      <div 
-        onClick={() => {setIsOpen(false)}}
-        className="flex flex-col items-center text-center"
+    <div 
+      onClick={() => {setIsOpen(false)}}
+      className="flex flex-col items-center text-center"
       >
-        {userInfo.image && (
-          <Image 
-            src={userInfo.image || "/images/default-avatar.png"} 
-            alt="User Avatar" 
-            width={100}
-            height={100}
-            className="w-16 h-16 rounded-full object-cover mb-2"
-          />
-        )}
-        <p className="text-xl text-gray-500">{userInfo.name || ''}</p>
-        <p className="text-sm text-gray-500">{userInfo.email || ''}</p>
-        <p className="text-sm text-gray-500">
-          合計獲得コイン: {userInfo.total_point}
+      {userInfo.image && (
+        <Image 
+        src={userInfo.image || "/images/default-avatar.png"} 
+        alt="User Avatar" 
+        width={100}
+        height={100}
+        className="w-16 h-16 rounded-full object-cover mb-2"
+        />
+      )}
+      <p className="text-xl text-gray-500">{userInfo.name || ''}</p>
+      <p className="text-sm text-gray-500">{userInfo.email || ''}</p>
+      <p className="text-sm text-gray-500">
+        合計獲得コイン: {userInfo.total_point}
+      </p>
+      <div className="
+        py-8
+        text-gray-500 font-bold
+        hover:text-pink-500
+        ">
+        <p>
+          <Link href="/pair">
+            <span className="
+              text-4xl
+            ">{userInfo.point}</span>
+          </Link>
+          <Link href="/pair">
+            <span className="text-xl"> コイン</span>
+          </Link>
         </p>
-        <div className="py-8">
-          <p>
-            <span className="text-4xl text-gray-500">{userInfo.point}</span>
-            <span className="text-xl font-bold text-gray-500"> コイン</span>
-          </p>
-        </div>
       </div>
-    </Link>
+    </div>
   )
 }
 
@@ -143,7 +151,7 @@ const PairButton = ({
           focus:ring-2
           focus:ring-blue-500
           focus:ring-offset-2
-      ">親子関係</button>
+      ">ファミリー</button>
     </Link>
   )
 }

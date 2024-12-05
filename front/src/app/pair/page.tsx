@@ -2,29 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { QRCodeCanvas } from 'qrcode.react';
-
 import { fetchData } from '@/lib/api';
 import { useUser } from '@/context/UserContext';
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
-import { FormatDateTime } from '@/lib/format';
-import { 
-  Table, 
-  Thead,
-  TheadTr,
-  Tbody,
-  TbodyTr,
-  Th, 
-  Td,
-} from '@/components/Table';
+import { Relation } from '@/types/pair';
 
+import { QrCode } from './components/QrCode';
+import { PairTable } from '@/app/pair/components/PairTable';
+import { GiftRequest } from '@/app/pair/components/GiftRequest';
 
-type Relation = {
-  relation_type: string,
-  relation_user_id: number,
-  relation_user_name: string,
-  created_at: Date,
-};
+import { SelectedRelation } from '@/types/pair';
 
 /*
  * TODO:
@@ -39,6 +26,9 @@ export default function Page() {
   const { userInfo } = useUser();
   const [relations, setRelations] = useState<Relation[]>([]);
   const [invitationUrl, setInvitationUrl] = useState<string | undefined | null>(null);
+
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const [selectedRelation, setSelectedRelation] = useState<SelectedRelation | null>(null); 
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -61,40 +51,29 @@ export default function Page() {
     }
   }, [userInfo]);
 
+  useEffect(() => {
+    console.log(isShowModal);
+  }, [isShowModal]);
+
   return(
     <>
-      <div className="text-center">
-        <p>パパやママにQRコードを教えて、たまったコインでお小遣いをもらおう！</p>
-        <div className="my-4 flex justify-center">
-          {invitationUrl && (
-            <QRCodeCanvas
-              value={invitationUrl}
-              size={150}
-              bgColor="#ffffff"
-              fgColor="#000000"
+      {isShowModal && selectedRelation
+        ? <GiftRequest
+            parentUserId={selectedRelation.parentUserId} 
+            parentUserName={selectedRelation.parentUserName} 
+            isShowModal={isShowModal}
+            setIsShowModal={setIsShowModal}
+          />
+        :
+          <>
+            <QrCode invitationUrl={invitationUrl} />
+            <PairTable
+              relations={relations}
+              setSelectedRelation={setSelectedRelation}
+              setIsShowModal={setIsShowModal}
             />
-          )}
-        </div>
-        <p>{invitationUrl}</p>
-      </div>
-      <Table>
-        <Thead>
-          <TheadTr>
-            <Th>作成日</Th>
-            <Th>関連</Th>
-            <Th>ニックネーム</Th>
-          </TheadTr>
-        </Thead>
-        <Tbody>
-          {relations.map((relation, index) => (
-            <TbodyTr key={index}>
-              <Td>{FormatDateTime(relation.created_at)}</Td>
-              <Td>{relation.relation_type}</Td>
-              <Td>{relation.relation_user_name}</Td>
-            </TbodyTr>
-          ))}
-        </Tbody>
-      </Table>
+          </>
+      }
     </>
   );
 }
