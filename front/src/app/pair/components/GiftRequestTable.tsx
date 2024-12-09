@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { GiftRequest } from '@/types/pair';
 
 import { Table, 
@@ -24,6 +25,22 @@ export const GiftRequestTable = ({
     return "お願い中";
   }
 
+  const [
+    sortedGiftRequests, 
+    setSortedGiftRequests
+  ] = useState<GiftRequest[]>([]);
+
+  useEffect(() => {
+    setSortedGiftRequests(
+      giftRequests
+        ?.filter((request) => request.created_at !== undefined)
+        .sort((a, b) => 
+          new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
+        )
+    );
+  }, [giftRequests]);
+
+
   return(
     <>
       <div className="hidden md:block">
@@ -38,7 +55,7 @@ export const GiftRequestTable = ({
             </TheadTr>
           </Thead>
           <Tbody>
-            {giftRequests.map((giftRequest) => (
+            {sortedGiftRequests.map((giftRequest) => (
               <TbodyTr key={giftRequest.id}>
                 <Td>{FormatDateTime(giftRequest.created_at)}</Td>
                 <Td>{printGiftRequestStatus(giftRequest)}</Td>
@@ -51,23 +68,43 @@ export const GiftRequestTable = ({
         </Table>
       </div>
       <div className="md:hidden space-y-4 mt-4">
-        {giftRequests.map((giftRequest) => (
+        {sortedGiftRequests.map((giftRequest) => (
           <MobileTable key={giftRequest.id}>
-            <p className="text-gray-500 text-sm mb-2">
-              申請日: {FormatDateTime(giftRequest.created_at)}
-            </p>
-            <p className="text-lg font-bold">
-              状態： {printGiftRequestStatus(giftRequest)}
-            </p>
-            <p className="text-lg font-bold">
-              ニックネーム： {giftRequest.pair_user_name}
-            </p>
-            <p className="text-lg font-bold">
-              コイン： {giftRequest.point}
-            </p>
-            <p className="text-lg font-bold">
-              Amazonギフト： 〇〇円分
-            </p>
+            <div className="
+              mb-4
+              flex items-center justify-between
+            ">
+              <p className="text-gray-500 text-sm mb-2">
+                申請日: {FormatDateTime(giftRequest.created_at)}
+              </p>
+              <p className="
+                p-2
+                text-right text-sm font-bold text-pink-500
+                bg-pink-200
+                rounded-lg
+              ">
+                {printGiftRequestStatus(giftRequest)}
+              </p>
+             </div>
+             <div className="
+               flex justify-between items-start
+               text-gray-600
+             ">
+               <p className="text-sm">
+                 {giftRequest.pair_user_name}
+               </p>
+               <div className='text-right'>
+                 <p>
+                   <span className="font-bold">{giftRequest.point}</span>
+                   コイン消費
+                 </p>
+                 <p>
+                   Amazonギフト
+                   <span className="font-bold">〇〇</span>
+                   円分
+                 </p>
+               </div>
+             </div>
           </MobileTable>
         ))}
       </div>

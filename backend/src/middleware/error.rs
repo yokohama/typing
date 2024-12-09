@@ -1,4 +1,4 @@
-use axum::extract::rejection::JsonRejection;
+use axum::extract::rejection::{JsonRejection, JsonDataError};
 use reqwest;
 
 use axum::http::StatusCode;
@@ -71,8 +71,7 @@ impl From<ValidationErrors> for AppError {
         let details = error
             .field_errors()
             .iter()
-            .map(|(field, errors)| {
-                let messages: Vec<String> = errors
+            .map(|(field, errors)| { let messages: Vec<String> = errors
                     .iter()
                     .map(|e| format!("{}: {:?}", e.code, e.params))
                     .collect();
@@ -84,10 +83,21 @@ impl From<ValidationErrors> for AppError {
     }
 }
 
+impl From<JsonDataError> for AppError {
+    fn from(error: JsonDataError) -> Self {
+        error!("{:#?}", error);
+        AppError::FormInputError(
+            error.to_string()
+        )
+    }
+}
+
 impl From<JsonRejection> for AppError {
     fn from(error: JsonRejection) -> Self {
         error!("{:#?}", error);
-        AppError::FormInputError(format!("Json error: {:?}", error))
+        AppError::FormInputError(
+            error.to_string()
+        )
     }
 }
 

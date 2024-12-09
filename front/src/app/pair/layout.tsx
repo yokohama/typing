@@ -9,7 +9,7 @@ export default function Page({children}: {children: React.ReactNode}) {
 
   return(
     <RequireAuth>
-      <SubHeader title="ファミリー">
+      <SubHeader title="ファミリー" href="/pair">
         <ListIcon href="/pair/gift_request" />
       </SubHeader>
       <Main>{children}</Main>

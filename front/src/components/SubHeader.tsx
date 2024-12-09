@@ -1,8 +1,12 @@
+import Link from "next/link";
+
 export function SubHeader({ 
   title,
+  href,
   children
 }: {
   title: string,
+  href?: string,
   children?: React.ReactNode
 }) {
   return (
@@ -15,11 +19,22 @@ export function SubHeader({
         bg-red-200 shadow
         flex justify-between items-center rounded-t-xl
     ">
-      <h2 
-        className="
-          text-xl lg:text-2xl
-          font-bold text-gray-600
-      ">{title}</h2>
+      {href ? (
+        <Link href={href}>
+          <h2 
+            className="
+              text-xl lg:text-2xl
+              font-bold text-gray-600
+              hover:text-pink-600
+          ">{title}</h2>
+        </Link>
+      ) : (
+        <h2 
+          className="
+            text-xl lg:text-2xl
+            font-bold text-gray-600
+        ">{title}</h2>
+      )}
       {children}
     </header>
   )

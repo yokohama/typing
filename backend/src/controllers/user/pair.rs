@@ -12,7 +12,7 @@ use crate::requests::params;
 
 pub async fn create(
     State(pool): State<PgPool>,
-    claims: auth::Claims,
+    _claims: auth::Claims,
     Json(payload): Json<params::pair::Create>
 ) -> Result<Json<impl Serialize>, error::AppError> {
 

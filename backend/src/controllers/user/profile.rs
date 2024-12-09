@@ -7,7 +7,6 @@ use sqlx::PgPool;
 
 use crate::middleware::error;
 use crate::middleware::auth;
-use crate::models;
 use crate::models::user;
 use crate::requests::{
     params,
@@ -17,7 +16,7 @@ use crate::requests::{
 pub async fn show(
     State(pool): State<PgPool>,
     claims: auth::Claims,
-    Query(mut query): Query<params::user::Query>,
+    Query(query): Query<params::user::Query>,
 ) -> Result<Json<impl Serialize>, error::AppError> {
 
     let user = if let Some(user_id) = query.user_id {

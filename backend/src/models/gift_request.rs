@@ -9,7 +9,6 @@ use sqlx::{
 use tracing::error;
 
 use crate::middleware::error;
-use crate::models;
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Entry {
@@ -31,12 +30,28 @@ pub struct Create {
     pub point: i32,
 }
 
+#[derive(Debug, Serialize, FromRow)]
+pub struct Created {
+    pub id: i32,
+    pub parent_user_id: i32,
+    pub child_user_id: i32,
+    pub point: i32,
+    pub approved_at: Option<NaiveDateTime>,
+    pub rejected_at: Option<NaiveDateTime>,
+    pub created_at: NaiveDateTime,
+    pub deleted_at: Option<NaiveDateTime>,
+}
+
+#[derive(Debug, Serialize, FromRow)]
+pub struct IdPair {
+    pub parent_user_id: Option<i32>,
+    pub child_user_id: Option<i32>,
+}
+
 pub async fn create(
     pool: &PgPool, 
     params: Create
-) -> Result<Entry, error::AppError> {
-
-    // 所持しているポイントよりも多いリクエストが来たらエラーを返す。
+) -> Result<Created, error::AppError> {
 
     let sql = r#"
         INSERT INTO gift_requests (
@@ -57,7 +72,7 @@ pub async fn create(
             deleted_at
     "#;
             
-    let result = query_as::<_,Entry>(sql)
+    let result = query_as::<_, Created>(sql)
         .bind(&params.parent_user_id)
         .bind(&params.child_user_id)
         .bind(&params.point)
@@ -73,11 +88,10 @@ pub async fn create(
 
 pub async fn find_all_by_user_id(
     pool: &PgPool, 
-    parent_user_id: Option<i32>,
-    child_user_id: Option<i32>,
+    id_pair: IdPair,
 ) -> Result<Vec<Entry>, error::AppError> {
 
-    let (sql, bind_value) = if let Some(parent_user_id) = parent_user_id {
+    let (sql, bind_value) = if let Some(parent_user_id) = id_pair.parent_user_id {
         (
             r#"
                 SELECT 
@@ -101,7 +115,7 @@ pub async fn find_all_by_user_id(
             "#,
             parent_user_id,
         )
-    } else if let Some(child_user_id) = child_user_id {
+    } else if let Some(child_user_id) = id_pair.child_user_id {
         (
             r#"
                 SELECT 

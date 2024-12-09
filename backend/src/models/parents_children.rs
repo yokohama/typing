@@ -7,7 +7,6 @@ use sqlx::{
     FromRow
 };
 
-use tower_http::follow_redirect::policy::PolicyExt;
 use tracing::error;
 
 use crate::middleware::error;

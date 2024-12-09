@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FaGift } from "react-icons/fa";
 
+import { useConfig } from "@/context/ConfigContext";
 import { useAlert } from "@/context/AlertContext";
 import { useUser } from "@/context/UserContext";
 
@@ -9,6 +10,8 @@ import { postData } from "@/lib/api";
 import { isErrorResponse } from '@/types/errorResponse';
 
 import { Modal } from "@/components/Modal";
+
+import { UserInfo } from "@/types/userInfo";
 
 type GiftRequest = {
   parent_user_id: number,
@@ -30,10 +33,14 @@ export const GiftRequest = ({
 
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/gift_requests`;
 
+  const router = useRouter();
+
   const { setAlerts } = useAlert();
-  const { userInfo } = useUser();
+  const { userInfo, setUserInfo } = useUser();
+  const { config } = useConfig();
 
   const [giftRequest, setGiftRequest] = useState<GiftRequest | null>(null);
+  const [isSendButtonDisabled, setIsSendButtonDisabled] = useState<boolean>(true);
 
   useEffect(() => {
     if (userInfo?.id) {
@@ -45,8 +52,25 @@ export const GiftRequest = ({
     }
   }, []);
 
+/*
+  const giftRequestCoinStep: number = parseInt(
+    config.find(item => "GIFT_REQUEST_COIN_STEP" in item)!["GIFT_REQUEST_COIN_STEP"],
+    10
+  );
+  */
+
+  const giftRequestCoinStep = (): number => {
+    if (!config) {
+      return 0;
+    }
+    return parseInt(
+      config.find(item => "GIFT_REQUEST_COIN_STEP" in item)!["GIFT_REQUEST_COIN_STEP"],
+      10
+    );
+  }
+
   const handleChangePoint = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10) || 0;
+    const value = parseFloat(e.target.value) || 0;
     setGiftRequest(prev => {
       if (!prev) {
         return prev;
@@ -56,19 +80,44 @@ export const GiftRequest = ({
         point: value,
       };
     });
+
+    if (!value) {
+      setIsSendButtonDisabled(true);
+    } else if (value <= 0) {
+      setIsSendButtonDisabled(true);
+    } else if (value % giftRequestCoinStep() === 0) {
+      setIsSendButtonDisabled(false);
+    } else {
+      setIsSendButtonDisabled(true);
+    }
   }
 
   const handleSendButton = async () => {
     try {
-      const data: GiftRequest = await postData(endpoint, giftRequest);
+      const data: UserInfo = await postData(endpoint, giftRequest);
 
       if (isErrorResponse(data)) {
-        console.error('API Error:', data.message);
+        setGiftRequest(null);
+        setIsShowModal(false);
+        setAlerts(prev => [
+          ...prev,
+          {
+            type: "error",
+            msg: "お願いに失敗しました。"
+          }
+        ]);
         return;
       }
 
       setGiftRequest(null);
       setIsShowModal(false);
+
+      setUserInfo({
+        id: data.id,
+        point: data.point,
+        total_point: data.total_point,
+      });
+
       setAlerts(prev => [
         ...prev,
         {
@@ -76,8 +125,12 @@ export const GiftRequest = ({
           msg: `${parentUserName}さんにお願いをしました！`
         }
       ]);
+
+      router.push("/pair/gift_request");
+
+
     } catch (error) {
-      console.error(error);
+      console.error("API error: " + error);
     }
   };
 
@@ -107,39 +160,49 @@ export const GiftRequest = ({
           <span className="font-bold">
             {parentUserName}
           </span>
-          さんにAmazonポイントに交換してもらいたいコインの数を入力してね
+          さんにAmazonポイントに交換してもらいたいコインの数を入力してね。
         </p>
-        <div className="mb-4">
+        <p className="text-center text-sm">
+          ※ {giftRequestCoinStep()}コイン単位で交換できます。
+        </p>
+        <div className="mb-4 flex items-center space-x-2">
           <input
             type="number"
             min={0}
             max={userInfo?.point}
-            step={10}
+            step={giftRequestCoinStep()}
             autoFocus
             defaultValue={0}
             onChange={handleChangePoint}
             className="
               text-4xl font-bold
               text-center
-              w-full
+              flex-grow
               p-2
               border border-gray-300
               rounded-md
               focus:outline-none focus:ring-2 focus:ring-blue-500
           "/>
+          <p className="
+            text-xl
+          "> / {userInfo?.point}コイン</p>
         </div>
         <div className="flex justify-center">
           <button 
             onClick={handleSendButton}
-            className="
+            disabled={isSendButtonDisabled}
+            className={`
               px-4 py-2
-              bg-pink-400
               text-white
               font-bold
               rounded-md
               shadow-md
-              hover:bg-pink-500
-           ">お願いする</button>
+              ${
+                isSendButtonDisabled
+                  ? 'bg-gray-400 cursor-not-allowd'
+                  : 'bg-pink-400 hover:bg-pink-500'
+              }
+           `}>お願いする</button>
         </div>
     </Modal>
   );

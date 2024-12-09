@@ -7,6 +7,7 @@ use sqlx::postgres::PgPool;
 
 use crate::middleware::error;
 use crate::controllers::welcome;
+use crate::controllers::config;
 use crate::controllers::user;
 
 pub fn get_routing(pool: PgPool) -> Router {
@@ -26,6 +27,8 @@ pub fn get_routing(pool: PgPool) -> Router {
         .route("/user/pairs", post(user::pair::create))
         .route("/user/gift_requests", get(user::gift_requests::index))
         .route("/user/gift_requests", post(user::gift_requests::create))
+
+        .route("/config", get(config::index))
 
         .with_state(pool)
         .fallback(error::not_found)

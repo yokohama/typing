@@ -14,8 +14,8 @@ export default function GiftRequestPage() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/gift_requests`;
 
 enum RequestType {
-  forParents = "お願いしてる",
-  fromChildren = "お願いされてる",
+  forParents = "ちょうだい！",
+  fromChildren = "あげる",
 };
 
   const [

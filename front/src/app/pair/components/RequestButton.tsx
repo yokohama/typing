@@ -3,6 +3,8 @@ import { FaGift } from "react-icons/fa";
 import { Relation, SelectedRelation } from '@/types/pair';
 import React from "react";
 
+import { useUser } from "@/context/UserContext";
+
 export const RequestButton = ({
   relation,
   setSelectedRelation,
@@ -12,6 +14,8 @@ export const RequestButton = ({
   setSelectedRelation: React.Dispatch<React.SetStateAction<SelectedRelation | null>>,
   setIsShowModal: React.Dispatch<React.SetStateAction<boolean>>,
 }) => {
+
+  const { userInfo } = useUser();
 
   const handleRequestButton = ({
     parentUserId,
@@ -31,21 +35,30 @@ export const RequestButton = ({
     return null;
   }
 
+  const isPointAvailable = (): boolean => {
+    return userInfo !== null && userInfo.point > 0;
+  };
+
   return (
     <button
-      onClick={() => handleRequestButton({
-        parentUserId: relation.relation_user_id,
-        parentUserName: relation.relation_user_name
-      })}
+      onClick={() => {
+        if (isPointAvailable()) {
+          handleRequestButton({
+            parentUserId: relation.relation_user_id,
+            parentUserName: relation.relation_user_name
+          });
+        }
+      }}
+      disabled={!isPointAvailable()}
       className="
     ">
       <FaGift 
         size={30}
-        className="
-          text-pink-500
-          hover:scale-110
-          hover:text-pink-600
-        "
+        className={`
+          ${isPointAvailable() ? 'text-pink-500' : 'text-gray-500'}
+          ${isPointAvailable() && 'hover:scale-110'}
+          ${isPointAvailable() && 'hover:text-pink-600'}
+        `}
       />
     </button>
   );
