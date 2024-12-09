@@ -47,7 +47,7 @@ export default function Page() {
 
   useEffect(() => {
     if (userInfo) {
-      setInvitationUrl(`${frontUrl}/invitation?inviteChildUserId=${userInfo?.id}`);
+      setInvitationUrl(`${frontUrl}/pair/invitation?inviteChildUserId=${userInfo?.id}`);
     }
   }, [userInfo]);
 
