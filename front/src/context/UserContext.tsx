@@ -13,6 +13,7 @@ import { fetchData, postData } from '@/lib/api';
 import { UserInfo } from "@/types/userInfo";
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 import { useAlert } from "@/context/AlertContext";
+import Loading from "@/components/Loading";
 
 type UserContextType = {
   userInfo: UserInfo | null;
@@ -99,7 +100,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (isErrorResponse(res) && res.message) {
           // You can debug => `res.message`
           sessionStorage.removeItem("inviteChildUserId");
-          router.push('/pair/invitation/exist');
+          router.push('/invitation/exist');
         } else {
           setAlerts(prev => [
             ...prev,
@@ -126,9 +127,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setUserInfo, 
       isJwtAvailable,
       setIsJwtAvailable,
-    }}>
-      {children}
-    </UserContext.Provider>
+    }}>{children}</UserContext.Provider>
   );
 };  
 

@@ -18,11 +18,10 @@ export default function InvitationPage() {
           mb-6
           text-xl
           font-bold
-        ">親子登録の招待状</div>
+        ">親子登録に失敗しました。</div>
         <div>
-          <p>既に親子登録済みです。この招待状は無効です。</p>
           <p>
-            登録済みの親子は、
+            既に親子登録済みのため、 この招待状は無効です。登録済みの親子は、
             <Link href='/pair'
               className="
                 text-blue-400
