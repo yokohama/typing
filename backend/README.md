@@ -17,6 +17,18 @@ CLOUDWATCH_LOG_GROUP=/aws/apprunner/xxxxxx
 ALLOWED_ORIGINS=http://localhost:3001
 ```
 
+### 必要な開発環境ツールのインストール(migrationで必要)
+```
+# Rustまわり
+TODO: ここにCargoのインストール
+$ cargo install cargo-watch
+$ cargo install sqlx-cli --no-default-features --features postgres
+
+# posgreクライアント
+$ apt-get update
+$ apt-get install -y postgresql-client
+```
+
 ### ビルド＆DB作成
 ```
 $ docker compose build
