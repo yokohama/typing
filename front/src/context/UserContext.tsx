@@ -13,7 +13,6 @@ import { fetchData, postData } from '@/lib/api';
 import { UserInfo } from "@/types/userInfo";
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 import { useAlert } from "@/context/AlertContext";
-import Loading from "@/components/Loading";
 
 type UserContextType = {
   userInfo: UserInfo | null;
