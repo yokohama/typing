@@ -28,13 +28,13 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
      */
     const fetchConfigData = async () => {
       try {
-        let res = await fetch(endpoint, { method: 'GET' });
+        const res = await fetch(endpoint, { method: 'GET' });
         if (!res.ok) {
           console.error('API Error: ', res);
           return null;
         }
 
-        let jsonBody: ConfigItem[] = await res.json();
+        const jsonBody: ConfigItem[] = await res.json();
         if (!jsonBody || Object.keys(jsonBody).length === 0) {
           console.error('API Error: ', res);
           return null;
