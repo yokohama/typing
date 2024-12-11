@@ -61,7 +61,7 @@ const ShutingItem = ({
   return (
     <Link href={`/shuting/${shuting_id}`} key="1">
       <div 
-        onMouseOver={() => { soundManager.playSelect() }}
+        // onMouseOver={() => { soundManager.playSelect() }}
         className="
           h-32
           bg-orange-50
