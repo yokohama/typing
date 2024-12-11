@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { 
+  useState, 
+  useEffect, 
+} from 'react';
 import Link from 'next/link';
 
 import { fetchData } from '@/lib/api';
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 import { Shuting } from '@/types/shuting';
 
-import { SoundManager } from './components/soundManager';
-
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings`;
 
   const [shutings, setShutings] = useState<Shuting[]>([]);
-  const soundManager = useRef(new SoundManager()).current;
 
   useEffect(() => {
     const fetchShutingsData = async () => {
@@ -39,7 +39,6 @@ export default function Page() {
             shuting_id={shuting.id}
             level={shuting.level}
             description={shuting.description}
-            soundManager={soundManager}
           />
         ))}
       </div>
@@ -51,17 +50,14 @@ const ShutingItem = ({
   shuting_id,
   level,
   description,
-  soundManager,
 } : {
   shuting_id: number,
   level: number,
   description: string,
-  soundManager: SoundManager,
 }) => {
   return (
     <Link href={`/shuting/${shuting_id}`} key="1">
       <div 
-        // onMouseOver={() => { soundManager.playSelect() }}
         className="
           h-32
           bg-orange-50
