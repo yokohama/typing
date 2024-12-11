@@ -6,9 +6,6 @@ import React, {
   useEffect
 } from "react";
 
-import { fetchData } from '@/lib/api';
-import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
-
 type ConfigItem = {
   [key: string]: string,
 };
@@ -25,16 +22,27 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<ConfigItem[]>([]);
 
   useEffect(() => {
+    /*
+     * The retrieval of settings dose not require `JWT` authentication, 
+     * so `fetchData()` in `lib/api.ts` is not used.
+     */
     const fetchConfigData = async () => {
       try {
-        const data = await fetchData<ConfigItem[] | ErrorResponse>(endpoint, 'GET');
-        if (isErrorResponse(data)) {
-          console.error('Error fetching shutings data:', data.message);
-          return;
+        let res = await fetch(endpoint, { method: 'GET' });
+        if (!res.ok) {
+          console.error('API Error: ', res);
+          return null;
         }
-        setConfig(data);
+
+        let jsonBody: ConfigItem[] = await res.json();
+        if (!jsonBody || Object.keys(jsonBody).length === 0) {
+          console.error('API Error: ', res);
+          return null;
+        }
+
+        setConfig(jsonBody);
       } catch (error) {
-        console.error(error);
+        console.error('API Error: ', error);
       }
     };
 
@@ -42,7 +50,10 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    console.log(config);
+    if (config.length > 0) {
+      console.log('## welcome typing app.');
+      console.log(config);
+    }
   }, [config]);
 
   return (
