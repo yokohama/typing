@@ -19,6 +19,7 @@ const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/config`;
 const ConfigContext = createContext<ConfigContextType | null>(null);
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
+console.log(endpoint);
   const [config, setConfig] = useState<ConfigItem[]>([]);
 
   useEffect(() => {

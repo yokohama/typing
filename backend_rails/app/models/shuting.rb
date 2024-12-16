@@ -1,0 +1,2 @@
+class Shuting < ApplicationRecord
+end

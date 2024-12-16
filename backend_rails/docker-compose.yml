@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  db:
+    image: postgres
+    container_name: typing-rails_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  api:
+    image: typing-rails
+    container_name: typing-rails
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      EDITOR: vi
+    volumes:
+      - .:/opt/app
+      - app_bundle_volume:/usr/local/bundle
+    ports:
+      - 3000:3000
+    dns: 
+      - 8.8.8.8
+
+volumes:
+  app_bundle_volume:
+  postgres_volume:

@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: db
+  username: postgres
+  password: password
+
+development:
+  <<: *default
+  database: typing-rails_development
+
+test:
+  <<: *default
+  database: typing-rails_test
+
+production:
+  <<: *default
+  host:     <%= Rails.application.credentials.aws.rds.host     if Rails.env.production? %>
+  database: <%= Rails.application.credentials.aws.rds.database if Rails.env.production? %>
+  username: <%= Rails.application.credentials.aws.rds.username if Rails.env.production? %>
+  password: <%= Rails.application.credentials.aws.rds.password if Rails.env.production? %>

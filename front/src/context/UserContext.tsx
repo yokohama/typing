@@ -37,7 +37,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [ userInfo, setUserInfo ] = useState<UserInfo | null>(null);
   const [ isJwtAvailable, setIsJwtAvailable ] = useState<boolean>(false);
 
-  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
+  //const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
+  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/auth/google`;
   const profileEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
   const pairEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/pairs`;
 
