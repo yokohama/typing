@@ -88,6 +88,8 @@ export default function Page() {
         return;
       };
 
+      console.log(data.words)
+
       if (Array.isArray(data.words)) {
         const words: Word[] = data.is_random
           ? [...data.words].sort(() => Math.random() - 0.5)
@@ -97,7 +99,7 @@ export default function Page() {
         setCurrentWord(words[currentIndex]);
         setShutingLimitSec(words[currentIndex]?.limit_sec);
       } else {
-        console.error("Expected an array of Shuting, received:", data);
+        console.error("Expected an array of words, received:", data.words);
       }
     };
 
