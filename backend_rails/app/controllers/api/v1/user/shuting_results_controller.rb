@@ -4,9 +4,7 @@ module Api
       class ShutingResultsController < BaseController
         def index
           results = Result.all
-          render json: results, 
-            each_serializer: ResultSerializer, 
-            status: :ok
+          render json: results, each_serializer: ResultSerializer, status: :ok
         end
 
         def create
@@ -18,17 +16,9 @@ module Api
               point: point
             )
           )
+          result.save!
 
-          if result.save
-            render json: result,
-              serializer: ResultSerializer,
-              status: :created
-          else
-            render json: {
-              error: "Failed to create result",
-              details: result.errors.full_messages
-            }, status: :unprocessable_entity
-          end
+          render json: result, serializer: ResultSerializer, status: :created
         end
 
         private
