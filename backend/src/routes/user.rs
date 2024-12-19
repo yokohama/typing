@@ -1,6 +1,6 @@
 use axum::{
     Router,
-    routing::{get, post},
+    routing::{get, post, patch},
 };
 use sqlx::postgres::PgPool;
 
@@ -9,7 +9,7 @@ use crate::controllers::user;
 pub fn get_routing(pool: PgPool) -> Router<PgPool> {
     Router::new()
         .route("/profile", get(user::profile::show))
-        .route("/profile", post(user::profile::update))
+        .route("/profile", patch(user::profile::update))
         .route("/shutings", get(user::shutings::index))
         .route("/shutings/:id", get(user::shutings::show))
         .route("/shutings/:shuting_id/results", get(user::results::index))

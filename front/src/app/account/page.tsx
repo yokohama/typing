@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { fetchData, postData } from '@/lib/api';
+import { fetchData, patchData } from '@/lib/api';
 import { useValidation } from '@/hooks/useValidation';
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 
@@ -57,7 +57,7 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = await postData<UserInfo, UserInfo | ErrorResponse>(endpoint, formData);
+      const data = await patchData<UserInfo, UserInfo | ErrorResponse>(endpoint, formData);
 
       if (isErrorResponse(data) && data.error_type === 'ValidationError') {
         const errors = data.details ? JSON.parse(data.details) : {};

@@ -39,6 +39,8 @@ export default function Page() {
         return;
       }
 
+      console.log(data);
+
       setRelations(data);
     };
 
@@ -47,7 +49,7 @@ export default function Page() {
 
   useEffect(() => {
     if (userInfo) {
-      setInvitationUrl(`${frontUrl}/pair/invitation?inviteChildUserId=${userInfo?.id}`);
+      setInvitationUrl(`${frontUrl}/invitation?inviteChildUserId=${userInfo?.id}`);
     }
   }, [userInfo]);
 

@@ -54,3 +54,16 @@ export async function postData<T, R>(
 
   return handleResponse<R>(response);
 }
+
+export async function patchData<T, R>(
+  url: string,
+  data: T
+): Promise<ApiResponse<R>> {
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  return handleResponse<R>(response);
+}
