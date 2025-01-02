@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
 import { GiftRequest } from '@/types/pair';
 
-import { Table, 
+import { useGiftRequestTable } from "@/hooks/useGiftRequestTable";
+
+import { 
+  Table, 
   Thead, TheadTr, 
   Tbody, TbodyTr, 
   Th, Td 
@@ -11,6 +13,7 @@ import { Table,
 
 import { FormatDateTime } from '@/lib/format';
 import { MobileTable } from '@/components/MobileTable';
+import { Modal } from "@/components/Modal";
 
 export const GiftRequestTable = ({
   giftRequests,
@@ -18,28 +21,14 @@ export const GiftRequestTable = ({
   giftRequests: GiftRequest[],
 }) => {
 
-  const printGiftRequestStatus = (giftRequest: GiftRequest) => {
-    if (giftRequest.approved_at) { return "支払済" };
-    if (giftRequest.rejected_at) { return "却下" };
-
-    return "お願い中";
-  }
-
-  const [
-    sortedGiftRequests, 
-    setSortedGiftRequests
-  ] = useState<GiftRequest[]>([]);
-
-  useEffect(() => {
-    setSortedGiftRequests(
-      giftRequests
-        ?.filter((request) => request.created_at !== undefined)
-        .sort((a, b) => 
-          new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
-        )
-    );
-  }, [giftRequests]);
-
+  const { 
+    isShowModal,
+    setIsShowModal,
+    printGiftRequestStatus,
+    sortedGiftRequests,
+    handleOnClick,
+    handleAccept,
+  } = useGiftRequestTable(giftRequests);
 
   return(
     <>
@@ -56,7 +45,10 @@ export const GiftRequestTable = ({
           </Thead>
           <Tbody>
             {sortedGiftRequests.map((giftRequest) => (
-              <TbodyTr key={giftRequest.id}>
+              <TbodyTr 
+                key={giftRequest.id} 
+                handleOnClick={() =>handleOnClick(giftRequest)}
+              >
                 <Td>{FormatDateTime(giftRequest.created_at)}</Td>
                 <Td>{printGiftRequestStatus(giftRequest)}</Td>
                 <Td>{giftRequest.pair_user_name}</Td>
@@ -67,9 +59,13 @@ export const GiftRequestTable = ({
           </Tbody>
         </Table>
       </div>
-      <div className="md:hidden space-y-4 mt-4">
+      <div 
+        className="md:hidden space-y-4 mt-4">
         {sortedGiftRequests.map((giftRequest) => (
-          <MobileTable key={giftRequest.id}>
+          <MobileTable 
+            key={giftRequest.id}
+            handleOnClick={() => handleOnClick(giftRequest)}
+          >
             <div className="
               mb-4
               flex items-center justify-between
@@ -108,6 +104,46 @@ export const GiftRequestTable = ({
           </MobileTable>
         ))}
       </div>
+
+      {isShowModal && (
+        <Modal
+          isShowModal={isShowModal}
+          setIsShowModal={setIsShowModal}
+        >
+          <div className="
+            mt-8
+            space-y-4
+            flex flex-col
+            justify-center items-center 
+            w-full
+          ">
+            <button 
+              onClick={() => handleAccept('approved')}
+              className="
+                px-4
+                py-8
+                text-2xl
+                font-bold
+                text-gray-700
+                bg-yellow-300
+                rounded-md
+                w-full
+              ">あげる</button>
+            <button 
+              onClick={() => handleAccept('rejected')}
+              className="
+                px-4 
+                py-4
+                text-lg
+                font-bold
+                text-gray-700
+                bg-red-300
+                rounded-md
+                w-full
+              ">キャンセル</button>
+          </div>
+        </Modal>
+      )}
     </>
   );
 }

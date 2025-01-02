@@ -45,7 +45,7 @@ pub async fn create(
         &pool, 
         models::result::Create {
             user_id: claims.sub,
-            shuting_id: shuting_id,
+            shuting_id,
             correct_count: payload.correct_count,
             incorrect_count: payload.incorrect_count,
             time: payload.time,

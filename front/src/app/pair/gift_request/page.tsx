@@ -34,7 +34,7 @@ enum RequestType {
   const [selectedTab, setSelectedTab] = useState<RequestType.forParents | RequestType.fromChildren>(RequestType.forParents);
 
   useEffect(() => {
-    const fetchShutingsData = async () => {
+    const fetchGiftRequestsData = async () => {
       const data = await fetchData<GiftRequests | ErrorResponse>(endpoint, 'GET');
 
       if (isErrorResponse(data)) {
@@ -45,7 +45,7 @@ enum RequestType {
       setGiftRequests(data);
     };
 
-    fetchShutingsData();
+    fetchGiftRequestsData();
   }, []);
 
   useEffect(() => {

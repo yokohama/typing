@@ -5,11 +5,11 @@ use axum::{
 use serde::Serialize;
 use sqlx::PgPool;
 use serde_json::json;
+use tracing::debug;
 
 use crate::middleware::error;
 use crate::middleware::auth;
 use crate::models;
-use crate::models::gift_request;
 use crate::requests::params;
 use crate::requests::validations::JsonValidatedForm;
 
@@ -18,17 +18,17 @@ pub async fn index(
     claims: auth::Claims,
 ) -> Result<Json<impl Serialize>, error::AppError> {
 
-    let my_children = gift_request::find_all_by_user_id(
+    let my_children = models::gift_request::find_all_by_user_id(
         &pool, 
-        gift_request::IdPair { 
+        models::gift_request::IdPair { 
             parent_user_id: Some(claims.sub), 
             child_user_id:  None,
         }
     ).await?;
 
-    let my_parents = gift_request::find_all_by_user_id(
+    let my_parents = models::gift_request::find_all_by_user_id(
         &pool, 
-        gift_request::IdPair { 
+        models::gift_request::IdPair { 
             parent_user_id: None,
             child_user_id: Some(claims.sub),
         }
@@ -68,7 +68,7 @@ pub async fn create(
 
         let updated = models::user::save(
             &pool, 
-            claims.sub, 
+            claims.sub,
             params::user::UpdateProfile {
               name: None,
               point: Some(user.point - validated_payload.point),
@@ -76,7 +76,37 @@ pub async fn create(
             }
         ).await?;
 
-        return Ok(Json(updated));
+        Ok(Json(updated))
+    } else {
+        Err(error::AppError::NotFound("User not found.".to_string()))
+    }
+}
+
+pub async fn update(
+    State(pool): State<PgPool>,
+    _claims: auth::Claims,
+    Json(payload): Json<models::gift_request::Update>
+) -> Result<Json<impl Serialize>, error::AppError> {
+    let child_user_id = payload.child_user_id;
+
+    if let Some(user) = models::user::find(&pool, child_user_id).await? {
+        let remaind_point = user.point - payload.point;
+
+        if remaind_point < 0 {
+            return Err(error::AppError::ValidationError("なぜか0ポイント以下なのでエラー".to_string()));
+        }
+
+        let updated = models::gift_request::save(&pool, payload).await?;
+
+        let child_profile = params::user::UpdateProfile {
+            name: None,
+            point: Some(remaind_point),
+            total_point: None,
+        };
+        let validated_payload: params::user::UpdateProfile = child_profile;
+        models::user::save(&pool, child_user_id, validated_payload).await?;
+
+        Ok(Json(updated))
     } else {
         Err(error::AppError::NotFound("User not found.".to_string()))
     }

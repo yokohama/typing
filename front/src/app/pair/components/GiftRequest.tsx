@@ -52,13 +52,6 @@ export const GiftRequest = ({
     }
   }, []);
 
-/*
-  const giftRequestCoinStep: number = parseInt(
-    config.find(item => "GIFT_REQUEST_COIN_STEP" in item)!["GIFT_REQUEST_COIN_STEP"],
-    10
-  );
-  */
-
   const giftRequestCoinStep = (): number => {
     if (!config) {
       return 0;

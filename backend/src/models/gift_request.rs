@@ -1,12 +1,12 @@
 use chrono::NaiveDateTime;
 
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use sqlx::{
     query_as, 
     FromRow, 
     PgPool
 };
-use tracing::error;
+use tracing::{debug, error};
 
 use crate::middleware::error;
 
@@ -40,6 +40,15 @@ pub struct Created {
     pub rejected_at: Option<NaiveDateTime>,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct Update {
+    pub id: i32,
+    pub child_user_id: i32,
+    pub point: i32,
+    pub approved_at: Option<NaiveDateTime>,
+    pub rejected_at: Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -86,6 +95,44 @@ pub async fn create(
     Ok(result)
 }
 
+pub async fn save(
+    pool: &PgPool, 
+    params: Update
+) -> Result<Update, error::AppError> {
+
+    let (column_name, value) = match (params.approved_at, params.rejected_at) {
+        (Some(approved_at), _) => ("approved_at", approved_at),
+        (_, Some(rejected_at)) => ("rejected_at", rejected_at),
+        (None, None) => return Err(error::AppError::ValidationError("".to_string())),
+    };
+
+    let sql = format!(
+        r#"
+          UPDATE gift_requests SET {} = $1
+          WHERE id = $2
+          RETURNING 
+              id, 
+              point,
+              child_user_id,
+              approved_at, 
+              rejected_at
+        "#,
+        column_name
+    );
+
+    let updated = query_as::<_, Update>(&sql)
+        .bind(value)
+        .bind(&params.id)
+        .fetch_one(pool)
+        .await
+        .map_err(|e| {
+            error!("{:#?}", e);
+            error::AppError::DatabaseError(e.to_string())
+        })?;
+
+    Ok(updated)
+}
+
 pub async fn find_all_by_user_id(
     pool: &PgPool, 
     id_pair: IdPair,
@@ -111,7 +158,7 @@ pub async fn find_all_by_user_id(
                 ON
                   child_user_id = users.id
                 WHERE
-                  parent_user_id = $1 AND rejected_at IS NULL
+                  parent_user_id = $1
             "#,
             parent_user_id,
         )
@@ -135,7 +182,7 @@ pub async fn find_all_by_user_id(
                 ON
                   parent_user_id = users.id
                 WHERE
-                  child_user_id = $1 AND rejected_at IS NULL
+                  child_user_id = $1
             "#,
             child_user_id,
         )

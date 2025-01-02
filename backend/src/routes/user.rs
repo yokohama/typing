@@ -20,5 +20,6 @@ pub fn get_routing(pool: PgPool) -> Router<PgPool> {
         .route("/pairs", post(user::pair::create))
         .route("/gift_requests", get(user::gift_requests::index))
         .route("/gift_requests", post(user::gift_requests::create))
+        .route("/gift_requests", patch(user::gift_requests::update))
         .with_state(pool)
 }

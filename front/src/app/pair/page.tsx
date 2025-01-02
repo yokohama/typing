@@ -39,8 +39,6 @@ export default function Page() {
         return;
       }
 
-      console.log(data);
-
       setRelations(data);
     };
 

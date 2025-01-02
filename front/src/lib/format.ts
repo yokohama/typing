@@ -15,3 +15,10 @@ export const FormatDateTime = (dateTime: Date | string | number): string => {
     hour12:   false
   });
 };
+
+/*
+ * jsの型をAPIに合わせた方に変換する。
+ */
+export const formatToNaiveDateTime = (date: Date): string => {
+  return date.toISOString().replace("Z", "").split(".")[0];
+};
