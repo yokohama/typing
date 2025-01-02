@@ -9,6 +9,7 @@ import { useUser } from '@/context/UserContext';
 import { UserInfo } from '@/types/userInfo';
 import { BasicButton } from '@/components/Button';
 import { Label } from '@/app/account/components/Lable';
+import { useUserData } from '@/hooks/useUserData';
 
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
@@ -28,24 +29,7 @@ export default function Page() {
   const { validationErrors, setErrors, clearErrors } = useValidation();
   const [isUpdated, setIsUpdated] = useState(false);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const data = await fetchData<UserInfo | ErrorResponse>(endpoint, 'GET');
-
-      if (isErrorResponse(data)) {
-        console.error('Error fetching user data:', data.message);
-        return;
-      }
-
-      setUserInfo({
-        ...data,
-        image: userInfo?.image
-      });
-      setFormData(data);
-    };
-
-    fetchUserData();
-  }, [endpoint]);
+  useUserData(endpoint, setFormData);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
