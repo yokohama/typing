@@ -27,6 +27,7 @@ pub struct Create {
     pub limit_sec: i32,
 }
 
+#[allow(dead_code)]
 pub async fn create(
     pool: &PgPool, 
     params: Create

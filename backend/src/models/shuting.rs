@@ -38,6 +38,7 @@ pub struct Create {
     pub description: String,
 }
 
+#[allow(dead_code)]
 pub async fn create(
     pool: &PgPool, 
     params: Create

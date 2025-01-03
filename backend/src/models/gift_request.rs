@@ -6,7 +6,7 @@ use sqlx::{
     FromRow, 
     PgPool
 };
-use tracing::{debug, error};
+use tracing::error;
 
 use crate::middleware::error;
 

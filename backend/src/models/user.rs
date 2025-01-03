@@ -7,7 +7,7 @@ use sqlx::{
     FromRow
 };
 
-use tracing::error;
+use tracing::{debug, error};
 
 use crate::middleware::error;
 use crate::requests::params::user::UpdateProfile;
@@ -150,6 +150,9 @@ pub async fn save(
     if let Some(_point) = params.point {
         updates.push(format!("point = ${}", index));
         index += 1;
+
+        updates.push(format!("total_point = ${}", index));
+        index += 1;
     }
 
     if updates.is_empty() {
@@ -181,7 +184,12 @@ pub async fn save(
         query = query.bind(name);
     }
     if let Some(point) = params.point {
+        // current point
         query = query.bind(point);
+
+        // total point
+        let user = find(&pool, id).await?.unwrap();
+        query = query.bind(user.total_point + (point - user.point));
     }
     query = query.bind(id);
 
