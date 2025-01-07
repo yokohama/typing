@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { fetchData, patchData } from '@/lib/api';
+import React, { useState } from 'react';
+import { patchData } from '@/lib/api';
 import { useValidation } from '@/hooks/useValidation';
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 
