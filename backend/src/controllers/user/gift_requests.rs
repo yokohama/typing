@@ -67,26 +67,10 @@ pub async fn update(
 ) -> Result<Json<impl Serialize>, error::AppError> {
     let child_user_id = payload.child_user_id;
 
-    if let Some(user) = models::user::find(&pool, child_user_id).await? {
-        let remaind_point = user.point - payload.point;
-
-        // 残ポイントが０以下になるようならバリデーションエラー。
-        if remaind_point < 0 {
-            return Err(error::AppError::ValidationError("なぜか0ポイント以下なのでエラー".to_string()));
-        }
-
+    if let Some(_user) = models::user::find(&pool, child_user_id).await? {
         models::gift_request::save(&pool, payload).await?;
 
-        let child_profile = params::user::UpdateProfile {
-            name: None,
-            point: Some(remaind_point),
-            total_point: None,
-        };
-        let validated_payload: params::user::UpdateProfile = child_profile;
-        models::user::save(&pool, child_user_id, validated_payload).await?;
-
         let pairs = find_all_by_user_id(pool, claims.sub).await?;
-
         Ok(Json(pairs))
     } else {
         Err(error::AppError::NotFound("User not found.".to_string()))

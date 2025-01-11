@@ -13,10 +13,7 @@ import {
   Th, Td 
 } from '@/components/Table';
 
-enum RequestType {
-  forParents = "ちょうだい！",
-  fromChildren = "あげる",
-};
+import { RequestStatus, RequestType, SelectedGroup } from '@/types/pair';
 
 export default function GiftRequestPage() {
 
@@ -25,10 +22,11 @@ export default function GiftRequestPage() {
     setSelectedTab,
     isShowModal,
     setIsShowModal,
+    handleSelectedGroup,
     handleAccept,
     printGiftRequestStatus,
     getHandleOnClick,
-    selectedSortedGiftRequests
+    filterdGiftRequests
   } = useGiftRequest();
 
   return(
@@ -83,6 +81,22 @@ export default function GiftRequestPage() {
            * マウスオーバー時に背景をグレーに 
            */
         }
+        <div>
+          <select onChange={handleSelectedGroup}>
+            <option value={SelectedGroup.all}>
+              {SelectedGroup.all}
+            </option>
+            <option value={SelectedGroup.request}>
+              {SelectedGroup.request}
+            </option>
+            <option value={SelectedGroup.approved}>
+              {SelectedGroup.approved}
+            </option>
+            <option value={SelectedGroup.rejected}>
+              {SelectedGroup.rejected}
+            </option>
+          </select>
+        </div>
         <Table>
           <Thead>
             <TheadTr>
@@ -94,10 +108,15 @@ export default function GiftRequestPage() {
             </TheadTr>
           </Thead>
           <Tbody>
-            {selectedSortedGiftRequests.map((giftRequest) => (
+            {filterdGiftRequests.map((giftRequest) => (
               <TbodyTr 
                 key={giftRequest.id} 
-                {...getHandleOnClick(giftRequest)}
+                {
+                  ...(
+                    selectedTab === RequestType.fromChildren 
+                     ? getHandleOnClick(giftRequest) : {}
+                  )
+                }
               >
                 <Td>{FormatDateTime(giftRequest.created_at)}</Td>
                 <Td>{printGiftRequestStatus(giftRequest)}</Td>
@@ -116,7 +135,7 @@ export default function GiftRequestPage() {
            * TODO: onClick出来ないレコードは、
            * マウスオーバー時に背景をグレーに 
            */}
-        {selectedSortedGiftRequests.map((giftRequest) => (
+        {filterdGiftRequests.map((giftRequest) => (
           <MobileTable 
             key={giftRequest.id}
             {...getHandleOnClick(giftRequest)}
@@ -173,7 +192,7 @@ export default function GiftRequestPage() {
             w-full
           ">
             <button 
-              onClick={() => handleAccept('approved')}
+              onClick={() => handleAccept(RequestStatus.approved)}
               className="
                 px-4 py-8
                 text-2xl font-bold
@@ -182,7 +201,7 @@ export default function GiftRequestPage() {
                 w-full
               ">あげる</button>
             <button 
-              onClick={() => handleAccept('rejected')}
+              onClick={() => handleAccept(RequestStatus.rejected)}
               className="
                 px-4 py-4
                 text-lg font-bold

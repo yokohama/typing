@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 
 import { useAlert } from "@/context/AlertContext";
 
-import { GiftRequests, GiftRequest } from "@/types/pair";
+import { 
+  GiftRequests, 
+  GiftRequest,
+  RequestType,
+  SelectedGroup,
+  RequestStatus
+} from "@/types/pair";
 import { isErrorResponse, ErrorResponse } from '@/types/errorResponse';
 
 import { patchData, fetchData } from "@/lib/api";
 import { formatToNaiveDateTime } from "@/lib/format";
-
-enum RequestType {
-  forParents = "ちょうだい！",
-  fromChildren = "あげる",
-};
 
 export const useGiftRequest = () => {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/gift_requests`;
@@ -38,6 +39,11 @@ export const useGiftRequest = () => {
     selectedTab, 
     setSelectedTab
   ] = useState<RequestType.forParents | RequestType.fromChildren>(RequestType.forParents);
+
+  const [
+    selectedGroup,
+    setSelectedGroup
+  ] = useState<SelectedGroup>(SelectedGroup.all);
 
   useEffect(() => {
     const fetchGiftRequestsData = async () => {
@@ -73,8 +79,8 @@ export const useGiftRequest = () => {
   }
 
   const [
-    selectedSortedGiftRequests, 
-    setSelectedSortedGiftRequests
+    filterdGiftRequests, 
+    setFilterdGiftRequests
   ] = useState<GiftRequest[]>([]);
 
   useEffect(() => {
@@ -83,14 +89,33 @@ export const useGiftRequest = () => {
         ? myParentsGiftRequests
         : myChildrenGiftRequests
 
-    const sortedGiftRequests = sourceGiftRequests
+    const groupedGiftRequests = sourceGiftRequests.filter(gr => {
+      switch (selectedGroup) {
+        case SelectedGroup.request:
+          return !gr.approved_at && !gr.rejected_at;
+        case SelectedGroup.approved:
+          return gr.approved_at;
+        case SelectedGroup.rejected:
+          return gr.rejected_at;
+        default:
+          return true;
+      }
+    });
+
+    const sortedGiftRequests = groupedGiftRequests
       ?.filter((request) => request.created_at !== undefined)
       .sort((a, b) => 
         new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
       );
 
-    setSelectedSortedGiftRequests(sortedGiftRequests);
-  }, [selectedTab]);
+    setFilterdGiftRequests(sortedGiftRequests);
+  }, [
+    selectedTab, 
+    selectedGroup,
+    giftRequests,
+    myParentsGiftRequests, 
+    myChildrenGiftRequests
+  ]);
 
   const [
     selectedGiftRequest, 
@@ -106,7 +131,11 @@ export const useGiftRequest = () => {
     setIsShowModal(true);
   };
 
-  const handleAccept = async (status: string) => {
+  const handleSelectedGroup = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedGroup(e.target.value as SelectedGroup);
+  };
+
+  const handleAccept = async (status: RequestStatus) => {
     setIsShowModal(false);
 
     const now = formatToNaiveDateTime(new Date());
@@ -115,8 +144,8 @@ export const useGiftRequest = () => {
 
     const updatedGiftRequest = {
       ...selectedGiftRequest,
-      approved_at: status === "approved" ? now : approved_at,
-      rejected_at: status === "rejected" ? now : rejected_at
+      approved_at: status === RequestStatus.approved ? now : approved_at,
+      rejected_at: status === RequestStatus.rejected ? now : rejected_at
     };
 
     try {
@@ -152,7 +181,8 @@ export const useGiftRequest = () => {
     setIsShowModal,
     printGiftRequestStatus,
     getHandleOnClick,
-    selectedSortedGiftRequests, 
+    filterdGiftRequests, 
+    handleSelectedGroup,
     handleAccept,
     selectedTab,
     setSelectedTab,

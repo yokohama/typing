@@ -150,7 +150,9 @@ pub async fn save(
     if let Some(_point) = params.point {
         updates.push(format!("point = ${}", index));
         index += 1;
+    }
 
+    if let Some(_total_point) = params.total_point {
         updates.push(format!("total_point = ${}", index));
         index += 1;
     }
@@ -184,12 +186,10 @@ pub async fn save(
         query = query.bind(name);
     }
     if let Some(point) = params.point {
-        // current point
         query = query.bind(point);
-
-        // total point
-        let user = find(&pool, id).await?.unwrap();
-        query = query.bind(user.total_point + (point - user.point));
+    }
+    if let Some(total_point) = params.total_point {
+        query = query.bind(total_point);
     }
     query = query.bind(id);
 

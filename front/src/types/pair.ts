@@ -25,3 +25,20 @@ export type GiftRequests = {
   myParents: GiftRequest[],
   myChildren: GiftRequest[],
 }
+
+export enum RequestType {
+  forParents = "ちょうだい！",
+  fromChildren = "あげる",
+};
+
+export enum RequestStatus {
+  request = "お願い中",
+  approved = "支払済",
+  rejected = "却下",
+}
+
+export const SelectedGroup = {
+  ...RequestStatus,
+  all: "ALL"
+} as const;
+export type SelectedGroup = typeof SelectedGroup[keyof typeof SelectedGroup];
