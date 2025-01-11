@@ -18,7 +18,8 @@ export type GiftRequest = {
   point: number,
   approved_at: Date | undefined,
   rejected_at: Date | undefined,
-  created_at: Date
+  created_at: Date,
+  requestStatus?: RequestStatus,
 }
 
 export type GiftRequests = {

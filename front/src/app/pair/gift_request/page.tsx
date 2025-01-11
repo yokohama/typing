@@ -12,8 +12,10 @@ import {
   Tbody, TbodyTr, 
   Th, Td 
 } from '@/components/Table';
+import { SelectGroup } from '@/app/pair/components/SelectGroup';
 
-import { RequestStatus, RequestType, SelectedGroup } from '@/types/pair';
+import { RequestStatus, RequestType } from '@/types/pair';
+import { RequestStatusLabel } from "../components/RequestStatusLabel";
 
 export default function GiftRequestPage() {
 
@@ -24,7 +26,6 @@ export default function GiftRequestPage() {
     setIsShowModal,
     handleSelectedGroup,
     handleAccept,
-    printGiftRequestStatus,
     getHandleOnClick,
     filterdGiftRequests
   } = useGiftRequest();
@@ -75,27 +76,8 @@ export default function GiftRequestPage() {
       </div>
 
       <div className="hidden md:block">
-        {
-          /* 
-           * TODO: onClick出来ないレコードは、
-           * マウスオーバー時に背景をグレーに 
-           */
-        }
-        <div>
-          <select onChange={handleSelectedGroup}>
-            <option value={SelectedGroup.all}>
-              {SelectedGroup.all}
-            </option>
-            <option value={SelectedGroup.request}>
-              {SelectedGroup.request}
-            </option>
-            <option value={SelectedGroup.approved}>
-              {SelectedGroup.approved}
-            </option>
-            <option value={SelectedGroup.rejected}>
-              {SelectedGroup.rejected}
-            </option>
-          </select>
+        <div className="flex justify-end items-center mb-4 mr-6">
+          <SelectGroup handleSelectedGroup={handleSelectedGroup} />
         </div>
         <Table>
           <Thead>
@@ -119,7 +101,9 @@ export default function GiftRequestPage() {
                 }
               >
                 <Td>{FormatDateTime(giftRequest.created_at)}</Td>
-                <Td>{printGiftRequestStatus(giftRequest)}</Td>
+                <Td>
+                  <RequestStatusLabel status={giftRequest.requestStatus} />
+                </Td>
                 <Td>{giftRequest.pair_user_name}</Td>
                 <Td>{giftRequest.point}</Td>
                 <Td>〇〇円分</Td>
@@ -128,8 +112,11 @@ export default function GiftRequestPage() {
           </Tbody>
         </Table>
       </div>
-      <div 
-        className="md:hidden space-y-4 mt-4">
+
+      <div className="md:hidden space-y-4 mt-4">
+        <div className="flex justify-end items-center mb-4">
+          <SelectGroup handleSelectedGroup={handleSelectedGroup} />
+        </div>
         {
           /* 
            * TODO: onClick出来ないレコードは、
@@ -147,14 +134,7 @@ export default function GiftRequestPage() {
               <p className="text-gray-500 text-sm mb-2">
                 申請日: {FormatDateTime(giftRequest.created_at)}
               </p>
-              <p className="
-                p-2
-                text-right text-sm font-bold text-pink-500
-                bg-pink-200
-                rounded-lg
-              ">
-                {printGiftRequestStatus(giftRequest)}
-              </p>
+              <RequestStatusLabel status={giftRequest.requestStatus} />
              </div>
              <div className="
                flex justify-between items-start

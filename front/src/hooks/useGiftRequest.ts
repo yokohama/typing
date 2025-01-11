@@ -65,14 +65,8 @@ export const useGiftRequest = () => {
     setMyChildrenGiftRequests(giftRequests?.myChildren || []);
   }, [giftRequests])
 
-  const printGiftRequestStatus = (giftRequest: GiftRequest) => {
-    if (giftRequest.approved_at) { return "支払済" };
-    if (giftRequest.rejected_at) { return "却下" };
-    return "お願い中";
-  }
-
   const getHandleOnClick = (giftRequest: GiftRequest) => {
-    if (printGiftRequestStatus(giftRequest) === "お願い中") {
+    if (giftRequest.requestStatus === RequestStatus.request) {
       return { handleOnClick: () => handleOnClick(giftRequest) };
     }
     return {};
@@ -103,12 +97,26 @@ export const useGiftRequest = () => {
     });
 
     const sortedGiftRequests = groupedGiftRequests
-      ?.filter((request) => request.created_at !== undefined)
+      ?.filter(gr => gr.created_at !== undefined)
       .sort((a, b) => 
         new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime()
       );
 
-    setFilterdGiftRequests(sortedGiftRequests);
+    const labeldGiftRequests = sortedGiftRequests
+      ?.map(gr  => {
+        if (!gr.approved_at && !gr.rejected_at) {
+          return { ...gr, requestStatus: RequestStatus.request };
+        } else if (gr.approved_at) {
+          return { ...gr, requestStatus: RequestStatus.approved };
+        } else if (gr.rejected_at) {
+          return { ...gr, requestStatus: RequestStatus.rejected };
+        } else {
+          return gr;
+        }
+      }
+    );
+
+    setFilterdGiftRequests(labeldGiftRequests);
   }, [
     selectedTab, 
     selectedGroup,
@@ -179,7 +187,6 @@ export const useGiftRequest = () => {
   return {
     isShowModal,
     setIsShowModal,
-    printGiftRequestStatus,
     getHandleOnClick,
     filterdGiftRequests, 
     handleSelectedGroup,
