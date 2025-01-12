@@ -29,7 +29,6 @@ export const ResultTable = ({
               <Th></Th>
               <Th>レベル</Th>
               <Th>スコア</Th>
-              <Th>タイムボーナス</Th>
               <Th>タイム</Th>
               <Th>コイン</Th>
             </TheadTr>
@@ -43,9 +42,8 @@ export const ResultTable = ({
                 <Td>{result.created_at && FormatDateTime(result.created_at)}</Td>
                 <Td>{result.shuting_id}</Td>
                 <Td>{result.score}</Td>
-                <Td>{result.time_bonus}</Td>
-                <Td>{result.time && FormatSecTime(result.time)}</Td>
-                <Td>{result.coin}</Td>
+                <Td>{result.completion_time && FormatSecTime(result.completion_time)}</Td>
+                <Td>{result.gain_coin}</Td>
               </TbodyTr>
             ))}
           </Tbody>
@@ -66,9 +64,8 @@ export const ResultTable = ({
             <p className="text-lg font-bold">
               スコア: {result.score}
             </p>
-            <p>タイムボーナス: {result.time_bonus}</p>
-            <p>タイム: {result.time && FormatSecTime(result.time)}</p>
-            <p>コイン: {result.coin}</p>
+            <p>タイム: {result.completion_time && FormatSecTime(result.completion_time)}</p>
+            <p>コイン: {result.gain_coin}</p>
           </MobileTable>
         ))}
       </div>

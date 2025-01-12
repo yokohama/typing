@@ -27,23 +27,19 @@ export const Description = ({
         <tbody>
           <tr>
             <Th>獲得コイン</Th>
-            <Td>{result.coin}</Td>
+            <Td>{result.gain_coin}</Td>
           </tr>
           <tr>
             <Th>スコア</Th>
             <Td>{result.score}</Td>
           </tr>
           <tr>
-            <Th>タイムボーナス</Th>
-            <Td>{result.time_bonus}</Td>
-          </tr>
-          <tr>
             <Th>所要時間</Th>
-            <Td>{FormatSecTime((result.time ?? 0))}</Td>
+            <Td>{FormatSecTime((result.completion_time ?? 0))}</Td>
           </tr>
           <tr>
             <Th>パーフェクト</Th>
-            <Td>{result.perfect_count}</Td>
+            <Td>{result.perfect_within_correct_count}</Td>
           </tr>
           <tr>
             <Th>正解</Th>

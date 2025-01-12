@@ -31,7 +31,7 @@ export const Chart: React.FC<RecordsProps> = ({ records }) => {
     datasets: [
       {
         label: '合計スコア',
-        data: records.map((record) => (record.score ?? 0) + (record.time_bonus ?? 0)),
+        data: records.map((record) => (record.score ?? 0)),
         borderColor: 'rgba(244, 114, 182, 0.4)',
         backgroundColor: 'rgb(244, 114, 182)',
         fill: false

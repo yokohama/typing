@@ -66,7 +66,7 @@ export default function Overlay({
                 text-white
                 text-4xl
                 font-bold
-            ">タイムボーナス: {result.time_bonus} </div>
+            ">獲得コイン: {result.gain_coin} </div>
           </div>
         </OverlayVisible>
       )}

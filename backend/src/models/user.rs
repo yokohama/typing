@@ -7,7 +7,7 @@ use sqlx::{
     FromRow
 };
 
-use tracing::{debug, error};
+use tracing::error;
 
 use crate::middleware::error;
 use crate::requests::params::user::UpdateProfile;

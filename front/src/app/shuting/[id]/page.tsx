@@ -57,7 +57,7 @@ export default function Page() {
   ] = useState(false);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [time, setTime] = useState<number>(0);
+  const [completionTime, setCompletionTime] = useState<number>(0);
   const [shutingLimitSec, setShutingLimitSec] = useState<number | null>(null);
   const [matchLength, setMatchLength] = useState<number>(0);
   const [result, setResult] = useState<Result>({
@@ -67,10 +67,9 @@ export default function Page() {
     score: 0,
     correct_count: 0,
     incorrect_count: 0,
-    time: 0,
-    perfect_count: 0,
-    time_bonus: 0,
-    coin: 0,
+    perfect_within_correct_count: 0,
+    completion_time: 0,
+    gain_coin: 0,
     created_at: undefined
   });
 
@@ -111,9 +110,9 @@ export default function Page() {
 
     if (isStart) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
+        setCompletionTime((prevTime) => prevTime + 1);
       }, 1000);
-    } else if (!isStart && time !== 0) {
+    } else if (!isStart && completionTime !== 0) {
       clearInterval(interval);
     }
 
@@ -135,7 +134,7 @@ export default function Page() {
   };
 
   const handleStart = () => {
-    setTime(0);
+    setCompletionTime(0);
     setIsStart(true);
     soundManager.playBgm();
   };
@@ -148,28 +147,28 @@ export default function Page() {
 
     const finalResult: Result = {
       ...result,
-      time: time,
-      perfect_count: perfectCount,
+      completion_time: completionTime,
+      perfect_within_correct_count: perfectCount,
     };
 
     try {
       const data: Result = await postData(postEndpoint, finalResult);
+
       if (isErrorResponse(data)) {
         console.error('API Error:', data.message);
+
       } else if (data && 'id' in data) {
         setResult(prev => ({
           ...prev,
           score: data.score,
-          time_bonus: data.time_bonus
+          gain_coin: data.gain_coin,
         }));
-
-	console.log(data);
 
         setUserInfo((prev) => ({
           ...prev,
           id: prev?.id ?? null,
-          coin: data.coin ?? 0,
-          total_gain_coin: prev?.total_gain_coin ?? 0,
+          coin: data.owned_coin ?? 0,
+          total_gain_coin: data.total_gain_coin ?? 0,
         }));
 
         setIsFinishOverlayVisible(true);
@@ -200,7 +199,7 @@ export default function Page() {
       />
 
       <main className="w-full max-w-5xl bg-white p-6">
-        <Time time={time} />
+        <Time time={completionTime} />
 
         <Progress
           currentIndex={currentIndex}
