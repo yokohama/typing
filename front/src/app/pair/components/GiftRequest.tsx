@@ -16,7 +16,7 @@ import { UserInfo } from "@/types/userInfo";
 type GiftRequest = {
   parent_user_id: number,
   child_user_id: number,
-  point: number,
+  coin: number,
 }
 
 export const GiftRequest = ({
@@ -47,7 +47,7 @@ export const GiftRequest = ({
       setGiftRequest({
         parent_user_id: parentUserId,
         child_user_id: userInfo.id,
-        point: 0,
+        coin: 0,
       });
     }
   }, []);
@@ -71,7 +71,7 @@ export const GiftRequest = ({
       }
       return {
         ...prev,
-        point: value,
+        coin: value,
       };
     });
 
@@ -108,8 +108,8 @@ export const GiftRequest = ({
 
       setUserInfo({
         id: data.id,
-        point: data.point,
-        total_point: data.total_point,
+        coin: data.coin,
+        total_gain_coin: data.total_gain_coin,
       });
 
       setAlerts(prev => [
@@ -148,7 +148,7 @@ export const GiftRequest = ({
           text-center
         ">
           <span className="font-bold">
-            {userInfo?.point}コイン
+            {userInfo?.coin}コイン
           </span>
           たまってるよ！
           <span className="font-bold">
@@ -163,7 +163,7 @@ export const GiftRequest = ({
           <input
             type="number"
             min={0}
-            max={userInfo?.point}
+            max={userInfo?.coin}
             step={giftRequestCoinStep()}
             autoFocus
             defaultValue={0}
@@ -179,7 +179,7 @@ export const GiftRequest = ({
           "/>
           <p className="
             text-xl
-          "> / {userInfo?.point}コイン</p>
+          "> / {userInfo?.coin}コイン</p>
         </div>
         <div className="flex justify-center">
           <button 

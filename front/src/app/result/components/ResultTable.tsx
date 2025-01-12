@@ -45,7 +45,7 @@ export const ResultTable = ({
                 <Td>{result.score}</Td>
                 <Td>{result.time_bonus}</Td>
                 <Td>{result.time && FormatSecTime(result.time)}</Td>
-                <Td>{result.point}</Td>
+                <Td>{result.coin}</Td>
               </TbodyTr>
             ))}
           </Tbody>
@@ -68,7 +68,7 @@ export const ResultTable = ({
             </p>
             <p>タイムボーナス: {result.time_bonus}</p>
             <p>タイム: {result.time && FormatSecTime(result.time)}</p>
-            <p>コイン: {result.point}</p>
+            <p>コイン: {result.coin}</p>
           </MobileTable>
         ))}
       </div>

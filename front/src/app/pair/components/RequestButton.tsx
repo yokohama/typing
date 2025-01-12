@@ -36,7 +36,7 @@ export const RequestButton = ({
   }
 
   const isPointAvailable = (): boolean => {
-    return userInfo !== null && userInfo.point > 0;
+    return userInfo !== null && userInfo.coin > 0;
   };
 
   return (

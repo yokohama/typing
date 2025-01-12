@@ -16,7 +16,7 @@ pub struct Entry {
     pub parent_user_id: i32,
     pub child_user_id: i32,
     pub pair_user_name: String,
-    pub point: i32,
+    pub coin: i32,
     pub approved_at: Option<NaiveDateTime>,
     pub rejected_at: Option<NaiveDateTime>,
     pub created_at: NaiveDateTime,
@@ -27,7 +27,7 @@ pub struct Entry {
 pub struct Create {
     pub parent_user_id: i32,
     pub child_user_id: i32,
-    pub point: i32,
+    pub coin: i32,
 }
 
 #[derive(Debug, Serialize, FromRow)]
@@ -35,7 +35,7 @@ pub struct Created {
     pub id: i32,
     pub parent_user_id: i32,
     pub child_user_id: i32,
-    pub point: i32,
+    pub coin: i32,
     pub approved_at: Option<NaiveDateTime>,
     pub rejected_at: Option<NaiveDateTime>,
     pub created_at: NaiveDateTime,
@@ -46,7 +46,7 @@ pub struct Created {
 pub struct Update {
     pub id: i32,
     pub child_user_id: i32,
-    pub point: i32,
+    pub coin: i32,
     pub approved_at: Option<NaiveDateTime>,
     pub rejected_at: Option<NaiveDateTime>,
 }
@@ -66,7 +66,7 @@ pub async fn create(
         INSERT INTO gift_requests (
             parent_user_id, 
             child_user_id,
-            point,
+            coin,
             created_at
         )
         VALUES ($1, $2, $3, NOW())
@@ -74,7 +74,7 @@ pub async fn create(
             id, 
             parent_user_id, 
             child_user_id, 
-            point, 
+            coin, 
             approved_at, 
             rejected_at,
             created_at, 
@@ -84,7 +84,7 @@ pub async fn create(
     let result = query_as::<_, Created>(sql)
         .bind(&params.parent_user_id)
         .bind(&params.child_user_id)
-        .bind(&params.point)
+        .bind(&params.coin)
         .fetch_one(pool)
         .await
         .map_err(|e| {
@@ -112,7 +112,7 @@ pub async fn save(
           WHERE id = $2
           RETURNING 
               id, 
-              point,
+              coin,
               child_user_id,
               approved_at, 
               rejected_at
@@ -146,7 +146,7 @@ pub async fn find_all_by_user_id(
                   gift_requests.parent_user_id, 
                   gift_requests.child_user_id, 
                   users.name AS pair_user_name,
-                  gift_requests.point, 
+                  gift_requests.coin, 
                   gift_requests.approved_at, 
                   gift_requests.rejected_at,
                   gift_requests.created_at, 
@@ -170,7 +170,7 @@ pub async fn find_all_by_user_id(
                   gift_requests.parent_user_id, 
                   gift_requests.child_user_id, 
                   users.name AS pair_user_name,
-                  gift_requests.point, 
+                  gift_requests.coin, 
                   gift_requests.approved_at, 
                   gift_requests.rejected_at,
                   gift_requests.created_at, 

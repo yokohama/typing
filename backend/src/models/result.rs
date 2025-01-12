@@ -22,7 +22,7 @@ pub struct Entry {
     pub time: i32,
     pub perfect_count: i32,
     pub time_bonus: i32,
-    pub point: i32,
+    pub coin: i32,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
 }
@@ -77,7 +77,7 @@ pub async fn create(
             time,
             perfect_count,
             time_bonus,
-            point,
+            coin,
             created_at
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
@@ -91,7 +91,7 @@ pub async fn create(
             time, 
             perfect_count, 
             time_bonus, 
-            point,
+            coin,
             created_at, 
             deleted_at
     "#;
@@ -133,7 +133,7 @@ pub async fn find(
           time, 
           perfect_count,
           time_bonus,
-          point,
+          coin,
           created_at, 
           deleted_at
         FROM 
@@ -171,7 +171,7 @@ pub async fn where_all(
           time, 
           perfect_count,
           time_bonus,
-          point,
+          coin,
           created_at, 
           deleted_at
         FROM 
@@ -247,7 +247,7 @@ fn calc_score(
     };
 
     let time_bonus = time_bonus.round() as i32;
-    let point = (score + time_bonus) / 10;
+    let coin = (score + time_bonus) / 10;
 
-    (score, time_bonus, point)
+    (score, time_bonus, coin)
 }

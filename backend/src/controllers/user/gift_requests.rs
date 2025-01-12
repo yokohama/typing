@@ -31,7 +31,7 @@ pub async fn create(
         let validated_payload: params::gift_request::Create = payload.0;
 
         // 自分で持っているポイントよりも多い場合はバリデーションエラー。
-        if validated_payload.point > user.point {
+        if validated_payload.coin > user.coin {
             return Err(error::AppError::ValidationError("ポイントが足りません。".to_string()));
         }
 
@@ -40,7 +40,7 @@ pub async fn create(
             models::gift_request::Create {
                 parent_user_id: validated_payload.parent_user_id,
                 child_user_id: validated_payload.child_user_id,
-                point: validated_payload.point,
+                coin: validated_payload.coin,
             }
         ).await?;
 
@@ -49,8 +49,8 @@ pub async fn create(
             claims.sub,
             params::user::UpdateProfile {
               name: None,
-              point: Some(user.point - validated_payload.point),
-              total_point: None,
+              coin: Some(user.coin - validated_payload.coin),
+              total_gain_coin: None,
             }
         ).await?;
 

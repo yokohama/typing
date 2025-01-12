@@ -26,8 +26,8 @@ export const Description = ({
       ">
         <tbody>
           <tr>
-            <Th>コイン</Th>
-            <Td>{result.point}</Td>
+            <Th>獲得コイン</Th>
+            <Td>{result.coin}</Td>
           </tr>
           <tr>
             <Th>スコア</Th>

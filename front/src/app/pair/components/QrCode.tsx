@@ -16,7 +16,7 @@ export const QrCode = ({
         text-gray-500
         font-bold
       ">
-        <span className="text-4xl lg:text-6xl">{userInfo?.point}</span>
+        <span className="text-4xl lg:text-6xl">{userInfo?.coin}</span>
         <span className="lg:text-2xl">コイン</span>
       </div>
       <p>たまったコインをAmazonポイントに変えるには、最初にパパやママにQRコードを教えて、登録してもらってね！</p>

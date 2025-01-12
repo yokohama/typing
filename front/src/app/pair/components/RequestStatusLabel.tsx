@@ -1,7 +1,7 @@
 import { RequestStatus } from "@/types/pair"
 
 const statusClass = {
-  [RequestStatus.request]: "text-pink-500 bg-pink-200",
+  [RequestStatus.request]: "text-yellow-500 bg-yellow-200",
   [RequestStatus.approved]: "text-green-500 bg-green-200",
   [RequestStatus.rejected]: "text-gray-500 bg-gray-200",
   undefined: "text-gray-500 bg-white",

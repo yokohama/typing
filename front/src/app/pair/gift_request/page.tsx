@@ -105,7 +105,7 @@ export default function GiftRequestPage() {
                   <RequestStatusLabel status={giftRequest.requestStatus} />
                 </Td>
                 <Td>{giftRequest.pair_user_name}</Td>
-                <Td>{giftRequest.point}</Td>
+                <Td>{giftRequest.coin}</Td>
                 <Td>〇〇円分</Td>
               </TbodyTr>
             ))}
@@ -145,7 +145,7 @@ export default function GiftRequestPage() {
                </p>
                <div className='text-right'>
                  <p>
-                   <span className="font-bold">{giftRequest.point}</span>
+                   <span className="font-bold">{giftRequest.coin}</span>
                    コイン消費
                  </p>
                  <p>

@@ -74,8 +74,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               email: userRes.email || '',
               name: userRes.name || '',
               image: session?.user?.image || '',
-              point: userRes.point || 0,
-              total_point: userRes.point || 0,
+              coin: userRes.coin || 0,
+              total_gain_coin: userRes.total_gain_coin || 0,
             }));
           });
         }).catch(error => {

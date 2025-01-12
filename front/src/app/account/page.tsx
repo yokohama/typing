@@ -18,8 +18,8 @@ export default function Page() {
     id: null,
     email: '',
     name: '',
-    point: 0,
-    total_point: 0,
+    coin: 0,
+    total_gain_coin: 0,
   });
 
   const [isEditing, setIsEditing] = useState(false);

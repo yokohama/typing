@@ -85,7 +85,7 @@ const UserInfoArea = ({
       <p className="text-xl text-gray-500">{userInfo.name || ''}</p>
       <p className="text-sm text-gray-500">{userInfo.email || ''}</p>
       <p className="text-sm text-gray-500">
-        合計獲得コイン: {userInfo.total_point}
+        合計獲得コイン: {userInfo.total_gain_coin}
       </p>
       <div className="
         py-8
@@ -96,7 +96,7 @@ const UserInfoArea = ({
           <Link href="/pair">
             <span className="
               text-4xl
-            ">{userInfo.point}</span>
+            ">{userInfo.coin}</span>
           </Link>
           <Link href="/pair">
             <span className="text-xl"> コイン</span>

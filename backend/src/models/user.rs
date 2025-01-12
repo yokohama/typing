@@ -17,8 +17,8 @@ pub struct Entry {
     pub id: i32,
     pub email: String,
     pub name: Option<String>,
-    pub point: i32,
-    pub total_point: i32,
+    pub coin: i32,
+    pub total_gain_coin: i32,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
 }
@@ -39,8 +39,8 @@ pub async fn find_by_email(
           id, 
           email, 
           name, 
-          point, 
-          total_point,
+          coin, 
+          total_gain_coin,
           created_at, 
           deleted_at 
         FROM 
@@ -71,8 +71,8 @@ pub async fn find(
           id, 
           email, 
           name, 
-          point, 
-          total_point, 
+          coin, 
+          total_gain_coin, 
           created_at, 
           deleted_at 
         FROM
@@ -112,8 +112,8 @@ pub async fn create(
               id, 
               email, 
               name, 
-              point, 
-              total_point, 
+              coin, 
+              total_gain_coin, 
               created_at, 
               deleted_at
             "#;
@@ -147,13 +147,13 @@ pub async fn save(
         index += 1;
     }
 
-    if let Some(_point) = params.point {
-        updates.push(format!("point = ${}", index));
+    if let Some(_coin) = params.coin {
+        updates.push(format!("coin = ${}", index));
         index += 1;
     }
 
-    if let Some(_total_point) = params.total_point {
-        updates.push(format!("total_point = ${}", index));
+    if let Some(_total_gain_coin) = params.total_gain_coin {
+        updates.push(format!("total_gain_coin = ${}", index));
         index += 1;
     }
 
@@ -172,8 +172,8 @@ pub async fn save(
             id, 
             email, 
             name, 
-            point, 
-            total_point, 
+            coin, 
+            total_gain_coin, 
             created_at, 
             deleted_at
         ",
@@ -185,11 +185,11 @@ pub async fn save(
     if let Some(name) = &params.name {
         query = query.bind(name);
     }
-    if let Some(point) = params.point {
-        query = query.bind(point);
+    if let Some(coin) = params.coin {
+        query = query.bind(coin);
     }
-    if let Some(total_point) = params.total_point {
-        query = query.bind(total_point);
+    if let Some(total_gain_coin) = params.total_gain_coin {
+        query = query.bind(total_gain_coin);
     }
     query = query.bind(id);
 

@@ -63,7 +63,7 @@ pub fn name(value: &str) -> Result<(), ValidationError> {
     }
 }
 
-pub fn valid_point(value: i32) -> Result<(), ValidationError> {
+pub fn valid_coin(value: i32) -> Result<(), ValidationError> {
     let step = env::var("GIFT_REQUEST_COIN_STEP")
         .ok()
         .and_then(|s| s.parse::<i32>().ok())

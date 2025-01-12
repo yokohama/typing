@@ -15,7 +15,7 @@ export type GiftRequest = {
   parent_user_id: number,
   child_user_id: number,
   pair_user_name: string,
-  point: number,
+  coin: number,
   approved_at: Date | undefined,
   rejected_at: Date | undefined,
   created_at: Date,

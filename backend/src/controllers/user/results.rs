@@ -53,10 +53,10 @@ pub async fn create(
         },
     ).await?;
 
-    let point = update_point(
+    let coin = update_coin(
         &pool, 
         claims.sub, 
-        result.point,
+        result.coin,
     ).await?;
 
     let mut result = serde_json::to_value(&result)
@@ -66,7 +66,7 @@ pub async fn create(
         })?;
 
     if let serde_json::Value::Object(ref mut map) = result {
-        map.insert("point".to_string(), json!(point));
+        map.insert("coin".to_string(), json!(coin));
     }
 
     Ok(Json(result))
@@ -86,10 +86,10 @@ pub async fn show(
     Ok(Json(result))
 }
 
-async fn update_point(
+async fn update_coin(
     pool: &PgPool,
     user_id: i32,
-    point: i32,
+    coin: i32,
 ) -> Result<i32, error::AppError> {
 
     let user = models::user::find(
@@ -104,8 +104,8 @@ async fn update_point(
         })?;
 
     let update = params::user::UpdateProfile {
-        point: Some(user.point + point),
-        total_point: Some(user.total_point + point),
+        coin: Some(user.coin + coin),
+        total_gain_coin: Some(user.total_gain_coin + coin),
         ..Default::default()
     };
 
@@ -115,5 +115,5 @@ async fn update_point(
         update
     ).await?;
 
-    Ok(update_user.point)
+    Ok(update_user.coin)
 }

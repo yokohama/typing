@@ -70,13 +70,13 @@ export default function Page() {
     time: 0,
     perfect_count: 0,
     time_bonus: 0,
-    point: 0,
+    coin: 0,
     created_at: undefined
   });
 
   const soundManager = useRef(new SoundManager()).current;
 
-  // Stop BGM when use browser back button.
+  // TODO: Stop BGM when use browser back button.
   window.addEventListener('popstate', () => {soundManager.stopBgm() });
 
   useEffect(() => {
@@ -87,8 +87,6 @@ export default function Page() {
         console.error('Error fetching lesson data:', data.message);
         return;
       };
-
-      console.log(data.words)
 
       if (Array.isArray(data.words)) {
         const words: Word[] = data.is_random
@@ -164,13 +162,15 @@ export default function Page() {
           score: data.score,
           time_bonus: data.time_bonus
         }));
-	
-          setUserInfo((prev) => ({
-            ...prev,
-            id: prev?.id ?? null,
-            point: data.point ?? 0,
-            total_point: prev?.total_point ?? 0,
-          }));
+
+	console.log(data);
+
+        setUserInfo((prev) => ({
+          ...prev,
+          id: prev?.id ?? null,
+          coin: data.coin ?? 0,
+          total_gain_coin: prev?.total_gain_coin ?? 0,
+        }));
 
         setIsFinishOverlayVisible(true);
         await new Promise(resolve => setTimeout(resolve, 5000));
