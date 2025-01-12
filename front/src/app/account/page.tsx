@@ -29,7 +29,7 @@ export default function Page() {
   const { validationErrors, setErrors, clearErrors } = useValidation();
   const [isUpdated, setIsUpdated] = useState(false);
 
-  useUserData(endpoint, setFormData);
+  useUserData(setFormData);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -118,12 +118,12 @@ export default function Page() {
               <p
                 onClick={handleEditClick}
                 className="
-                  mt-1 p-2 
+                  mt-1 p-2
                   border border-transparent rounded
                   bg-gray-100
                   hover:bg-gray-200 cursor-pointer
                 ">{formData.name || "Click to edit"}</p>
-            )}   
+            )}
             <div className="mb-8" />
           </div>
 

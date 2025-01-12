@@ -4,7 +4,8 @@ import { UserInfo } from '@/types/userInfo';
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 import { useUser } from '@/context/UserContext';
 
-export const useUserData = (endpoint: string, setFormData: (data: UserInfo) => void) => {
+export const useUserData = (setFormData: (data: UserInfo) => void) => {
+  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
   const { userInfo, setUserInfo } = useUser();
 
   useEffect(() => {
@@ -24,5 +25,7 @@ export const useUserData = (endpoint: string, setFormData: (data: UserInfo) => v
     };
 
     fetchUserData();
-  }, [endpoint, setUserInfo, userInfo?.image, setFormData]);
+  }, [setUserInfo, userInfo?.image]);
+
+  return { endpoint, setFormData };
 };
