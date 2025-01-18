@@ -9,7 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { useUser } from '@/context/UserContext';
 import { Shuting } from '@/types/shuting';
-import { Word } from '@/types/shuting';
+import { ShutingWord } from '@/types/shuting';
 import { Result } from '@/types/result';
 import { fetchData, postData } from '@/lib/api';
 import { isErrorResponse } from '@/types/errorResponse';
@@ -31,14 +31,47 @@ export default function Page() {
   const postEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${id}/results`;
 
   const { setUserInfo } = useUser();
+
+  // Shuting全体
   const [isStart, setIsStart] = useState<boolean>(false);
   const [isFinish, setIsFinish] = useState<boolean>(false);
-  const [isCountdownVisible, setIsCountdownVisible] = useState<boolean>(true);
-  const [shutingWords, setShutingWords] = useState<Word[]>([]);
-  const [currentWord, setCurrentWord] = useState<Word | null>(null);
-  const [answer, setAnswer] = useState<string>('');
+  const [completionTime, setCompletionTime] = useState<number>(0);
+  const [shutingWords, setShutingWords] = useState<ShutingWord[]>([]);
+
+  // 出題進捗
+  const [
+    currentShutingWordIndex, 
+    setCurrentShutingWordIndex
+  ] = useState<number>(0);
+  const [
+    currentShutingWordLimitSec, 
+    setCurrentShutingWordLimitSec
+  ] = useState<number | null>(null);
+  const [
+    currentShutingWord, 
+    setCurrentShutingWord
+  ] = useState<ShutingWord | null>(null);
+
+  // 解答進捗
+  const [
+    currentShutingWordAnswer, 
+    setCurrentShutingWordAnswer
+  ] = useState<string>('');
+  const [
+    currentShutingWordAnswerMatchedLength, 
+    setCurrentShutingWordAnswerMatchedLength
+  ] = useState<number>(0);
+  const [
+    isCurrentShutingWordAnswerComplete, 
+    setIsCurrentShutingWordAnswerComplete
+  ] = useState(false);
   const [perfectCount, setPerfectCount] = useState<number>(0);
 
+  // 表示アクション
+  const [
+    isCountdownVisible, 
+    setIsCountdownVisible
+  ] = useState<boolean>(true);
   const [
     isCorrectOverlayVisible, 
     setIsCorrectOverlayVisible
@@ -56,10 +89,7 @@ export default function Page() {
     setIsFinishOverlayVisible
   ] = useState(false);
 
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [completionTime, setCompletionTime] = useState<number>(0);
-  const [shutingLimitSec, setShutingLimitSec] = useState<number | null>(null);
-  const [matchLength, setMatchLength] = useState<number>(0);
+  // 最終結果
   const [result, setResult] = useState<Result>({
     id: undefined,
     user_id: undefined,
@@ -88,13 +118,13 @@ export default function Page() {
       };
 
       if (Array.isArray(data.words)) {
-        const words: Word[] = data.is_random
+        const words: ShutingWord[] = data.is_random
           ? [...data.words].sort(() => Math.random() - 0.5)
           : data.words;
 
         setShutingWords(words);
-        setCurrentWord(words[currentIndex]);
-        setShutingLimitSec(words[currentIndex]?.limit_sec);
+        setCurrentShutingWord(words[currentShutingWordIndex]);
+        setCurrentShutingWordLimitSec(words[currentShutingWordIndex]?.limit_sec);
       } else {
         console.error("Expected an array of words, received:", data.words);
       }
@@ -119,17 +149,18 @@ export default function Page() {
     return () => clearInterval(interval);
   }, [isStart]);
 
-  const moveToNextExample = () => {
-    const nextIndex = currentIndex + 1;
+  const moveToNextShutingWord = () => {
+    const nextShutingWordIndex = currentShutingWordIndex + 1;
 
-    if (nextIndex < shutingWords.length) {
-      setCurrentWord(shutingWords[nextIndex]);
-      setAnswer('');
-      setCurrentIndex(nextIndex);
-      setMatchLength(0);
-      setShutingLimitSec(shutingWords[nextIndex].limit_sec || null);
+    if (nextShutingWordIndex < shutingWords.length) {
+      setCurrentShutingWord(shutingWords[nextShutingWordIndex]);
+      setCurrentShutingWordAnswer('');
+      setCurrentShutingWordIndex(nextShutingWordIndex);
+      setCurrentShutingWordAnswerMatchedLength(0);
+      setCurrentShutingWordLimitSec(shutingWords[nextShutingWordIndex].limit_sec || null);
+      setIsCurrentShutingWordAnswerComplete(false);
     } else {
-      handleFinish();
+      setIsFinish(true);
     }
   };
 
@@ -139,48 +170,56 @@ export default function Page() {
     soundManager.playBgm();
   };
 
-  const handleFinish = async () => {
+  useEffect(() => {
+    if (!isFinish) { return; }
+
+    const postResult = async () => {
+      soundManager.stopBgm();
+      soundManager.playFinish();
+
+      const finalResult: Result = {
+        ...result,
+        completion_time: completionTime,
+        perfect_within_correct_count: perfectCount,
+      };
+
+      try {
+        const data: Result = await postData(postEndpoint, finalResult);
+
+        if (isErrorResponse(data)) {
+          console.error('API Error:', data.message);
+
+        } else if (data && 'id' in data) {
+          setResult(prev => ({
+            ...prev,
+            score: data.score,
+            gain_coin: data.gain_coin,
+          }));
+
+          setUserInfo((prev) => ({
+            ...prev,
+            id: prev?.id ?? null,
+            coin: data.owned_coin ?? 0,
+            total_gain_coin: data.total_gain_coin ?? 0,
+          }));
+
+          setIsFinishOverlayVisible(true);
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          setIsFinishOverlayVisible(false);
+
+          router.push(`/result/${data.id}`);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     setIsStart(false);
-    setIsFinish(true);
     soundManager.stopBgm();
     soundManager.playFinish();
 
-    const finalResult: Result = {
-      ...result,
-      completion_time: completionTime,
-      perfect_within_correct_count: perfectCount,
-    };
-
-    try {
-      const data: Result = await postData(postEndpoint, finalResult);
-
-      if (isErrorResponse(data)) {
-        console.error('API Error:', data.message);
-
-      } else if (data && 'id' in data) {
-        setResult(prev => ({
-          ...prev,
-          score: data.score,
-          gain_coin: data.gain_coin,
-        }));
-
-        setUserInfo((prev) => ({
-          ...prev,
-          id: prev?.id ?? null,
-          coin: data.owned_coin ?? 0,
-          total_gain_coin: data.total_gain_coin ?? 0,
-        }));
-
-        setIsFinishOverlayVisible(true);
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        setIsFinishOverlayVisible(false);
-
-        router.push(`/result/${data.id}`);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
+    postResult();
+  }, [isFinish]);
 
   return(
     <div className="flex justify-center min-h-screen bg-gray-50 relative">
@@ -202,35 +241,37 @@ export default function Page() {
         <Time time={completionTime} />
 
         <Progress
-          currentIndex={currentIndex}
+          currentShutingWordIndex={currentShutingWordIndex}
           shutingWordsLength={shutingWords.length}
           isFinish={isFinish}
         />
 
         <ShutingArea
-          shutingLimitSec={shutingLimitSec}
-          word={currentWord}
-          answer={answer}
-          matchLength={matchLength}
-          setMatchLength={setMatchLength}
+          currentWordLimitSec={currentShutingWordLimitSec}
+          setCurrentWordLimitSec={setCurrentShutingWordLimitSec}
+          currentShutingWord={currentShutingWord}
+          currentShutingWordAnswer={currentShutingWordAnswer}
+          currentShutingWordAnswerMatchedLength={currentShutingWordAnswerMatchedLength}
+          setCurrentShutingWordAnswerMatchedLength={setCurrentShutingWordAnswerMatchedLength}
           soundManager={soundManager}
-          moveToNextExample={moveToNextExample}
+          moveToNextShutingWord={moveToNextShutingWord}
           isStart={isStart}
-          setShutingLimitSec={setShutingLimitSec}
           setResult={setResult}
           setIsIncorrectOverlayVisible={setIsIncorrectOverlayVisible}
-          currentIndex={currentIndex}
+          currentShutingWordIndex={currentShutingWordIndex}
         />
 
         <AnswerArea
-          answer={answer}
-          word={currentWord}
+          currentShutingWordAnswer={currentShutingWordAnswer}
+          currentShutingWord={currentShutingWord}
+          isCurrentShutingWordAnswerComplete={isCurrentShutingWordAnswerComplete}
+          setIsCurrentShutingWordAnswerComplete={setIsCurrentShutingWordAnswerComplete}
           soundManager={soundManager}
           setIsCorrectOverlayVisible={setIsCorrectOverlayVisible}
           setIsPerfectOverlayVisible={setIsPerfectOverlayVisible}
-          moveToNextExample={moveToNextExample}
+          moveToNextShutingWord={moveToNextShutingWord}
           setResult={setResult}
-          setAnswer={setAnswer}
+          setAnswer={setCurrentShutingWordAnswer}
           setPerfectCount={setPerfectCount}
         />
       </main>

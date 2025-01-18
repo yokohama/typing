@@ -1,11 +1,11 @@
 type ProgressProps = {
-  currentIndex: number;
+  currentShutingWordIndex: number;
   shutingWordsLength: number;
   isFinish: boolean;
 };
 
 export default function Progress({
-  currentIndex,
+  currentShutingWordIndex,
   shutingWordsLength,
   isFinish,
 }: ProgressProps) {
@@ -20,7 +20,7 @@ export default function Progress({
     ">
       <div 
         style={{
-          width: `${((currentIndex+1) / shutingWordsLength) * 100}%`,
+          width: `${((currentShutingWordIndex+1) / shutingWordsLength) * 100}%`,
         }}
         className="
           absolute top-0 left-0 h-full
@@ -34,7 +34,7 @@ export default function Progress({
         style={{
           width: isFinish
             ? '100%'
-            : `${((currentIndex) / shutingWordsLength) * 100}%`
+            : `${((currentShutingWordIndex) / shutingWordsLength) * 100}%`
         }}
         className="
           absolute top-0 left-0 h-full

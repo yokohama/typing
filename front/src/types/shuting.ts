@@ -1,4 +1,4 @@
-export type Word = {
+export type ShutingWord = {
   word?: string | undefined | null;
   limit_sec: number;
 };
@@ -8,5 +8,5 @@ export type Shuting = {
   level: number;
   description: string;
   is_random: boolean;
-  words: Word[];
+  words: ShutingWord[];
 };

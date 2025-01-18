@@ -1,64 +1,64 @@
 import React, { useEffect, useMemo } from "react";
 import { Result } from "@/types/result";
-import { Word } from "@/types/shuting";
+import { ShutingWord } from "@/types/shuting";
 import { SoundManager } from "./soundManager";
 
 type ShutingAreaProps = {
-  shutingLimitSec: number | null;
-  word: Word | null;
-  answer: string;
-  matchLength: number;
-  setMatchLength: React.Dispatch<React.SetStateAction<number>>;
+  currentWordLimitSec: number | null;
+  currentShutingWord: ShutingWord | null;
+  currentShutingWordAnswer: string;
+  currentShutingWordAnswerMatchedLength: number;
+  setCurrentShutingWordAnswerMatchedLength: React.Dispatch<React.SetStateAction<number>>;
   soundManager: SoundManager;
-  moveToNextExample: () => void;
+  moveToNextShutingWord: () => void;
   isStart: boolean;
-  setShutingLimitSec: React.Dispatch<React.SetStateAction<number | null>>;
+  setCurrentWordLimitSec: React.Dispatch<React.SetStateAction<number | null>>;
   setResult: React.Dispatch<React.SetStateAction<Result>>;
   setIsIncorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  currentIndex: number;
+  currentShutingWordIndex: number;
 };
 
 export default function ShutingArea({
-  shutingLimitSec,
-  word,
-  answer,
-  matchLength,
-  setMatchLength,
+  currentWordLimitSec,
+  currentShutingWord,
+  currentShutingWordAnswer,
+  currentShutingWordAnswerMatchedLength,
+  setCurrentShutingWordAnswerMatchedLength,
   soundManager,
-  moveToNextExample,
+  moveToNextShutingWord,
   isStart,
-  setShutingLimitSec,
+  setCurrentWordLimitSec,
   setResult,
   setIsIncorrectOverlayVisible,
-  currentIndex,
+  currentShutingWordIndex,
 }: ShutingAreaProps) {
 
   const newMatchLength = useMemo(() => {
-    if (!word?.word) return 0;
+    if (!currentShutingWord?.word) return 0;
 
-    let tempMatchLength = 0;
-    for (let i = 0; i < answer.length; i++) {
-      if (answer[i] === word?.word[i]) {
-        tempMatchLength++;
+    let progressMatchLength = 0;
+    for (let i = 0; i < currentShutingWordAnswer.length; i++) {
+      if (currentShutingWordAnswer[i] === currentShutingWord?.word[i]) {
+        progressMatchLength++;
       } else {
         break;
       }
     }
-    return tempMatchLength;
-  }, [answer, word?.word]);
+    return progressMatchLength;
+  }, [currentShutingWordAnswer, currentShutingWord?.word]);
 
   useEffect(() => {
-    if (newMatchLength > matchLength) {
+    if (newMatchLength > currentShutingWordAnswerMatchedLength) {
       soundManager.playSuccess();
-      setMatchLength(newMatchLength);
+      setCurrentShutingWordAnswerMatchedLength(newMatchLength);
     }
-  }, [newMatchLength, matchLength, soundManager]);
+  }, [newMatchLength, currentShutingWordAnswerMatchedLength, soundManager]);
 
   useEffect(() => {
-    if (!isStart || shutingLimitSec === null || shutingLimitSec <= 0) return;
+    if (!isStart || currentWordLimitSec === null || currentWordLimitSec <= 0) return;
 
     const interval = setInterval(() => {
-      setShutingLimitSec(prev => {
+      setCurrentWordLimitSec(prev => {
         if (prev === null || prev <= 1) {
           clearInterval(interval);
           return 0;
@@ -68,13 +68,13 @@ export default function ShutingArea({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isStart, currentIndex]);
+  }, [isStart, currentShutingWordIndex]);
 
   useEffect(() => {
-    if (shutingLimitSec === 0) {
+    if (currentWordLimitSec === 0) {
       handleTimeLimitExceeded();
     }
-  }, [shutingLimitSec]);
+  }, [currentWordLimitSec]);
 
   const handleTimeLimitExceeded = () => {
     setResult(prevResult => ({
@@ -85,22 +85,22 @@ export default function ShutingArea({
     setIsIncorrectOverlayVisible(true);
     setTimeout(() => {
       setIsIncorrectOverlayVisible(false);
-      moveToNextExample();
+      moveToNextShutingWord();
     }, 1000);
   };
 
-  const borderColor = shutingLimitSec !== null && word?.limit_sec
+  const borderColor = currentWordLimitSec !== null && currentShutingWord?.limit_sec
     ? `rgba(
-        ${Math.round(220 * (1 - shutingLimitSec / (word.limit_sec || 1))) + 35}, 
-        ${Math.round(180 * (shutingLimitSec / (word.limit_sec || 1)))}, 
-        ${Math.round(50 * (shutingLimitSec / (word.limit_sec || 1)))}, 1)`
+        ${Math.round(220 * (1 - currentWordLimitSec / (currentShutingWord.limit_sec || 1))) + 35}, 
+        ${Math.round(180 * (currentWordLimitSec / (currentShutingWord.limit_sec || 1)))}, 
+        ${Math.round(50 * (currentWordLimitSec / (currentShutingWord.limit_sec || 1)))}, 1)`
     : "rgba(220, 50, 50, 1)";
 
-  const backgroundColor = shutingLimitSec !== null && word?.limit_sec
+  const backgroundColor = currentWordLimitSec !== null && currentShutingWord?.limit_sec
     ? `rgba(
-        ${Math.round(220 * (1 - shutingLimitSec / (word.limit_sec || 1))) + 35}, 
-        ${Math.round(180 * (shutingLimitSec / (word.limit_sec || 1)))}, 
-        ${Math.round(50 * (shutingLimitSec / (word.limit_sec || 1)))}, 0.1)`
+        ${Math.round(220 * (1 - currentWordLimitSec / (currentShutingWord.limit_sec || 1))) + 35}, 
+        ${Math.round(180 * (currentWordLimitSec / (currentShutingWord.limit_sec || 1)))}, 
+        ${Math.round(50 * (currentWordLimitSec / (currentShutingWord.limit_sec || 1)))}, 0.1)`
     : "rgba(220, 50, 50, 0.1)";
 
   return (
@@ -121,10 +121,10 @@ export default function ShutingArea({
     ">
       <span>
         <span className="text-green-600 font-bold">
-          {word?.word?.slice(0, newMatchLength)}
+          {currentShutingWord?.word?.slice(0, newMatchLength)}
         </span>
         <span>
-          {word?.word?.slice(newMatchLength)}
+          {currentShutingWord?.word?.slice(newMatchLength)}
         </span>
       </span>
     </div>
