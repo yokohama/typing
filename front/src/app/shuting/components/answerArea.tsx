@@ -1,4 +1,8 @@
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, { 
+  ChangeEvent, 
+  useState, 
+  useEffect 
+} from "react";
 
 import { SoundManager } from "./soundManager";
 import { Result } from "@/types/result";
@@ -16,6 +20,7 @@ type AnswerAreaProps =  {
   moveToNextShutingWord: () => void;
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
   setPerfectCount: React.Dispatch<React.SetStateAction<number>>,
+  isFinish: boolean,
 };
 
 export default function AnswerArea({ 
@@ -30,6 +35,7 @@ export default function AnswerArea({
   moveToNextShutingWord,
   setAnswer,
   setPerfectCount,
+  isFinish,
 }: AnswerAreaProps) {
 
   const [isTypeDeleteKey, setIsTypeDeleteKey] = useState(false);
@@ -93,6 +99,7 @@ export default function AnswerArea({
       <input
         type="text"
         value={currentShutingWordAnswer}
+        disabled={isFinish}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
         autoFocus

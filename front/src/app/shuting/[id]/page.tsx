@@ -273,6 +273,7 @@ export default function Page() {
           setResult={setResult}
           setAnswer={setCurrentShutingWordAnswer}
           setPerfectCount={setPerfectCount}
+	  isFinish={isFinish}
         />
       </main>
     </div>
