@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { patchData } from '@/lib/api';
 import { useValidation } from '@/hooks/useValidation';
-import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 
 import { useUser } from '@/context/UserContext';
 import { UserInfo } from '@/types/userInfo';
@@ -14,7 +12,7 @@ import { useUserData } from '@/hooks/useUserData';
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
 
-  const { userInfo, setUserInfo } = useUser();
+  const { userInfo,  } = useUser();
   const [formData, setFormData] = useState<UserInfo>({
     id: null,
     email: '',
@@ -29,47 +27,21 @@ export default function Page() {
   const { validationErrors, setErrors, clearErrors } = useValidation();
   const [isUpdated, setIsUpdated] = useState(false);
 
-  useUserData(setFormData);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value || '',
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const data = await patchData<UserInfo, UserInfo | ErrorResponse>(endpoint, formData);
-
-      if (isErrorResponse(data) && data.error_type === 'ValidationError') {
-        const errors = data.details ? JSON.parse(data.details) : {};
-        setErrors(errors);
-      } else if (!isErrorResponse(data)) {
-        setUserInfo({
-          ...data,
-          image: userInfo?.image
-        });
-        setFormData(data);
-        clearErrors();
-
-        setIsUpdated(true);
-        setTimeout(() => {
-          setIsUpdated(false);
-        }, 3000);
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-    }
-  };
+  const { handleChange, handleSubmit } = useUserData(
+    setFormData,
+    formData,
+    setErrors,
+    clearErrors,
+    setIsUpdated,
+    endpoint
+  );
 
   if (userInfo) {
     return(
       <div>
         {isUpdated && (
           <div className="
-            py-2 px-4 
+            py-2 px-4
             mb-4
             bg-green-400
             text-white
@@ -103,14 +75,14 @@ export default function Page() {
                 name="name"
                 value={formData.name || ''}
                 onChange={handleChange}
-                onBlur={() => setIsEditing(false)} 
+                onBlur={() => setIsEditing(false)}
                 autoFocus
                 className="
                   mt-1 p-2
-                  border border-gray-300 
-                  rounded 
-                  focus:outline-none 
-                  focus:ring-2 
+                  border border-gray-300
+                  rounded
+                  focus:outline-none
+                  focus:ring-2
                   focus:ring-blue-400
                 "
               />
