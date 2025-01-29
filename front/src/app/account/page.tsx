@@ -12,7 +12,7 @@ import { useUserData } from '@/hooks/useUserData';
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
 
-  const { userInfo,  } = useUser();
+  const { userInfo } = useUser();
   const [formData, setFormData] = useState<UserInfo>({
     id: null,
     email: '',
