@@ -1,57 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FaHeart, FaYenSign } from "react-icons/fa"
-
-import { fetchData } from '@/lib/api';
-
 import { GiftRequestTable } from '@/app/pair/components/GiftRequestTable';
-
-import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
-import { GiftRequests, GiftRequest } from '@/types/pair';
+import { useGiftRequests } from '@/hooks/useGiftRequests';
 
 export default function GiftRequestPage() {
-  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/gift_requests`;
+  enum RequestType {
+    forParents = "ちょうだい！",
+    fromChildren = "あげる",
+  };
 
-enum RequestType {
-  forParents = "ちょうだい！",
-  fromChildren = "あげる",
-};
-
-  const [
-    giftRequests, 
-    setGiftRequests
-  ] = useState<GiftRequests | null>(null);
-  const [
-    myParentsGiftRequests, 
-    setMyParentsGiftRequests
-  ] = useState<GiftRequest[]>([]);
-  const [
-    myChildrenGiftRequests, 
-    setMyChildrenGiftRequests
-  ] = useState<GiftRequest[]>([]);
-
+  const { myParentsGiftRequests, myChildrenGiftRequests } = useGiftRequests();
   const [selectedTab, setSelectedTab] = useState<RequestType.forParents | RequestType.fromChildren>(RequestType.forParents);
-
-  useEffect(() => {
-    const fetchShutingsData = async () => {
-      const data = await fetchData<GiftRequests | ErrorResponse>(endpoint, 'GET');
-
-      if (isErrorResponse(data)) {
-        console.error('Error fetching shutings data:', data.message);
-        return;
-      }
-
-      setGiftRequests(data);
-    };
-
-    fetchShutingsData();
-  }, []);
-
-  useEffect(() => {
-    setMyParentsGiftRequests(giftRequests?.myParents || []);
-    setMyChildrenGiftRequests(giftRequests?.myChildren || []);
-  }, [giftRequests])
 
   return(
     <>
