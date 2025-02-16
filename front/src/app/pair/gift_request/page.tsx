@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from 'react';
 import { FaHeart, FaYenSign } from "react-icons/fa"
 import { GiftRequestTable } from '@/app/pair/components/GiftRequestTable';
 import { useGiftRequests } from '@/hooks/useGiftRequests';

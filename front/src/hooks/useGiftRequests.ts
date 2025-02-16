@@ -28,7 +28,7 @@ export const useGiftRequests = () => {
     };
 
     fetchGiftRequestsData();
-  }, []);
+  }, [endpoint]);
 
   useEffect(() => {
     setMyParentsGiftRequests(giftRequests?.myParents || []);
