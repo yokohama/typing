@@ -6,13 +6,13 @@ import { GiftRequestTable } from '@/app/pair/components/GiftRequestTable';
 import { useGiftRequests } from '@/hooks/useGiftRequests';
 
 export default function GiftRequestPage() {
-  enum RequestType {
-    forParents = "ちょうだい！",
-    fromChildren = "あげる",
-  };
-
-  const { myParentsGiftRequests, myChildrenGiftRequests } = useGiftRequests();
-  const [selectedTab, setSelectedTab] = useState<RequestType.forParents | RequestType.fromChildren>(RequestType.forParents);
+  const {
+    myParentsGiftRequests,
+    myChildrenGiftRequests,
+    selectedTab,
+    setSelectedTab,
+    RequestType
+  } = useGiftRequests();
 
   return(
     <>
