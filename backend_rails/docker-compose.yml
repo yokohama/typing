@@ -23,7 +23,9 @@ services:
       - app_bundle_volume:/usr/local/bundle
     ports:
       - 3000:3000
-    dns: 
+    depends_on:
+      - db
+    dns:
       - 8.8.8.8
 
 volumes:
