@@ -16,7 +16,6 @@ type ConfigContextType = {
 };
 
 const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/config`;
-// const endpoint = "http://localhost:3000/api/v1/config";
 
 const ConfigContext = createContext<ConfigContextType | null>(null);
 
