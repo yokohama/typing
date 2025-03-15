@@ -1,15 +1,14 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { fetchData } from '@/lib/api';
 import { Result } from '@/types/result';
 import { Description } from '@/app/result/components/Description';
 import { Chart } from '@/app/result/components/Chart';
 import Loading from "@/components/Loading";
-import { isErrorResponse } from '@/types/errorResponse';
 import { BasicButton } from "@/components/Button";
+import { useResultData } from '@/hooks/useResultData';
 
 export default function Page() {
   const [result, setResult] = useState<Result | null>(null);
@@ -20,36 +19,13 @@ export default function Page() {
   const resultEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results/${id}`;
   const recordsEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings/${result?.shuting_id}/results`;
 
-  useEffect(() => {
-    const fetchResult = async () => {
-      const data = await fetchData(resultEndpoint, 'GET');
-
-      if (isErrorResponse(data)) {
-        console.error('Error fetching result data:', data.message);
-	return;
-      }
-
-      setResult(data as Result);
-    };
-
-    fetchResult();
-  }, [resultEndpoint]);
-
-  useEffect(() => {
-    if (result && result?.shuting_id) {
-      const fetchRecords = async () => {
-        const data = await fetchData(recordsEndpoint, 'GET');
-
-        if (Array.isArray(data) && data.every(item => !isErrorResponse(item))) {
-          setRecords(data);
-        } else {
-          console.error('Error fetching records data');
-        }
-      };
-
-      fetchRecords();
-    }
-  }, [result, recordsEndpoint]);
+  useResultData(
+    resultEndpoint,
+    recordsEndpoint,
+    setResult,
+    setRecords,
+    result
+  );
 
   return (
     <div className="justify-center min-h-screen">
@@ -63,8 +39,8 @@ export default function Page() {
           ">レベル{result.shuting_id}</h1>
           <Chart records={records} />
           <Description result={result} />
-          <BasicButton 
-            text='チャレンジ'
+          <BasicButton
+             text='チャレンジ'
             url={`/shuting/${result.shuting_id}`}
           />
         </div>
