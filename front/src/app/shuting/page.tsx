@@ -1,34 +1,16 @@
 "use client";
 
-import { 
-  useState, 
-  useEffect, 
-} from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
-import { fetchData } from '@/lib/api';
-import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
 import { Shuting } from '@/types/shuting';
+import { useShutings } from '@/hooks/useShutings';
 
 export default function Page() {
   const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/shutings`;
-
   const [shutings, setShutings] = useState<Shuting[]>([]);
 
-  useEffect(() => {
-    const fetchShutingsData = async () => {
-      const data = await fetchData<Shuting[] | ErrorResponse>(endpoint, 'GET');
-
-      if (isErrorResponse(data)) {
-        console.error('Error fetching shutings data:', data.message);
-        return;
-      }
-
-      setShutings(data);
-    };
-
-    fetchShutingsData();
-  }, []);
+  useShutings(endpoint, setShutings);
 
   return(
     <div>
@@ -57,7 +39,7 @@ const ShutingItem = ({
 }) => {
   return (
     <Link href={`/shuting/${shuting_id}`} key="1">
-      <div 
+      <div
         className="
           h-32
           bg-orange-50
