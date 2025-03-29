@@ -27,7 +27,6 @@ export const useGameState = (
   setResult: React.Dispatch<React.SetStateAction<Result>>,
   setIsFinishOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>,
   setUserInfo: (updater: (prev: UserInfo | null) => UserInfo | null) => void
-  // setUserInfo: (updater: (prev: any) => any) => void
 ) => {
   const router = useRouter();
 
