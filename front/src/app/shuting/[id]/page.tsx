@@ -1,18 +1,14 @@
 "use client"
 
 import React, { 
-  useEffect, 
   useState, 
   useRef,
 } from 'react';
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 import { useUser } from '@/context/UserContext';
-import { Shuting } from '@/types/shuting';
 import { Word } from '@/types/shuting';
 import { Result } from '@/types/result';
-import { fetchData, postData } from '@/lib/api';
-import { isErrorResponse } from '@/types/errorResponse';
 import { SoundManager } from '../components/soundManager';
 import Time from '../components/time';
 import ShutingArea from '../components/shutingArea';
@@ -20,10 +16,11 @@ import Progress from '../components/progress';
 import AnswerArea from '../components/answerArea';
 import Overlay from '../components/overlay';
 import Countdown from '../components/countdown';
+import { useShutingData } from '@/hooks/useShutingData';
+import { useGameState } from '@/hooks/useGameState';
 
 export default function Page() {
   const params = useParams();
-  const router = useRouter();
 
   const id = params?.id;
 
@@ -79,109 +76,38 @@ export default function Page() {
   // Stop BGM when use browser back button.
   window.addEventListener('popstate', () => {soundManager.stopBgm() });
 
-  useEffect(() => {
-    const fetchShutings = async () => {
-      const data: Shuting = await fetchData(getEndpoint, 'GET');
+  // データ取得ロジックをカスタムフックに分離
+  useShutingData(
+    getEndpoint,
+    currentIndex,
+    setShutingWords,
+    setCurrentWord,
+    setShutingLimitSec,
+    soundManager
+  );
 
-      if (isErrorResponse(data)) {
-        console.error('Error fetching lesson data:', data.message);
-        return;
-      };
-
-      console.log(data.words)
-
-      if (Array.isArray(data.words)) {
-        const words: Word[] = data.is_random
-          ? [...data.words].sort(() => Math.random() - 0.5)
-          : data.words;
-
-        setShutingWords(words);
-        setCurrentWord(words[currentIndex]);
-        setShutingLimitSec(words[currentIndex]?.limit_sec);
-      } else {
-        console.error("Expected an array of words, received:", data.words);
-      }
-    };
-
-    fetchShutings();
-
-    soundManager.playReadyGo();
-  }, []);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | undefined;
-
-    if (isStart) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
-      }, 1000);
-    } else if (!isStart && time !== 0) {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [isStart]);
-
-  const moveToNextExample = () => {
-    const nextIndex = currentIndex + 1;
-
-    if (nextIndex < shutingWords.length) {
-      setCurrentWord(shutingWords[nextIndex]);
-      setAnswer('');
-      setCurrentIndex(nextIndex);
-      setMatchLength(0);
-      setShutingLimitSec(shutingWords[nextIndex].limit_sec || null);
-    } else {
-      handleFinish();
-    }
-  };
-
-  const handleStart = () => {
-    setTime(0);
-    setIsStart(true);
-    soundManager.playBgm();
-  };
-
-  const handleFinish = async () => {
-    setIsStart(false);
-    setIsFinish(true);
-    soundManager.stopBgm();
-    soundManager.playFinish();
-
-    const finalResult: Result = {
-      ...result,
-      time: time,
-      perfect_count: perfectCount,
-    };
-
-    try {
-      const data: Result = await postData(postEndpoint, finalResult);
-      if (isErrorResponse(data)) {
-        console.error('API Error:', data.message);
-      } else if (data && 'id' in data) {
-        setResult(prev => ({
-          ...prev,
-          score: data.score,
-          time_bonus: data.time_bonus
-        }));
-	
-          setUserInfo((prev) => ({
-            ...prev,
-            id: prev?.id ?? null,
-            point: data.point ?? 0,
-            total_point: prev?.total_point ?? 0,
-          }));
-
-        setIsFinishOverlayVisible(true);
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        setIsFinishOverlayVisible(false);
-
-        router.push(`/result/${data.id}`);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  // ゲーム状態管理ロジックをカスタムフックに分離
+  const { moveToNextExample, handleStart } = useGameState(
+    postEndpoint,
+    shutingWords,
+    currentIndex,
+    isStart,
+    time,
+    perfectCount,
+    result,
+    soundManager,
+    setTime,
+    setIsStart,
+    setIsFinish,
+    setCurrentWord,
+    setAnswer,
+    setCurrentIndex,
+    setMatchLength,
+    setShutingLimitSec,
+    setResult,
+    setIsFinishOverlayVisible,
+    setUserInfo
+  );
 
   return(
     <div className="flex justify-center min-h-screen bg-gray-50 relative">
