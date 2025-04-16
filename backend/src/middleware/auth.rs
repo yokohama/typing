@@ -34,6 +34,7 @@ pub struct Claims {
     pub exp: usize,
 }
 
+// テスト
 #[async_trait]
 impl<S> FromRequestParts<S> for Claims
 where
