@@ -9,6 +9,7 @@ CREATE TABLE results (
     score INT NOT NULL,
     perfect_count INT NOT NULL,
     time_bonus INT NOT NULL,
+    point INT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP
 );

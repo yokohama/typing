@@ -7,5 +7,11 @@ use crate::requests::validations;
 pub struct UpdateProfile {
     #[validate(custom = "validations::name")]
     pub name: Option<String>,
-    pub point: Option<i32>,
+    pub coin: Option<i32>,
+    pub total_gain_coin: Option<i32>,
+}
+
+#[derive(Deserialize)]
+pub struct Query {
+    pub user_id: Option<i32>,
 }

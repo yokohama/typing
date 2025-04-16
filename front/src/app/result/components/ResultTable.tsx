@@ -1,40 +1,74 @@
-import { ResultTableProps } from "@/types/result";
-import { FormatSecTime, FormatDateTime } from "@/lib/format";
+import { useRouter } from 'next/navigation';
 
-export const ResultTable: React.FC<ResultTableProps> = ({ result }) => (
-  <div className="overflow-x-auto mb-10">
-    <table className="table-auto w-full border-collapse border border-gray-300 rounded-lg shadow-md">
-      <tbody>
-        <tr className="odd:bg-white even:bg-gray-100">
-          <td className="border px-4 py-2 font-semibold">日時</td>
-          <td className="border px-4 py-2">
-            {result.created_at && FormatDateTime(result.created_at)}
-          </td>
-        </tr>
-        <tr className="odd:bg-white even:bg-gray-100">
-          <td className="border px-4 py-2 font-semibold">スコア</td>
-          <td className="border px-4 py-2">{result.score}</td>
-        </tr>
-        <tr className="odd:bg-white even:bg-gray-100">
-          <td className="border px-4 py-2 font-semibold">タイムボーナス</td>
-          <td className="border px-4 py-2">{result.time_bonus}</td>
-        </tr>
-        <tr className="odd:bg-white even:bg-gray-100">
-          <td className="border px-4 py-2 font-semibold">合計スコア</td>
-          <td className="border px-4 py-2">
-            {(result.score ?? 0) + (result.time_bonus ?? 0)}
-          </td>
-        </tr>
-        <tr className="odd:bg-white even:bg-gray-100">
-          <td className="border px-4 py-2 font-semibold">詳細</td>
-          <td className="border px-4 py-2">
-            <p>所要時間: {FormatSecTime((result.time ?? 0))}</p>
-            <p>パーフェクト: {result.perfect_count}</p>
-            <p>正解: {result.correct_count}</p>
-            <p>失敗: {result.incorrect_count}</p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-);
+import { FormatDateTime, FormatSecTime } from '@/lib/format';
+
+import { Result } from '@/types/result';
+
+import { 
+  Table,
+  Thead, TheadTr,
+  Tbody, TbodyTr,
+  Th, Td,
+} from "@/components/Table";
+import { MobileTable } from '@/components/MobileTable';
+
+export const ResultTable = ({
+  sortedResults,
+}
+: {
+  sortedResults: Result[],
+}) => {
+  const router = useRouter();
+
+  return(
+    <div>
+      <div className="hidden md:block overflow-x-auto">
+        <Table>
+          <Thead>
+            <TheadTr>
+              <Th></Th>
+              <Th>レベル</Th>
+              <Th>スコア</Th>
+              <Th>タイム</Th>
+              <Th>コイン</Th>
+            </TheadTr>
+          </Thead>
+          <Tbody>
+            {sortedResults.map((result, index) => (
+              <TbodyTr
+                key={index}
+                handleOnClick={() => router.push(`/result/${result.id}`)}
+              >
+                <Td>{result.created_at && FormatDateTime(result.created_at)}</Td>
+                <Td>{result.shuting_id}</Td>
+                <Td>{result.score}</Td>
+                <Td>{result.completion_time && FormatSecTime(result.completion_time)}</Td>
+                <Td>{result.gain_coin}</Td>
+              </TbodyTr>
+            ))}
+          </Tbody>
+        </Table>
+      </div>
+      <div className="md:hidden space-y-4">
+        {sortedResults.map((result, index) => (
+          <MobileTable
+            key={index}
+            handleOnClick={() => router.push(`/result/${result.id}`)}
+          >
+            <p className="text-gray-500 text-sm mb-2">
+              作成日: {result.created_at && FormatDateTime(result.created_at)}
+            </p>
+            <p className="text-lg font-bold">
+              レベル: {result.shuting_id}
+            </p>
+            <p className="text-lg font-bold">
+              スコア: {result.score}
+            </p>
+            <p>タイム: {result.completion_time && FormatSecTime(result.completion_time)}</p>
+            <p>コイン: {result.gain_coin}</p>
+          </MobileTable>
+        ))}
+      </div>
+    </div>
+  );
+};

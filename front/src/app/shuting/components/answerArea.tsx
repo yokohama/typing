@@ -1,34 +1,74 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { 
+  ChangeEvent, 
+  useState, 
+  useEffect 
+} from "react";
 
 import { SoundManager } from "./soundManager";
 import { Result } from "@/types/result";
-import { Word } from "@/types/shuting";
+import { ShutingWord } from "@/types/shuting";
 
 type AnswerAreaProps =  {
-  answer: string;
-  word: Word | null;
+  currentShutingWordAnswer: string;
+  currentShutingWord: ShutingWord | null;
+  isCurrentShutingWordAnswerComplete: boolean;
+  setIsCurrentShutingWordAnswerComplete: React.Dispatch<React.SetStateAction<boolean>>,
   soundManager: SoundManager;
   setIsCorrectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setIsPerfectOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setResult: React.Dispatch<React.SetStateAction<Result>>;
-  moveToNextExample: () => void;
+  moveToNextShutingWord: () => void;
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
   setPerfectCount: React.Dispatch<React.SetStateAction<number>>,
+  isFinish: boolean,
 };
 
 export default function AnswerArea({ 
-  answer, 
-  word,
+  currentShutingWordAnswer, 
+  currentShutingWord,
+  isCurrentShutingWordAnswerComplete,
+  setIsCurrentShutingWordAnswerComplete,
   soundManager,
   setIsCorrectOverlayVisible,
   setIsPerfectOverlayVisible,
   setResult,
-  moveToNextExample,
+  moveToNextShutingWord,
   setAnswer,
   setPerfectCount,
+  isFinish,
 }: AnswerAreaProps) {
 
   const [isTypeDeleteKey, setIsTypeDeleteKey] = useState(false);
+
+  useEffect(() => {
+    if (!isCurrentShutingWordAnswerComplete) {
+      return;
+    }
+
+    setResult((prev) => ({
+      ...prev,
+      correct_count: prev.correct_count + 1,
+    }));
+    
+    if (!isTypeDeleteKey) {
+      soundManager.playPerfect();
+      setPerfectCount((prev) => prev + 1);
+      setIsPerfectOverlayVisible(true);
+      setTimeout(() => {
+        setIsPerfectOverlayVisible(false);
+        moveToNextShutingWord();
+      }, 1000);
+    } else {
+      soundManager.playCorrect();
+      setIsTypeDeleteKey(false);
+      setIsCorrectOverlayVisible(true);
+      setTimeout(() => {
+        setIsCorrectOverlayVisible(false);
+        moveToNextShutingWord();
+      }, 1000);
+    }
+
+  }, [isCurrentShutingWordAnswerComplete]);
 
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -36,32 +76,16 @@ export default function AnswerArea({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isCurrentShutingWordAnswerComplete) {
+      return;
+    }
+
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
 
-      setResult((prev) => ({
-        ...prev,
-        correct_count: prev.correct_count + 1,
-      }));
-
-      if (word && answer === word.word) {
-        if (!isTypeDeleteKey) {
-          soundManager.playPerfect();
-          setPerfectCount((prev) => prev + 1);
-          setIsPerfectOverlayVisible(true);
-          setTimeout(() => {
-            setIsPerfectOverlayVisible(false);
-            moveToNextExample();
-          }, 1000);
-        } else {
-          soundManager.playCorrect();
-          setIsTypeDeleteKey(false);
-          setIsCorrectOverlayVisible(true);
-          setTimeout(() => {
-            setIsCorrectOverlayVisible(false);
-            moveToNextExample();
-          }, 1000);
-        }
+      if (currentShutingWord 
+        && currentShutingWordAnswer === currentShutingWord.word) {
+        setIsCurrentShutingWordAnswerComplete(true);
       }
     }
 
@@ -74,13 +98,17 @@ export default function AnswerArea({
     <div id="answerArea" className="w-full">
       <input
         type="text"
-        value={answer}
+        value={currentShutingWordAnswer}
+        disabled={isFinish}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
         autoFocus
         className="
           w-full p-4
-          text-xl border-2 border-gray-300
+          text-2xl lg:text-4xl
+          text-center
+          font-bold
+          border-2 border-gray-300
           rounded-lg
           focus:outline-none
           focus:ring-2

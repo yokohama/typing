@@ -45,19 +45,18 @@ pub async fn create(
         &pool, 
         models::result::Create {
             user_id: claims.sub,
-            shuting_id: shuting_id,
+            shuting_id,
             correct_count: payload.correct_count,
             incorrect_count: payload.incorrect_count,
-            time: payload.time,
-            perfect_count: payload.perfect_count,
+            completion_time: payload.completion_time,
+            perfect_within_correct_count: payload.perfect_within_correct_count,
         },
     ).await?;
 
-    let point = update_point(
+    let (owned_coin, total_gain_coin) = update_coin(
         &pool, 
         claims.sub, 
-        result.score,
-        result.time_bonus,
+        result.gain_coin,
     ).await?;
 
     let mut result = serde_json::to_value(&result)
@@ -67,7 +66,8 @@ pub async fn create(
         })?;
 
     if let serde_json::Value::Object(ref mut map) = result {
-        map.insert("point".to_string(), json!(point));
+        map.insert("owned_coin".to_string(), json!(owned_coin));
+        map.insert("total_gain_coin".to_string(), json!(total_gain_coin));
     }
 
     Ok(Json(result))
@@ -87,12 +87,12 @@ pub async fn show(
     Ok(Json(result))
 }
 
-async fn update_point(
+async fn update_coin(
     pool: &PgPool,
     user_id: i32,
-    score: i32,
-    time_bonus: i32,
-) -> Result<i32, error::AppError> {
+    coin: i32,
+) -> Result<(i32, i32), error::AppError> {
+
     let user = models::user::find(
           &pool, 
           user_id,
@@ -105,11 +105,16 @@ async fn update_point(
         })?;
 
     let update = params::user::UpdateProfile {
-        point: Some(user.point + score + time_bonus),
+        coin: Some(user.coin + coin),
+        total_gain_coin: Some(user.total_gain_coin + coin),
         ..Default::default()
     };
 
-    let update_user = models::user::save(&pool, user_id, update).await?;
+    let update_user = models::user::save(
+        &pool, 
+        user_id, 
+        update
+    ).await?;
 
-    Ok(update_user.point)
+    Ok((update_user.coin, update_user.total_gain_coin))
 }

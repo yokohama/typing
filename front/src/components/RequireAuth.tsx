@@ -1,5 +1,6 @@
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
+import { useUser } from "@/context/UserContext";
 import Loading from "@/components/Loading";
 
 export const RequireAuth = ({
@@ -8,12 +9,13 @@ export const RequireAuth = ({
   children: React.ReactNode
 }) => {
   const { data: session, status } = useSession();
+  const { isJwtAvailable } = useUser();
 
-  if (status === 'loading') {
+  if (status === 'loading' || !isJwtAvailable) {
     return <Loading />;
   }
 
-  if (session && status === 'authenticated') {
+  if (session && status === 'authenticated' && isJwtAvailable) {
     return(
       <div
         className="
@@ -22,8 +24,5 @@ export const RequireAuth = ({
         items-center rounded-xl
       ">{children}</div>
     );
-  } else {
-    signIn("google");
-    return null;
   }
 }

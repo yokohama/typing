@@ -1,3 +1,5 @@
+use std::env;
+
 use axum::{
     async_trait,
     extract::{
@@ -59,4 +61,17 @@ pub fn name(value: &str) -> Result<(), ValidationError> {
         error.add_param("msg".into(), &"名前は10文字以内です。".to_string());
         Err(error)
     }
+}
+
+pub fn valid_coin(value: i32) -> Result<(), ValidationError> {
+    let step = env::var("GIFT_REQUEST_COIN_STEP")
+        .ok()
+        .and_then(|s| s.parse::<i32>().ok())
+        .unwrap_or(20);
+
+    if value <= 0 || value % step != 0 {
+        return Err(ValidationError::new("数字の値が不正です。"));
+    }
+
+    Ok(())
 }

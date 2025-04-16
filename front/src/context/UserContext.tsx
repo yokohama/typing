@@ -5,96 +5,131 @@ import React, {
   useEffect,
   ReactNode 
 } from "react";
-
-import { UserInfo } from "@/types/userInfo";
-
-
-
-
+import { useRouter } from "next/navigation";
 
 import { useSession, signOut } from 'next-auth/react';
-import { fetchData } from '@/lib/api';
+
+import { fetchData, postData } from '@/lib/api';
+import { UserInfo } from "@/types/userInfo";
 import { ErrorResponse, isErrorResponse } from '@/types/errorResponse';
-
-
-
-
+import { useAlert } from "@/context/AlertContext";
 
 type UserContextType = {
-  userInfo: UserInfo;
-  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
+  userInfo: UserInfo | null;
+  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo | null>>;
+  isJwtAvailable: boolean;
+  setIsJwtAvailable: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+export const handleGoogleAccessTokenError = (errorMsg: string) => {
+  localStorage.clear();
+  signOut({ callbackUrl: '/google-accesstoken-error' })
+  console.error(errorMsg);
+}
+
 export const UserProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
+  const { setAlerts } = useAlert();
+
   const { data: session, status } = useSession();
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    email: "",
-    name: "",
-    image: "",
-    point: 0,
-  });
+  const [ userInfo, setUserInfo ] = useState<UserInfo | null>(null);
+  const [ isJwtAvailable, setIsJwtAvailable ] = useState<boolean>(false);
 
-  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
+  //const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/api/auth/google`;
+  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/auth/google`;
   const profileEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/profile`;
+  const pairEndpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/pairs`;
 
-  const getJwtByGoogleAccessToken = async () => {
+  useEffect(() => {
     if (status === 'authenticated' && session?.accessToken) {
-      const response = await fetch(endpoint, {
+      fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          googleToken: session.accessToken,
+          googleToken: session?.accessToken,
         }),
-      });
 
-      if (!response.ok) {
-        signOut({ callbackUrl: '/google-accesstoken-error' })
-        const errorText = await response.text();
-        throw new Error(errorText || 'Unknown error occurred');
-      }
+      }).then(jwtRes => {
+        jwtRes.json().then((jwtData: { jwt: string }) => {
+          localStorage.setItem('jwt', jwtData.jwt);
+          setIsJwtAvailable(true);
 
-      const jwtData: { jwt: string } = await response.json();
-      localStorage.setItem('jwt', jwtData.jwt);
+          fetchData<UserInfo | ErrorResponse>(
+            profileEndpoint, 
+            'GET'
+          ).then((userRes) => {
+
+            if (isErrorResponse(userRes)) {
+              console.error('Error fetching user data:', userRes.message);
+              return;
+            }
+
+            setUserInfo((prev) => ({
+              ...prev,
+              id: userRes.id || null,
+              email: userRes.email || '',
+              name: userRes.name || '',
+              image: session?.user?.image || '',
+              coin: userRes.coin || 0,
+              total_gain_coin: userRes.total_gain_coin || 0,
+            }));
+          });
+        }).catch(error => {
+          handleGoogleAccessTokenError(error.message);
+        });
+      })
     }
-  };
+  }, [session, status]);
 
-  const getUserInfo = async () => {
-    const data = await fetchData<UserInfo | ErrorResponse>(profileEndpoint, 'GET');
-
-    if (isErrorResponse(data)) {
-      console.error('Error fetching user data:', data.message);
-      return;
-    }
-
-    if (data) {
-      setUserInfo((prev) => ({
-        ...prev,
-        email: data.email || '',
-        name: data.name || '',
-        image: session?.user?.image || '',
-        point: data.point || 0,
-      }));
-    }
-  }
-
+  // Create pair if from invitation link
   useEffect(() => {
-    if (status === 'authenticated' && session?.accessToken) {
-      getJwtByGoogleAccessToken();
-      getUserInfo();
-    }
+    const createPair = async (inviteChildUserId: number) => {
+      try {
+        const res = await postData(
+          pairEndpoint, 
+          {
+            parent_user_id: userInfo?.id,
+            child_user_id: inviteChildUserId,
+          }
+        );
 
-  }, [ session, status ]);
+        if (isErrorResponse(res) && res.message) {
+          // You can debug => `res.message`
+          sessionStorage.removeItem("inviteChildUserId");
+          router.push('/invitation/exist');
+        } else {
+          setAlerts(prev => [
+            ...prev,
+            {
+              type: "success",
+              msg: "親子の関連付けに成功しました。"
+            }
+          ]);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const inviteChildUserId = sessionStorage.getItem("inviteChildUserId");
+    if (userInfo && inviteChildUserId) {
+      createPair(parseInt(inviteChildUserId, 10));
+    };
+  }, [userInfo]);
 
   return (
-    <UserContext.Provider value={{ userInfo, setUserInfo }}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={{ 
+      userInfo, 
+      setUserInfo, 
+      isJwtAvailable,
+      setIsJwtAvailable,
+    }}>{children}</UserContext.Provider>
   );
-};
+};  
 
 export const useUser = () => {
   const context = useContext(UserContext);

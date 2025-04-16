@@ -17,7 +17,8 @@ pub struct Entry {
     pub id: i32,
     pub email: String,
     pub name: Option<String>,
-    pub point: i32,
+    pub coin: i32,
+    pub total_gain_coin: i32,
     pub created_at: NaiveDateTime,
     pub deleted_at: Option<NaiveDateTime>,
 }
@@ -38,7 +39,8 @@ pub async fn find_by_email(
           id, 
           email, 
           name, 
-          point, 
+          coin, 
+          total_gain_coin,
           created_at, 
           deleted_at 
         FROM 
@@ -57,7 +59,6 @@ pub async fn find_by_email(
                 Err(error::AppError::DatabaseError(e.to_string()))
             }
         }
-
 }
 
 pub async fn find(
@@ -70,7 +71,8 @@ pub async fn find(
           id, 
           email, 
           name, 
-          point, 
+          coin, 
+          total_gain_coin, 
           created_at, 
           deleted_at 
         FROM
@@ -88,17 +90,16 @@ pub async fn find(
                 Err(error::AppError::DatabaseError(e.to_string()))
             }
         }
-
 }
 
 pub async fn create(
     pool: &PgPool, 
     params: Create
 ) -> Result<Entry, error::AppError> {
-    match find_by_email(&pool, params.email.clone()).await? {
-        Some(user) => {
-            Ok(user)
-        },
+    let exist_user = find_by_email(&pool, params.email.clone()).await?;
+
+    match exist_user {
+        Some(exist_user) => Ok(exist_user),
         None => {
             let sql = r#"
             INSERT INTO users (
@@ -107,10 +108,17 @@ pub async fn create(
                 created_at
             )
             VALUES ($1, $2, NOW())
-            RETURNING id, email, name, created_at, deleted_at
+            RETURNING 
+              id, 
+              email, 
+              name, 
+              coin, 
+              total_gain_coin, 
+              created_at, 
+              deleted_at
             "#;
             
-            let user = query_as::<_, Entry>(sql)
+            let created_user = query_as::<_, Entry>(sql)
                 .bind(&params.email)
                 .bind(&params.name)
                 .fetch_one(pool)
@@ -120,7 +128,7 @@ pub async fn create(
                     error::AppError::DatabaseError(e.to_string())
                 })?;
 
-            Ok(user)
+            Ok(created_user)
         },
     }
 }
@@ -139,8 +147,13 @@ pub async fn save(
         index += 1;
     }
 
-    if let Some(_point) = params.point {
-        updates.push(format!("point = ${}", index));
+    if let Some(_coin) = params.coin {
+        updates.push(format!("coin = ${}", index));
+        index += 1;
+    }
+
+    if let Some(_total_gain_coin) = params.total_gain_coin {
+        updates.push(format!("total_gain_coin = ${}", index));
         index += 1;
     }
 
@@ -153,7 +166,17 @@ pub async fn save(
 
     sql.push_str(&updates.join(", "));
     sql.push_str(&format!(
-        " WHERE id = ${} RETURNING id, email, name, point, created_at, deleted_at",
+        " WHERE 
+            id = ${} 
+          RETURNING 
+            id, 
+            email, 
+            name, 
+            coin, 
+            total_gain_coin, 
+            created_at, 
+            deleted_at
+        ",
         index
     ));
 
@@ -162,8 +185,11 @@ pub async fn save(
     if let Some(name) = &params.name {
         query = query.bind(name);
     }
-    if let Some(point) = params.point {
-        query = query.bind(point);
+    if let Some(coin) = params.coin {
+        query = query.bind(coin);
+    }
+    if let Some(total_gain_coin) = params.total_gain_coin {
+        query = query.bind(total_gain_coin);
     }
     query = query.bind(id);
 

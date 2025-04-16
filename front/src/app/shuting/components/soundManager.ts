@@ -1,12 +1,14 @@
+import { Howl, Howler } from 'howler';
+
 export class SoundManager {
-  private bgm: HTMLAudioElement;
-  private successSound: HTMLAudioElement;
-  private correctSound: HTMLAudioElement;
-  private incorrectSound: HTMLAudioElement;
-  private finishSound: HTMLAudioElement;
-  private perfectSound: HTMLAudioElement;
-  private readyGoSound: HTMLAudioElement;
-  private selectSound: HTMLAudioElement;
+  private bgm: Howl;
+  private successSound: Howl;
+  private correctSound: Howl;
+  private incorrectSound: Howl;
+  private finishSound: Howl;
+  private perfectSound: Howl;
+  private readyGoSound: Howl;
+  private selectSound: Howl;
 
   constructor() {
     const bgmList = [
@@ -14,63 +16,71 @@ export class SoundManager {
       '/sounds/bgms/BGM_-_067_-_Stone_Dance.mp3',
       '/sounds/bgms/Dive_To_Mod.mp3',
       '/sounds/bgms/bgm.mp3',
-      '/sounds/bgms/kaeruno_piano.mp3'
+      '/sounds/bgms/kaeruno_piano.mp3',
     ];
     const randomIndex = Math.floor(Math.random() * bgmList.length);
 
-    this.bgm = new Audio(bgmList[randomIndex]);
-    this.bgm.loop = true;
+    this.bgm = new Howl({
+      src: [bgmList[randomIndex]],
+      loop: true,
+      volume: 0.5,
+    });
 
-    this.successSound = new Audio('/sounds/success2.mp3');
-    this.perfectSound = new Audio('/sounds/excellent.mp3');
-    this.correctSound = new Audio('/sounds/good.mp3');
-    this.incorrectSound = new Audio('/sounds/out.mp3');
-    this.finishSound = new Audio('/sounds/finish.mp3');
-    this.readyGoSound = new Audio('/sounds/readygo.mp3');
-    this.selectSound = new Audio('/sounds/correct.mp3');
+    this.successSound = new Howl({ src: ['/sounds/success2.mp3'], volume: 1.0 });
+    this.perfectSound = new Howl({ src: ['/sounds/excellent.mp3'], volume: 1.0 });
+    this.correctSound = new Howl({ src: ['/sounds/good.mp3'], volume: 1.0 });
+    this.incorrectSound = new Howl({ src: ['/sounds/out.mp3'], volume: 1.0 });
+    this.finishSound = new Howl({ src: ['/sounds/finish.mp3'], volume: 0.5 });
+    this.readyGoSound = new Howl({ src: ['/sounds/readygo.mp3'], volume: 1.0 });
+    this.selectSound = new Howl({ src: ['/sounds/correct.mp3'], volume: 1.0 });
   }
 
   playBgm() {
-    this.bgm.play().catch(error => console.error('Failed to play BGM:', error));
+    if (!this.bgm.playing()) {
+      this.bgm.play();
+    }
   }
 
   stopBgm() {
-    this.bgm.pause();
-    this.bgm.currentTime = 0;
+    this.bgm.stop();
   }
 
   playSuccess() {
-    this.successSound.currentTime = 0;
-    this.successSound.play().catch(error => console.error('Failed to play success sound:', error));
+    this.successSound.stop();
+    this.successSound.play();
   }
 
   playCorrect() {
-    this.correctSound.currentTime = 0;
-    this.correctSound.play().catch(error => console.error('Failed to play correct sound:', error));
+    this.correctSound.stop();
+    this.correctSound.play();
   }
 
   playIncorrect() {
-    this.incorrectSound.currentTime = 0;
-    this.incorrectSound.play().catch(error => console.error('Failed to play incorrect sound:', error));
+    this.incorrectSound.stop();
+    this.incorrectSound.play();
   }
 
   playFinish() {
-    this.finishSound.currentTime = 0;
-    this.finishSound.play().catch(error => console.error('Failed to play finish sound:', error));
+    this.finishSound.stop();
+    this.finishSound.play();
   }
 
   playPerfect() {
-    this.perfectSound.currentTime = 0;
-    this.perfectSound.play().catch(error => console.error('Failed to perfect sound:', error));
+    this.perfectSound.stop();
+    this.perfectSound.play();
   }
 
   playReadyGo() {
-    this.readyGoSound.currentTime = 0;
-    this.readyGoSound.play().catch(error => console.error('Failed to readygo sound:', error));
+    this.readyGoSound.stop();
+    this.readyGoSound.play();
   }
 
   playSelect() {
-    this.selectSound.currentTime = 0;
-    this.selectSound.play().catch(error => console.error('Failed to select sound:', error));
+    this.selectSound.stop();
+    this.selectSound.play();
+  }
+
+  setVolume(volume: number) {
+    Howler.volume(volume);
   }
 }

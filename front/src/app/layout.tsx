@@ -5,9 +5,12 @@ import "./globals.css";
 
 import { SessionProvider } from 'next-auth/react';
 
+import { ConfigProvider } from '@/context/ConfigContext';
+import { AlertProvider } from '@/context/AlertContext';
 import { UserProvider } from '@/context/UserContext';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Alert } from '@/components/Alert';
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ['latin'],
@@ -22,6 +25,7 @@ const inter = Inter({
 });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
   return (
     <html lang="ja" className={`${notoSansJP.className} ${inter.className}`}>
       <head>
@@ -29,16 +33,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           httpEquiv="Content-Security-Policy" 
           content="trusted-types nextjs#bundler;" />
       </head>
-      <body className="bg-gray-100 text-gray-900">
-        <SessionProvider>
-          <UserProvider>
-            <Header />
-            <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-              {children}
-            </main>
-            <Footer />
-          </UserProvider>
-        </SessionProvider>
+      <body className="bg-yellow-50 text-gray-900">
+        <ConfigProvider>
+          <AlertProvider>
+            <SessionProvider>
+              <UserProvider>
+                <Header />
+                <main className="
+                  max-w-7xl mx-auto p-4 sm:p-6 lg:p-8
+                ">
+                  <Alert />
+                  {children}
+                </main>
+                <Footer />
+              </UserProvider>
+            </SessionProvider>
+          </AlertProvider>
+        </ConfigProvider>
       </body>
     </html>
   );

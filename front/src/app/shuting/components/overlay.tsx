@@ -18,44 +18,74 @@ export default function Overlay({
   return(
     <>
       {isCorrectOverlayVisible && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-         >
-          <span className="text-white text-[20rem] font-bold">〇</span>
-        </div>
+        <OverlayVisible>
+          <span className="
+            text-6xl lg:text-[10rem]
+            text-white font-bold
+          ">(*ˊᵕˋ*)</span>
+        </OverlayVisible>
       )}
 
       {isPerfectOverlayVisible && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-         >
-          <span className="text-white text-[10rem] font-bold">すごい！</span>
-        </div>
+        <OverlayVisible>
+          <span className="
+            text-6xl lg:text-[10rem]
+            text-white font-bold
+          ">(°∀°)ｯ?!</span>
+        </OverlayVisible>
       )}
 
       {isIncorrectOverlayVisible && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-         >
-          <span className="text-red text-[20rem] font-bold">×</span>
-        </div>
+        <OverlayVisible>
+          <span className="
+            text-6xl lg:text-[10rem]
+            text-white font-bold
+          ">(;´д｀)</span>
+        </OverlayVisible>
       )}
 
       {isFinishOverlayVisible && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center flex-col z-50"
-         >
-          <div className="text-white text-[5rem] font-bold">
-            FINISH
+        <OverlayVisible>
+          <div>
+            <div
+              className="
+                text-white
+                text-6xl
+                font-bold
+                mb-4
+            ">FINISH</div>
+            <div 
+              className="
+                text-white
+                text-4xl
+                font-bold
+                mb-4
+            ">スコア: {result.score}</div>
+            <div
+              className="
+                text-white
+                text-4xl
+                font-bold
+            ">獲得コイン: {result.gain_coin} </div>
           </div>
-          <div className="text-white text-[3rem] font-bold">
-            スコア: {result.score}
-          </div>
-          <div className="text-white text-[3rem] font-bold">
-            タイムボーナス: {result.time_bonus}
-          </div>
-        </div>
+        </OverlayVisible>
       )}
     </>
   );
 }
+
+export const OverlayVisible = ({
+  children,
+} : {
+  children: React.ReactNode,
+}) => {
+  return (
+    <div 
+      className="
+      flex flex-col 
+      items-center justify-center text-center
+      fixed inset-0 bg-black bg-opacity-80 
+      z-50
+    ">{children}</div>
+  );
+};

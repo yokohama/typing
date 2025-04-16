@@ -5,8 +5,8 @@ use validator::Validate;
 pub struct Create {
     pub correct_count: i32,
     pub incorrect_count: i32,
-    pub time: i32,
-    pub perfect_count: i32,
+    pub completion_time: i32,
+    pub perfect_within_correct_count: i32,
 }
 
 #[derive(Deserialize)]

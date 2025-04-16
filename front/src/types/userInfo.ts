@@ -1,6 +1,8 @@
 export type UserInfo = {
+  id: number | null,
   email?: string,
   name?: string,
   image?: string,
-  point: number,
+  coin: number,
+  total_gain_coin: number,
 };

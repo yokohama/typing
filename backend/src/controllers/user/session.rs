@@ -5,13 +5,13 @@ use axum::{
 use sqlx::PgPool;
 use serde::Deserialize;
 use reqwest::Client;
-use tracing::{ debug, error }; 
+use tracing::error; 
 
 use crate::middleware::error;
 use crate::middleware::auth;
 use crate::models::user;
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct GoogleTokenRequest {
     #[serde(rename = "googleToken")]
     google_token: String,
@@ -28,7 +28,7 @@ pub async fn google(
     Json(payload): Json<GoogleTokenRequest>,
 ) -> Result<Json<serde_json::Value>, error::AppError> {
 
-    let access_token = payload.google_token;
+    let access_token = payload.google_token.clone();
 
     let response = match Client::new()
         .get("https://www.googleapis.com/oauth2/v3/userinfo")
@@ -46,9 +46,10 @@ pub async fn google(
     };
 
     let status = response.status();
-    let body_text = response.text().await.unwrap_or_else(|_| "Failed to read body".to_string());
-    debug!("Google API response status: {}", status);
-    debug!("Google API response body: {}", body_text);
+    let body_text = response
+        .text()
+        .await
+        .unwrap_or_else(|_| "Failed to read body".to_string());
 
     if !status.is_success() {
         error!(
@@ -68,14 +69,13 @@ pub async fn google(
                 "Failed to parse user info from Google API response. Body: {}, Error: {}",
                 body_text, err
             );
-            // errorをfrontに返した際にフロント側でログアウトの実装をする。
             return Err(error::AppError::InternalServerError(
                 "Failed to parse user info".to_string(),
             ));
         }
     };
 
-    let user = user::create(&pool,user::Create{
+    let user = user::create(&pool, user::Create{
         email: user_info.email.clone(),
         name: user_info.name.clone(),
     }).await?;

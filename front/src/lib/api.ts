@@ -1,11 +1,12 @@
+import { handleGoogleAccessTokenError } from "@/context/UserContext";
+
 type ApiResponse<T> = T & { message?: string };
 
 function getHeaders(): HeadersInit | undefined {
   const jwt = localStorage.getItem('jwt');
 
   if(!jwt) {
-    console.error('JWT token not found in localStorage');
-    return;
+    throw new Error('JWT token not found in localStorage');
   }
 
   return {
@@ -21,7 +22,10 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     console.error('API Error: ', data.message);
   }
 
-  console.log(data);
+  if (data.error_type === 'MissingCredentials') {
+    handleGoogleAccessTokenError(data.message);
+  }
+
   return data;
 }
 
@@ -29,7 +33,7 @@ export async function fetchData<T>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
 ): Promise<ApiResponse<T>> {
-  console.log(url);
+
   const response = await fetch(url, {
     method: method,
     headers: getHeaders(),
@@ -44,6 +48,19 @@ export async function postData<T, R>(
 ): Promise<ApiResponse<R>> {
   const response = await fetch(url, {
     method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  return handleResponse<R>(response);
+}
+
+export async function patchData<T, R>(
+  url: string,
+  data: T
+): Promise<ApiResponse<R>> {
+  const response = await fetch(url, {
+    method: 'PATCH',
     headers: getHeaders(),
     body: JSON.stringify(data),
   });

@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 
 import { fetchData } from '@/lib/api';
 import { Result } from '@/types/result';
-import { ResultTable } from '@/app/result/components/ResultTable';
-import { Records } from '@/app/result/components/Records';
+import { Description } from '@/app/result/components/Description';
+import { Chart } from '@/app/result/components/Chart';
 import Loading from "@/components/Loading";
 import { isErrorResponse } from '@/types/errorResponse';
+import { BasicButton } from "@/components/Button";
 
 export default function Page() {
   const [result, setResult] = useState<Result | null>(null);
@@ -52,44 +52,25 @@ export default function Page() {
   }, [result, recordsEndpoint]);
 
   return (
-    <div className="flex justify-center min-h-screen bg-gray-50">
-      <main className="w-full max-w-3xl bg-white p-6">
-        {result ? (
-          <div>
-            <h1 className="text-center text-3xl font-bold mb-6">
-              レベル{result.shuting_id}
-            </h1>
-            <Records records={records} />
-            <ResultTable result={result} />
-            <ChallengeButton shuting_id={result.shuting_id} />
-          </div>
-        ): (
-          <Loading />
-        )}
-      </main>
+    <div className="justify-center min-h-screen">
+      {result ? (
+        <div>
+          <h1 className="
+            text-2xl
+            font-bold
+            text-center
+            text-gray-600
+          ">レベル{result.shuting_id}</h1>
+          <Chart records={records} />
+          <Description result={result} />
+          <BasicButton 
+            text='チャレンジ'
+            url={`/shuting/${result.shuting_id}`}
+          />
+        </div>
+      ): (
+        <Loading />
+      )}
     </div>
   );
-}
-
-const ChallengeButton = ({
-  shuting_id
-} : {
-  shuting_id: number
-}) => {
-  return (
-    <Link 
-      href={`/shuting/${shuting_id}`}
-      className="
-        block 
-        px-6 py-2
-        mx-auto text-center 
-        bg-yellow-400 text-white font-semibold 
-        rounded
-        hover:bg-orange-400
-        focus:outline-none
-        focus:ring-2
-        focus:ring-orange-500
-        focus:ring-offset-2 w-fit
-    ">チャレンジ</Link>
-  )
 }

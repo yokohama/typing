@@ -6,11 +6,19 @@ export const FormatSecTime = (seconds: number) => {
 
 export const FormatDateTime = (dateTime: Date | string | number): string => {
   return new Date(dateTime).toLocaleString('ja-JP', {
-    year:   'numeric',
-    month:  '2-digit',
-    day:    '2-digit',
-    hour:   '2-digit',
-    minute: '2-digit',
-    hour12: false
+    timeZone: 'Asia/Tokyo',
+    year:     'numeric',
+    month:    '2-digit',
+    day:      '2-digit',
+    hour:     '2-digit',
+    minute:   '2-digit',
+    hour12:   false
   });
+};
+
+/*
+ * jsの型をAPIに合わせた方に変換する。
+ */
+export const formatToNaiveDateTime = (date: Date): string => {
+  return date.toISOString().replace("Z", "").split(".")[0];
 };

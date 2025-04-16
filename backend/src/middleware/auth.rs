@@ -81,7 +81,6 @@ pub fn create_jwt(
 
     match encode(&Header::default(), &claims, &EncodingKey::from_secret(jwt_secret.as_ref())) {
         Ok(jwt) => {
-            //info!("Generated JWT for user: {}", id);
             Ok(Json(serde_json::json!({ "jwt": jwt })))
         }
         Err(err) => {
