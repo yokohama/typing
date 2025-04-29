@@ -3,25 +3,14 @@
 import React, { useEffect, useState } from 'react';
 
 import { Result } from '@/types/result';
-import { fetchData } from '@/lib/api';
 import Loading from '@/components/Loading';
-
+import { useResults } from '@/hooks/useResults';
 import { ResultTable } from '@/app/result/components/ResultTable';
 
 export default function Page() {
-  const endpoint = `${process.env.NEXT_PUBLIC_API_ENDPOINT_URL}/user/results`;
-
-  const [results, setResults] = useState<Result[]>([]);
   const [sortedResults, setSortedResults] = useState<Result[]>([]);
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      const data = await fetchData(endpoint, 'GET');
-      setResults(Array.isArray(data) ? data : []);
-    };
-
-    fetchResults();
-  }, [endpoint]);
+  const results = useResults();
 
   useEffect(() => {
     setSortedResults(
