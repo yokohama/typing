@@ -181,7 +181,7 @@ const FooterArea = () => {
     <div className="mt-4 text-xs text-gray-400 text-center">
       <a href="#" className="hover:underline">プライバシーポリシー</a>
       ・
-      <a href="#" className="hover:underline">利用規約</a>
+      <a href="/welcome/terms" className="hover:underline">利用規約</a>
     </div>
   )
 }
