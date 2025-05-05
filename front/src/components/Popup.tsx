@@ -179,7 +179,7 @@ const LogoutButton = () => {
 const FooterArea = () => {
   return(
     <div className="mt-4 text-xs text-gray-400 text-center">
-      <a href="#" className="hover:underline">プライバシーポリシー</a>
+      <a href="/welcome/privacypolicy" className="hover:underline">プライバシーポリシー</a>
       ・
       <a href="/welcome/terms" className="hover:underline">利用規約</a>
     </div>
