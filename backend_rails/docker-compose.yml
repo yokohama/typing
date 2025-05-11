@@ -18,6 +18,7 @@ services:
       dockerfile: Dockerfile
     environment:
       EDITOR: vi
+      CORS_ORIGINS: http://localhost:3001
     volumes:
       - .:/opt/app
       - app_bundle_volume:/usr/local/bundle
