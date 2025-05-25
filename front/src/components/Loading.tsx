@@ -7,7 +7,7 @@ type LoadingProps = {
 
 export default function Loading({
   size = "medium",
-  color = "#6366F1"
+  color = "#F59E0B"
 }: LoadingProps) {
   // サイズに基づいてwidthとheightを設定
   const dimensions = {
