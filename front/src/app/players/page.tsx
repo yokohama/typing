@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PlayerCard from '../../components/PlayerCard';
 import { mockPlayers } from '../../data/mockPlayers';
 import useInfiniteScroll from '../../hooks/useInfiniteScroll';
@@ -11,6 +11,40 @@ export default function PlayersPage() {
 
   // インフィニティスクロールフックを使用
   const { visibleItems, hasMore, loading, lastElementRef } = useInfiniteScroll(sortedPlayers);
+
+  // ヘッダーリンクの問題を修正するuseEffect
+  useEffect(() => {
+    const fixHeaderLink = () => {
+      // ヘッダーのリンク要素を取得
+      const headerLink = document.querySelector('header a');
+      if (headerLink) {
+        // 既存のクリックイベントリスナーをクリア
+        const newHeaderLink = headerLink.cloneNode(true) as HTMLElement;
+        headerLink.parentNode?.replaceChild(newHeaderLink, headerLink);
+
+        // 新しいクリックイベントリスナーを追加
+        newHeaderLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // /shutingページに強制遷移
+          window.location.href = '/shuting';
+        });
+
+        console.log('Header link fixed for players page');
+      }
+    };
+
+    // ページロード後に実行
+    fixHeaderLink();
+
+    // 少し遅延してもう一度実行（DOMの更新を待つため）
+    const timer = setTimeout(fixHeaderLink, 100);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -33,12 +67,12 @@ export default function PlayersPage() {
 
       <div className="space-y-3">
         {visibleItems.map((player, index) => (
-          <div 
-            key={player.id} 
+          <div
+            key={player.id}
             ref={index === visibleItems.length - 1 ? lastElementRef : null}
           >
             <PlayerCard 
-              player={player} 
+              player={player}
               rank={index + 1}
             />
           </div>
